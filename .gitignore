@@ -1,0 +1,8 @@
+# private environment files
+.env
+
+# virtual environment name
+.venv
+
+# all separate migrations
+/migrations/
