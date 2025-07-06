@@ -6,3 +6,23 @@
 
 # all separate migrations
 /migrations/
+
+
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw
+*.pyzwz
+*.pyzwzw
+
+/_pycache/
+authentication/migrations/
+
+
+
+
+
+
