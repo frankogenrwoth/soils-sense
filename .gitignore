@@ -20,6 +20,8 @@
 
 /_pycache/
 authentication/migrations/
+/apps/*/migrations/
+
 
 
 
