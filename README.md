@@ -30,7 +30,7 @@
 - Weather forecast integration
 - Automated threshold-based alerts
 
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Backend
 - **Django 5.2.4** - Web framework
