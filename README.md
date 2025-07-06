@@ -118,6 +118,48 @@ soilsense/
 ├── README.md                # Project documentation
 ├── .env.example             # Environment variables template
 ├── .gitignore              # Git ignore rules
+├── db.sqlite3              # SQLite database
+├── authentication/          # Authentication app
+│   ├── __init__.py
+│   ├── admin.py            # Admin configuration
+│   ├── apps.py             # App configuration
+│   ├── models.py           # Custom User model
+│   ├── views.py            # Authentication views
+│   ├── tests.py            # Test cases
+│   └── migrations/         # Database migrations
+├── apps/                   # Role-based applications
+│   ├── admin/              # Admin-specific functionality
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── tests.py
+│   │   └── migrations/
+│   ├── farmer/             # Farmer-specific functionality
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── tests.py
+│   │   └── migrations/
+│   ├── technician/         # Technician-specific functionality
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── tests.py
+│   │   └── migrations/
+│   └── landing_page/       # Landing page and public views
+│       ├── __init__.py
+│       ├── admin.py
+│       ├── apps.py
+│       ├── models.py
+│       ├── views.py
+│       ├── tests.py
+│       └── migrations/
 └── soilsense/              # Main Django project
     ├── __init__.py
     ├── settings.py         # Django settings
