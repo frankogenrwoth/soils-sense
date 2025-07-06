@@ -127,6 +127,12 @@ soilsense/
 │   ├── views.py            # Authentication views
 │   ├── tests.py            # Test cases
 │   └── migrations/         # Database migrations
+├── ml/                     # Machine Learning Engine
+│   ├── __init__.py         # Main ML interface
+│   ├── config.py           # ML configuration and settings
+│   ├── data_processor.py   # Data preprocessing utilities
+│   ├── model_trainer.py    # Model training functionality
+│   └── predictor.py        # Prediction functions
 ├── apps/                   # Role-based applications
 │   ├── admin/              # Admin-specific functionality
 │   │   ├── __init__.py
