@@ -7,7 +7,7 @@
 # all separate migrations
 /migrations/
 
-
+# python cache
 *.pyc
 *.pyo
 *.pyd
@@ -18,10 +18,20 @@
 *.pyzwz
 *.pyzwzw
 
+# django pycache
 /_pycache/
+
+# django migrations
 authentication/migrations/
 /apps/*/migrations/
 
+# ml engine
+/ml/data/
+/ml/models/
+
+# database
+db.sqlite3
+*.sqlite3
 
 
 
