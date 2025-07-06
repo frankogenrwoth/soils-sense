@@ -176,7 +176,6 @@ Create a `.env` file in the root directory with the following variables:
 ```env
 DEBUG=True
 SECRET_KEY=your-secret-key-here
-ALLOWED_HOSTS=localhost,127.0.0.1
 ```
 
 ### Database Configuration
