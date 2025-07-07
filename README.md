@@ -134,14 +134,6 @@ soilsense/
 │   ├── model_trainer.py    # Model training functionality
 │   └── predictor.py        # Prediction functions
 ├── apps/                   # Role-based applications
-│   ├── admin/              # Admin-specific functionality
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── views.py
-│   │   ├── tests.py
-│   │   └── migrations/
 │   ├── farmer/             # Farmer-specific functionality
 │   │   ├── __init__.py
 │   │   ├── admin.py
