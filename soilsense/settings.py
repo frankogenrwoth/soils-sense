@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     # authentication app
     "authentication",
     # role based apps
-    "apps.admin",
     "apps.farmer",
     "apps.landing_page",
     "apps.technician",
