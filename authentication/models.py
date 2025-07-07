@@ -4,13 +4,13 @@ from django.contrib.auth.models import AbstractUser
 
 class Role(models.TextChoices):
     ADMIN = "admin"
-    USER = "user"
+    FARMER = "farmer"
     TECHNICIAN = "technician"
 
 
 # Create your models here.
 class User(AbstractUser):
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.USER)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.FARMER)
     image = models.ImageField(
         upload_to="users/profile_images/",
         default="users/profile_images/default.webp",
