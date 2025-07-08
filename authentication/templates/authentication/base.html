@@ -8,15 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <nav class="bg-white shadow mb-8">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-bold text-blue-700">Soils Sense</a>
-            <div>
-                <a href="{% url 'authentication:login' %}" class="text-gray-700 hover:text-blue-700 mx-2">Login</a>
-                <a href="{% url 'authentication:signup' %}" class="text-gray-700 hover:text-blue-700 mx-2">Sign Up</a>
-            </div>
-        </div>
-    </nav>
+   
     <main>
         {% block content %}{% endblock %}
     </main>
