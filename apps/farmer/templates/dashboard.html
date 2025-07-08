@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - Soil Sense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#059669',
+                        accent: '#34D399',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Left Sidebar Navigation -->
+        <div class="w-64 bg-white shadow-lg border-r border-gray-200">
+            <!-- Logo Section -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center">
+                    <i class="fas fa-seedling text-primary text-2xl mr-3"></i>
+                    <span class="text-xl font-bold text-gray-900">Soil Sense</span>
+                </div>
+            </div>
+
+            <!-- User Profile Section -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User avatar">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username|default:"Farmer" }}</p>
+                        <p class="text-xs text-gray-500">{{ user.email|default:"farmer@example.com" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#home" class="nav-link active flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-home w-5 h-5 mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-user w-5 h-5 mr-3"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#manage-files" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-file-upload w-5 h-5 mr-3"></i>
+                            <span>Manage Files</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#view-history" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-history w-5 h-5 mr-3"></i>
+                            <span>View History</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#analytics" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-chart-line w-5 h-5 mr-3"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#recommendations" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-lightbulb w-5 h-5 mr-3"></i>
+                            <span>Recommendations</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Logout Section -->
+            <div class="absolute bottom-0 w-64 p-4 border-t border-gray-200">
+                <button class="w-full flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900" id="page-title">Dashboard</h1>
+                        <p class="text-gray-600" id="page-subtitle">Welcome back! Here's what's happening with your soil today.</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-bell text-xl"></i>
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-cog text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                
+                <!-- Home Section -->
+                <div id="home" class="section active">
+                    <!-- Quick Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-primary hover:shadow-lg transition-shadow">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-tint text-primary text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Current Moisture</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ current_moisture }}%</p>
+                                    <p class="text-xs text-green-600">+2.5% from yesterday</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-shadow">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-thermometer-half text-green-500 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Temperature</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ temperature }}°C</p>
+                                    <p class="text-xs text-blue-600">Optimal range</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-cloud text-blue-500 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Humidity</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ humidity }}%</p>
+                                    <p class="text-xs text-gray-600">Moderate</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500 hover:shadow-lg transition-shadow">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-leaf text-yellow-500 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Crop Health</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ crop_health }}</p>
+                                    <p class="text-xs text-green-600">Excellent</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Dashboard Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Moisture Chart -->
+                        <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Moisture Trends (Last 7 Days)</h3>
+                            <canvas id="moistureChart" width="400" height="200"></canvas>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-green-900">Irrigation completed</p>
+                                        <p class="text-xs text-green-700">2 hours ago</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-database text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-blue-900">Data recorded</p>
+                                        <p class="text-xs text-blue-700">4 hours ago</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-exclamation text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-yellow-900">Alert triggered</p>
+                                        <p class="text-xs text-yellow-700">6 hours ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile" class="section hidden">
+                    <div class="max-w-4xl mx-auto">
+                        <!-- Profile Header -->
+                        <div class="bg-white rounded-xl shadow-md p-8 mb-6">
+                            <div class="flex items-center space-x-6">
+                                <div class="relative">
+                                    <img class="h-24 w-24 rounded-full object-cover border-4 border-primary" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Profile photo">
+                                    <button class="absolute bottom-0 right-0 bg-primary text-white rounded-full p-2 hover:bg-secondary transition-colors">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900">{{ user.get_full_name|default:user.username|default:'John Doe' }}</h2>
+                                    <p class="text-gray-600">{{ user.email|default:'john.doe@example.com' }}</p>
+                                    <p class="text-sm text-primary mt-1">Member since {{ user.date_joined|date:"F Y"|default:"January 2024" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile Content -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Personal Information -->
+                            <div class="md:col-span-2 bg-white rounded-xl shadow-md p-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                                    <i class="fas fa-user-circle mr-3 text-primary"></i>
+                                    Personal Information
+                                </h3>
+                                <form class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                            <input type="text" value="{{ user.first_name|default:'John' }}" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                            <input type="text" value="{{ user.last_name|default:'Doe' }}" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                        <input type="email" value="{{ user.email|default:'john.doe@example.com' }}" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                        <input type="tel" value="+256 123 456 789" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent" rows="3">Plot 123, Farmer's Lane, Kampala, Uganda</textarea>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Farm Information & Security -->
+                            <div class="space-y-6">
+                                <!-- Farm Information -->
+                                <div class="bg-white rounded-xl shadow-md p-8">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                                        <i class="fas fa-farm mr-3 text-primary"></i>
+                                        Farm Information
+                                    </h3>
+                                    <form class="space-y-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Farm Name</label>
+                                            <input type="text" value="Green Valley Farm" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                            <input type="text" value="Kampala, Uganda" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Primary Crop</label>
+                                            <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                                <option>Maize</option>
+                                                <option>Beans</option>
+                                                <option>Rice</option>
+                                                <option>Vegetables</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Security Settings -->
+                                <div class="bg-white rounded-xl shadow-md p-8">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                                        <i class="fas fa-shield-alt mr-3 text-primary"></i>
+                                        Security Settings
+                                    </h3>
+                                    <form class="space-y-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                            <input type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                            <input type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                                            <input type="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        </div>
+                                        <div class="pt-2">
+                                            <button type="button" class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">
+                                                Update Password
+                                            </button>
+                                        </div>
+                                        <div class="text-center">
+                                            <button type="button" class="text-primary hover:text-secondary text-sm font-medium" onclick="showResetPasswordModal()">
+                                                Forgot your password?
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Changes Button -->
+                        <div class="mt-8 flex justify-end">
+                            <button class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-secondary transition-colors flex items-center">
+                                <i class="fas fa-save mr-2"></i>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password Reset Modal -->
+                    <div id="resetPasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div class="bg-white rounded-xl shadow-xl p-8 max-w-md w-full mx-4">
+                            <div class="text-center mb-6">
+                                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-key text-primary text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900">Reset Password</h3>
+                                <p class="text-gray-600 mt-2">Enter your email address and we'll send you instructions to reset your password.</p>
+                            </div>
+                            <form class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                    <input type="email" placeholder="Enter your email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                </div>
+                                <button type="button" class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">
+                                    Send Reset Instructions
+                                </button>
+                                <button type="button" onclick="hideResetPasswordModal()" class="w-full text-gray-600 hover:text-gray-800 text-sm font-medium">
+                                    Cancel
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Files Section -->
+                <div id="manage-files" class="section hidden">
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- File Upload Area -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-xl shadow-md p-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-6">Upload Soil Data Files</h3>
+                                
+                                <!-- Upload Instructions -->
+                                <div class="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-info-circle text-blue-500 text-xl mr-3 mt-1"></i>
+                                        <div>
+                                            <h4 class="font-semibold text-blue-900 mb-2">Upload Instructions</h4>
+                                            <ul class="text-sm text-blue-800 space-y-1">
+                                                <li>• Supported formats: CSV and JSON files only</li>
+                                                <li>• Maximum file size: 10MB per file</li>
+                                                <li>• Ensure your data includes: timestamp, moisture_level, temperature, humidity</li>
+                                                <li>• CSV files should have headers in the first row</li>
+                                                <li>• JSON files should be properly formatted with nested objects</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- File Upload Zone -->
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors" id="upload-zone">
+                                    <div class="mb-4">
+                                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                        <h4 class="text-lg font-medium text-gray-900 mb-2">Drop your files here</h4>
+                                        <p class="text-gray-600 mb-4">or click to browse</p>
+                                        <input type="file" id="file-input" accept=".csv,.json" multiple class="hidden">
+                                        <button onclick="document.getElementById('file-input').click()" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">
+                                            Choose Files
+                                        </button>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Supports CSV and JSON files up to 10MB</p>
+                                </div>
+
+                                <!-- File List -->
+                                <div id="file-list" class="mt-6 space-y-3 hidden">
+                                    <h4 class="font-medium text-gray-900 mb-3">Selected Files:</h4>
+                                    <div id="selected-files" class="space-y-2"></div>
+                                    <button id="upload-btn" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition-colors mt-4">
+                                        Upload Files
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- File Format Examples -->
+                        <div class="space-y-6">
+                            
+                            <!-- Upload Tips -->
+                            <div class="bg-white rounded-xl shadow-md p-6">
+                                <h4 class="font-semibold text-gray-900 mb-3">Upload Tips</h4>
+                                <ul class="text-sm text-gray-600 space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                        <span>Ensure timestamps are in ISO format</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                        <span>Moisture levels should be percentages (0-100)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                        <span>Temperature in Celsius, humidity in percentage</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                        <span>Remove any empty rows or invalid data</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View History Section -->
+                <div id="view-history" class="section hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">View History</h2>
+                    
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Upload History</h3>
+                                <p class="text-sm text-gray-600 mt-1">Total: {{ total_files }} files ({{ csv_files }} CSV, {{ json_files }} JSON)</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <select id="file-type-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                    <option value="">All Files</option>
+                                    <option value="csv">CSV Files</option>
+                                    <option value="json">JSON Files</option>
+                                </select>
+                                <input type="date" id="date-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                <button onclick="applyFilters()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition-colors">
+                                    Filter
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="files-table-body" class="bg-white divide-y divide-gray-200">
+                                    {% if uploaded_files %}
+                                        {% for file in uploaded_files %}
+                                        <tr class="hover:bg-gray-50" data-file-id="{{ file.id }}">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <i class="fas {{ file.get_file_icon }} mr-3"></i>
+                                                    <span class="text-sm font-medium text-gray-900">{{ file.file_name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ file.file_type|upper }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ file.get_file_size_mb }} MB</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ file.upload_date|date:"M d, Y" }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {% if file.status == 'processed' %}
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Processed</span>
+                                                {% elif file.status == 'processing' %}
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Processing</span>
+                                                {% elif file.status == 'error' %}
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Error</span>
+                                                {% else %}
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Uploaded</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                                <i class="fas fa-folder-open text-4xl mb-4"></i>
+                                                <p class="text-lg font-medium">No files uploaded yet</p>
+                                                <p class="text-sm">Upload your first soil data file to get started</p>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics" class="section hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Analytics Dashboard</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <!-- Weekly Moisture Analysis -->
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Moisture Analysis</h3>
+                            <canvas id="weeklyChart" width="400" height="300"></canvas>
+                        </div>
+
+                        <!-- Monthly Trends -->
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h3>
+                            <canvas id="monthlyChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Statistics -->
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Detailed Statistics</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <p class="text-3xl font-bold text-primary">85%</p>
+                                <p class="text-sm text-gray-600">Average Moisture</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <p class="text-3xl font-bold text-green-500">12</p>
+                                <p class="text-sm text-gray-600">Irrigation Events</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                <p class="text-3xl font-bold text-blue-500">2.3L</p>
+                                <p class="text-sm text-gray-600">Water Saved (per day)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations Section -->
+                <div id="recommendations" class="section hidden">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Smart Recommendations</h2>
+                    
+                    <!-- Priority Recommendations -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Priority Actions</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock text-2xl mr-3"></i>
+                                        <h4 class="text-lg font-semibold">Optimal Irrigation Time</h4>
+                                    </div>
+                                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">High Priority</span>
+                                </div>
+                                <p class="text-green-100 mb-4">Water your crops tomorrow at 6:00 AM for best results. Current soil moisture is optimal for irrigation.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">Recommended Duration: 45 minutes</span>
+                                    <button class="bg-white text-green-600 px-4 py-2 rounded-lg font-medium hover:bg-green-50 transition-colors">
+                                        Set Reminder
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-cloud-rain text-2xl mr-3"></i>
+                                        <h4 class="text-lg font-semibold">Weather Alert</h4>
+                                    </div>
+                                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Medium Priority</span>
+                                </div>
+                                <p class="text-blue-100 mb-4">Rain expected in 2 days - reduce irrigation schedule by 30% to prevent overwatering.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">Rain Probability: 75%</span>
+                                    <button class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                                        Adjust Schedule
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Recommendations -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Current Recommendations -->
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Current Recommendations</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-medium text-green-900">Soil pH Optimization</h4>
+                                        <p class="text-sm text-green-700">Current pH is 6.2 - optimal for most crops. No action needed.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-medium text-blue-900">Fertilizer Schedule</h4>
+                                        <p class="text-sm text-blue-700">Next fertilizer application due in 5 days. Prepare NPK mix.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-medium text-yellow-900">Maintenance Reminder</h4>
+                                        <p class="text-sm text-yellow-700">Check sensor calibration next week. Schedule technician visit.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Predictive Insights -->
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Predictive Insights</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <h4 class="font-medium text-gray-900 mb-3">Next 7 Days Forecast</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center p-2 bg-white rounded">
+                                            <span class="text-sm font-medium">Day 1</span>
+                                            <span class="text-primary font-medium">Irrigation needed</span>
+                                            <span class="text-xs text-gray-500">6:00 AM</span>
+                                        </div>
+                                        <div class="flex justify-between items-center p-2 bg-white rounded">
+                                            <span class="text-sm font-medium">Day 3</span>
+                                            <span class="text-green-600">Natural rainfall</span>
+                                            <span class="text-xs text-gray-500">75% chance</span>
+                                        </div>
+                                        <div class="flex justify-between items-center p-2 bg-white rounded">
+                                            <span class="text-sm font-medium">Day 5</span>
+                                            <span class="text-primary font-medium">Irrigation needed</span>
+                                            <span class="text-xs text-gray-500">6:30 AM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <h4 class="font-medium text-gray-900 mb-2">Crop Health Prediction</h4>
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-green-600">85%</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Based on current conditions, your crop health is expected to remain optimal for the next 2 weeks.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            const pageTitle = document.getElementById('page-title');
+            const pageSubtitle = document.getElementById('page-subtitle');
+
+            const pageData = {
+                'home': {
+                    title: 'Dashboard',
+                    subtitle: 'Welcome back! Here\'s what\'s happening with your soil today.'
+                },
+                'profile': {
+                    title: 'Profile Settings',
+                    subtitle: 'Manage your personal and farm information.'
+                },
+                'manage-files': {
+                    title: 'Manage Files',
+                    subtitle: 'Upload and manage your soil data files.'
+                },
+                'view-history': {
+                    title: 'View History',
+                    subtitle: 'Track your file uploads and data history.'
+                },
+                'analytics': {
+                    title: 'Analytics',
+                    subtitle: 'Detailed insights and trends for your farm.'
+                },
+                'recommendations': {
+                    title: 'Smart Recommendations',
+                    subtitle: 'AI-powered suggestions for optimal farming.'
+                }
+            };
+
+            // Handle navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navLinks.forEach(l => {
+                        l.classList.remove('active', 'bg-primary', 'text-white');
+                        l.classList.add('text-gray-700');
+                    });
+                    sections.forEach(s => s.classList.add('hidden'));
+                    
+                    this.classList.add('active', 'bg-primary', 'text-white');
+                    this.classList.remove('text-gray-700');
+                    
+                    const targetId = this.getAttribute('href').substring(1);
+                    document.getElementById(targetId).classList.remove('hidden');
+                    
+                    if (pageData[targetId]) {
+                        pageTitle.textContent = pageData[targetId].title;
+                        pageSubtitle.textContent = pageData[targetId].subtitle;
+                    }
+                });
+            });
+
+            // Initialize features
+            initializeCharts();
+            initializeFileUpload();
+            initializePasswordReset();
+        });
+
+        // Chart initialization
+        function initializeCharts() {
+            const charts = {
+                moisture: {
+                    id: 'moistureChart',
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Soil Moisture (%)',
+                            data: [65, 68, 72, 70, 68, 66, 69],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    }
+                },
+                weekly: {
+                    id: 'weeklyChart',
+                    type: 'bar',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Average Moisture',
+                            data: [70, 68, 72, 75, 73, 69, 71],
+                            backgroundColor: ['#10B981', '#059669', '#34D399', '#6EE7B7', '#A7F3D0', '#D1FAE5', '#ECFDF5'],
+                            borderRadius: 8
+                        }]
+                    }
+                },
+                monthly: {
+                    id: 'monthlyChart',
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Moisture Trend',
+                            data: [68, 71, 69, 73],
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    }
+                }
+            };
+
+            const defaultOptions = {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            };
+
+            Object.values(charts).forEach(chart => {
+                const ctx = document.getElementById(chart.id)?.getContext('2d');
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: chart.type,
+                        data: chart.data,
+                        options: defaultOptions
+                    });
+                }
+            });
+        }
+
+        // File upload handling
+        function initializeFileUpload() {
+            const fileInput = document.getElementById('file-input');
+            const uploadZone = document.getElementById('upload-zone');
+            const fileList = document.getElementById('file-list');
+            const selectedFiles = document.getElementById('selected-files');
+
+            if (!fileInput || !uploadZone || !fileList || !selectedFiles) return;
+
+            uploadZone.addEventListener('dragover', e => {
+                e.preventDefault();
+                uploadZone.classList.add('border-primary');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('border-primary');
+            });
+
+            uploadZone.addEventListener('drop', e => {
+                e.preventDefault();
+                uploadZone.classList.remove('border-primary');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+            function handleFiles(files) {
+                const validFiles = Array.from(files).filter(file => {
+                    const isValid = file.size <= 10 * 1024 * 1024 && 
+                                  ['text/csv', 'application/json'].includes(file.type);
+                    if (!isValid) {
+                        showNotification('Invalid file: ' + file.name, 'error');
+                    }
+                    return isValid;
+                });
+
+                if (validFiles.length) {
+                    fileList.classList.remove('hidden');
+                    selectedFiles.innerHTML = validFiles.map(file => `
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <span class="text-sm text-gray-600">${file.name}</span>
+                            <span class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // Password reset functionality
+        function initializePasswordReset() {
+            const modal = document.getElementById('resetPasswordModal');
+            if (!modal) return;
+
+            modal.addEventListener('click', e => {
+                if (e.target === modal) hideResetPasswordModal();
+            });
+        }
+
+        function showResetPasswordModal() {
+            const modal = document.getElementById('resetPasswordModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideResetPasswordModal() {
+            const modal = document.getElementById('resetPasswordModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Utility function for notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-red-500' : 'bg-green-500'
+            } text-white`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
