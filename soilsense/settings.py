@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "apps.farmer",
     "apps.landing_page",
     "apps.technician",
+    "apps.administrator",
 ]
 
 MIDDLEWARE = [
@@ -133,5 +134,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "authentication.User"
 
 # Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'noreply@soils-sense.local'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@soils-sense.local"
