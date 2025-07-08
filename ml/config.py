@@ -18,8 +18,14 @@ DATA_DIR = BASE_DIR / "ml" / "data"
 # Model configurations - define structure for different prediction models
 MODEL_CONFIGS = {
     "soil_moisture_predictor": {
-        "features": [],
-        "target": "",
+        "features": [
+            "location",
+            "status",
+            "temperature_celsius",
+            "humidity_percent",
+            "battery_voltage",
+        ],
+        "target": "soil_moisture_percent",
     },
     "irrigation_recommendation": {
         "features": [],
