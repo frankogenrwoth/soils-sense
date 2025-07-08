@@ -1,0 +1,217 @@
+{% extends 'farmer/base.html' %}
+
+{% block base_title %}Recommendations{% endblock %}
+
+{% block page_title %}Smart Recommendations{% endblock %}
+{% block page_subtitle %}AI-powered suggestions for optimal farming{% endblock %}
+
+{% block content %}
+<!-- Priority Recommendations -->
+<div class="mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Priority Actions</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <i class="fas fa-clock text-2xl mr-3"></i>
+                    <h4 class="text-lg font-semibold">Optimal Irrigation Time</h4>
+                </div>
+                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">High Priority</span>
+            </div>
+            <p class="text-green-100 mb-4">Water your crops tomorrow at 6:00 AM for best results. Current soil moisture is optimal for irrigation.</p>
+            <div class="flex items-center justify-between">
+                <span class="text-sm">Recommended Duration: 45 minutes</span>
+                <button class="bg-white text-green-600 px-4 py-2 rounded-lg font-medium hover:bg-green-50 transition-colors">
+                    Set Reminder
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <i class="fas fa-cloud-rain text-2xl mr-3"></i>
+                    <h4 class="text-lg font-semibold">Weather Alert</h4>
+                </div>
+                <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Medium Priority</span>
+            </div>
+            <p class="text-blue-100 mb-4">Rain expected in 2 days - reduce irrigation schedule by 30% to prevent overwatering.</p>
+            <div class="flex items-center justify-between">
+                <span class="text-sm">Rain Probability: 75%</span>
+                <button class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                    Adjust Schedule
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Recommendations -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Current Recommendations -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Current Recommendations</h3>
+        <div class="space-y-4">
+            <div class="flex items-start space-x-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                <div>
+                    <h4 class="font-medium text-green-900">Soil pH Optimization</h4>
+                    <p class="text-sm text-green-700">Current pH is 6.2 - optimal for most crops. No action needed.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                <div>
+                    <h4 class="font-medium text-blue-900">Fertilizer Schedule</h4>
+                    <p class="text-sm text-blue-700">Next fertilizer application due in 5 days. Prepare NPK mix.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
+                <div>
+                    <h4 class="font-medium text-yellow-900">Maintenance Reminder</h4>
+                    <p class="text-sm text-yellow-700">Check sensor calibration next week. Schedule technician visit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Predictive Insights -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Predictive Insights</h3>
+        <div class="space-y-4">
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-medium text-gray-900 mb-3">Next 7 Days Forecast</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center p-2 bg-white rounded">
+                        <span class="text-sm font-medium">Day 1</span>
+                        <span class="text-primary font-medium">Irrigation needed</span>
+                        <span class="text-xs text-gray-500">6:00 AM</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-white rounded">
+                        <span class="text-sm font-medium">Day 3</span>
+                        <span class="text-green-600">Natural rainfall</span>
+                        <span class="text-xs text-gray-500">75% chance</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-white rounded">
+                        <span class="text-sm font-medium">Day 5</span>
+                        <span class="text-primary font-medium">Irrigation needed</span>
+                        <span class="text-xs text-gray-500">6:30 AM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-medium text-gray-900 mb-2">Crop Health Prediction</h4>
+                <div class="flex items-center space-x-2 mb-2">
+                    <div class="flex-1 bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <span class="text-sm font-medium text-green-600">85%</span>
+                </div>
+                <p class="text-sm text-gray-600">Based on current conditions, your crop health is expected to remain optimal for the next 2 weeks.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Items -->
+<div class="mt-8 bg-white rounded-xl shadow-md p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Action Items</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center mb-3">
+                <i class="fas fa-tasks text-primary text-xl mr-2"></i>
+                <h4 class="font-medium text-gray-900">Today's Tasks</h4>
+            </div>
+            <ul class="space-y-2">
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>Check soil moisture sensors</span>
+                </li>
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Adjust irrigation timers</span>
+                </li>
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Review weather forecast</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center mb-3">
+                <i class="fas fa-calendar text-primary text-xl mr-2"></i>
+                <h4 class="font-medium text-gray-900">This Week</h4>
+            </div>
+            <ul class="space-y-2">
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Schedule fertilizer application</span>
+                </li>
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Maintenance check</span>
+                </li>
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Update crop rotation plan</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center mb-3">
+                <i class="fas fa-chart-line text-primary text-xl mr-2"></i>
+                <h4 class="font-medium text-gray-900">Long-term Goals</h4>
+            </div>
+            <ul class="space-y-2">
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Optimize water usage</span>
+                </li>
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Improve soil health</span>
+                </li>
+                <li class="flex items-center text-sm text-gray-600">
+                    <i class="far fa-circle text-gray-400 mr-2"></i>
+                    <span>Increase crop yield</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for reminder and schedule buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', function() {
+            const action = this.textContent.trim();
+            showNotification(`${action} - Feature coming soon!`, 'info');
+        });
+    });
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+            type === 'error' ? 'bg-red-500' : type === 'info' ? 'bg-blue-500' : 'bg-green-500'
+        } text-white`;
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'info' ? 'info-circle' : 'check-circle'} mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+});
+</script>
+{% endblock %}

@@ -62,7 +62,7 @@ ROOT_URLCONF = "soilsense.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -132,6 +132,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom User Model
 AUTH_USER_MODEL = "authentication.User"
+
 
 # Email configuration
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

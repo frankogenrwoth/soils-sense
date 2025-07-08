@@ -1,68 +1,66 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from authentication.models import Role
+from django.contrib import messages
 
-# Create your views here.
+# Keeping the decorator definition for future use, but not applying it
+def technician_required(view_func):
+    """Decorator to check if the user is a technician"""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('authentication:login')
+        if request.user.role != Role.TECHNICIAN:
+            raise PermissionDenied("You must be a technician to access this page.")
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
 def dashboard(request):
-    # Sample data for the dashboard - your colleagues will replace this with real data later
-    context = {
-        'active_farms': 24,
-        'active_sensors': 156,
-        'alerts': 7,
-        'pending_reports': 3,
-        'recent_alerts': [
-            {
-                'type': 'alert',
-                'message': 'Moisture Level Critical',
-                'farm_id': 'F123',
-                'time': '2m ago'
-            },
-            {
-                'type': 'warning',
-                'message': 'pH Level Warning',
-                'farm_id': 'F145',
-                'time': '15m ago'
-            },
-            {
-                'type': 'normal',
-                'message': 'Sensor Maintenance Due',
-                'farm_id': 'F156',
-                'time': '1h ago'
-            }
-        ],
-        'sensor_thresholds': [
-            {
-                'parameter': 'Soil Moisture',
-                'min': '30%',
-                'max': '70%',
-                'status': 'normal'
-            },
-            {
-                'parameter': 'pH Level',
-                'min': '6.0',
-                'max': '7.5',
-                'status': 'warning'
-            },
-            {
-                'parameter': 'Temperature',
-                'min': '15°C',
-                'max': '35°C',
-                'status': 'normal'
-            }
-        ],
-        'recent_reports': [
-            {
-                'title': 'Monthly Soil Analysis Report',
-                'farm_id': 'F123',
-                'description': 'Comprehensive soil health analysis',
-                'generated_by': 'System',
-                'time': '3 days ago'
-            },
-            {
-                'title': 'Sensor Maintenance Log',
-                'description': 'Routine check and calibration report',
-                'generated_by': 'Tech Team',
-                'time': '1 week ago'
-            }
-        ]
-    }
-    return render(request, 'technician_dashboard.html', context)
+    """Main technician dashboard view"""
+    return render(request, 'technician/dashboard.html')
+
+def profile(request):
+    """Profile management view"""
+    if request.method == 'POST':
+        # Get form data
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        
+        # Update user object
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.phone_number = phone_number
+        
+        # Handle profile image upload
+        if 'profile_image' in request.FILES:
+            user.image = request.FILES['profile_image']
+        
+        user.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('technician:profile')
+    
+    return render(request, 'technician/profile.html')
+
+def farm_locations(request):
+    """Farm locations management view"""
+    return render(request, 'technician/farm_locations.html')
+
+def sensor_config(request):
+    """Sensor configuration view"""
+    return render(request, 'technician/sensor_config.html')
+
+def analytics(request):
+    """Analytics dashboard view"""
+    return render(request, 'technician/analytics.html')
+
+def reports(request):
+    """Reports management view"""
+    return render(request, 'technician/reports.html')
+
+def settings(request):
+    """Settings configuration view"""
+    return render(request, 'technician/settings.html')

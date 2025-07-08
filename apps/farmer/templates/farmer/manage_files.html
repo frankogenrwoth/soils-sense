@@ -1,0 +1,190 @@
+{% extends 'farmer/base.html' %}
+
+{% block base_title %}Manage Files{% endblock %}
+
+{% block page_title %}Manage Files{% endblock %}
+{% block page_subtitle %}Upload and manage your soil data files{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- File Upload Area -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl shadow-md p-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Upload Soil Data Files</h3>
+            
+            <!-- Upload Instructions -->
+            <div class="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-500 text-xl mr-3 mt-1"></i>
+                    <div>
+                        <h4 class="font-semibold text-blue-900 mb-2">Upload Instructions</h4>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li>• Supported formats: CSV and JSON files only</li>
+                            <li>• Maximum file size: 10MB per file</li>
+                            <li>• Ensure your data includes: timestamp, moisture_level, temperature, humidity</li>
+                            <li>• CSV files should have headers in the first row</li>
+                            <li>• JSON files should be properly formatted with nested objects</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload Zone -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors" id="upload-zone">
+                <div class="mb-4">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <h4 class="text-lg font-medium text-gray-900 mb-2">Drop your files here</h4>
+                    <p class="text-gray-600 mb-4">or click to browse</p>
+                    <input type="file" id="file-input" accept=".csv,.json" multiple class="hidden">
+                    <button onclick="document.getElementById('file-input').click()" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">
+                        Choose Files
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500">Supports CSV and JSON files up to 10MB</p>
+            </div>
+
+            <!-- File List -->
+            <div id="file-list" class="mt-6 space-y-3 hidden">
+                <h4 class="font-medium text-gray-900 mb-3">Selected Files:</h4>
+                <div id="selected-files" class="space-y-2"></div>
+                <button id="upload-btn" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition-colors mt-4">
+                    Upload Files
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Tips -->
+    <div class="space-y-6">
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h4 class="font-semibold text-gray-900 mb-3">Upload Tips</h4>
+            <ul class="text-sm text-gray-600 space-y-2">
+                <li class="flex items-start">
+                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                    <span>Ensure timestamps are in ISO format</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                    <span>Moisture levels should be percentages (0-100)</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                    <span>Temperature in Celsius, humidity in percentage</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                    <span>Remove any empty rows or invalid data</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file-input');
+    const uploadZone = document.getElementById('upload-zone');
+    const fileList = document.getElementById('file-list');
+    const selectedFiles = document.getElementById('selected-files');
+    const uploadBtn = document.getElementById('upload-btn');
+
+    uploadZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        uploadZone.classList.add('border-primary');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('border-primary');
+    });
+
+    uploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadZone.classList.remove('border-primary');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+    function handleFiles(files) {
+        const validFiles = Array.from(files).filter(file => {
+            const isValid = file.size <= 10 * 1024 * 1024 && 
+                          ['text/csv', 'application/json'].includes(file.type);
+            if (!isValid) {
+                showNotification('Invalid file: ' + file.name, 'error');
+            }
+            return isValid;
+        });
+
+        if (validFiles.length) {
+            fileList.classList.remove('hidden');
+            selectedFiles.innerHTML = validFiles.map(file => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span class="text-sm text-gray-600">${file.name}</span>
+                    <span class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    uploadBtn.addEventListener('click', async () => {
+        const formData = new FormData();
+        Array.from(fileInput.files).forEach(file => {
+            formData.append('files[]', file);
+        });
+
+        try {
+            const response = await fetch('{% url "farmer:upload_file" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                showNotification('Files uploaded successfully!', 'success');
+                fileInput.value = '';
+                fileList.classList.add('hidden');
+            } else {
+                showNotification(result.error || 'Upload failed', 'error');
+            }
+        } catch (error) {
+            showNotification('Upload failed: ' + error.message, 'error');
+        }
+    });
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+            type === 'error' ? 'bg-red-500' : 'bg-green-500'
+        } text-white`;
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'} mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
