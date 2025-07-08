@@ -75,7 +75,12 @@ class DataProcessor:
             data (pandas.DataFrame): Data to save
             model_type (str): Type of model
         """
-        pass
+        data_path = DATA_DIR / f"{model_type}.csv"
+        data.to_csv(data_path, index=False)
+        print(f"Training data saved to {data_path}")
+        return data_path
+        
+        
 
     def load_encoders(self, model_type):
         """Load saved encoders and scalers from file
