@@ -27,6 +27,10 @@ class LoginForm(forms.Form):
 class SignupForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}), label='Password')
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}), label='Confirm Password')
+    
+    #let username and also email have placeholder
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}), label='Username')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'example@gmail.com'}), label='Email')
 
     class Meta:
         model = User
