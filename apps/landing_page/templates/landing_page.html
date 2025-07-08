@@ -25,8 +25,8 @@
             <li><a href="/contact" class="hover:text-green-400">Contact</a></li>
         </ul>
         <div class="flex space-x-3">
-            <a href="/login" class="hover:text-green-400">Login</a>
-            <a href="/signup" class="bg-green-500 px-4 py-1 rounded hover:bg-green-600">Sign Up</a>
+            <a href="{% url 'authentication:login' %}" class="hover:text-green-400">Login</a>
+            <a href="{% url 'authentication:signup' %}" class="bg-green-500 px-4 py-1 rounded hover:bg-green-600">Sign Up</a>
         </div>
     </div>
 </nav>
