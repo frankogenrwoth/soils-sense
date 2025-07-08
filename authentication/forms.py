@@ -35,6 +35,23 @@ class SignupForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'role', 'password', 'confirm_password']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name != 'role' and field_name != 'password' and field_name != 'confirm_password':
+                field.widget.attrs['class'] = 'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6'
+                
+            if field_name == 'password' or field_name == 'confirm_password':
+                field.widget.attrs['class'] = 'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6'
+                if field_name == 'password':
+                    field.widget.attrs['placeholder'] = 'Password'
+                else:
+                    field.widget.attrs['placeholder'] = 'Confirm Password'
+            
+            if field_name == 'role':
+                field.widget.attrs['class'] = 'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6'
+                field.widget.attrs['placeholder'] = 'Role'
 
     def clean(self):
         cleaned_data = super().clean()
