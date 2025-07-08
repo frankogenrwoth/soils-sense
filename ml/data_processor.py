@@ -121,7 +121,30 @@ class DataProcessor:
         Returns:
             numpy.ndarray: Preprocessed input data
         """
-        pass
+        if model_type not in self.label_encoders:
+            self.load_encoders(model_type)
+            df = pd.DataFrame(input_data)
+            required_features = MODEL_CONFIG[model_type]['features']
+            assert required_features.sort() == list(input_data.keys()).sort(), \
+                f"Required features {required_features} not found in input data"
+                #encode the feature status
+                if "status" in df.columns:
+                    encoder = self.label_encoders[model_type].get("status")
+                    if encoder:
+                        df["status"] = encoder.transform(df["status"])
+
+                #encode the feature location
+                if "location" in df.columns:
+                    encoder = self.label_encoders[model_type].get("location")
+                    if encoder:
+                        df["location"] = encoder.transform(df["location"])
+                        
+               #scale the features
+               if model_type not in self.scalers:
+                self.load_encoders(model_type)
+                df_scaled = self.scalers[model_type].transform(df)
+                return df_scaled.values
+
 
     def validate_prediction_range(self, prediction, model_type):
         """Validate that prediction is within expected range
