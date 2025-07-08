@@ -156,4 +156,19 @@ class DataProcessor:
         Returns:
             dict: Validation result with 'valid' boolean and 'message' string
         """
-        pass
+        #get the std of the target column in the dataset
+        data = self.load_training_data(model_type)
+        df = pd.DataFrame(data)
+        std = df[MODEL_CONFIG[model_type]['target']].std()
+        mean = df[MODEL_CONFIG[model_type]['target']].mean()
+        #validate the prediction
+        if prediction < mean - 3*std or prediction > mean + 3*std:
+            return {
+                "valid": False,
+                "message": f"Prediction {prediction} is outside the expected range of {mean - 3*std} to {mean + 3*std}"
+            }
+        else:
+        return {
+            "valid": True,
+            "message": f"Prediction {prediction} is within the expected range of {mean - 3*std} to {mean + 3*std}"
+        }
