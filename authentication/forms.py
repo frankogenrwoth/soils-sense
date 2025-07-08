@@ -6,11 +6,11 @@ User = get_user_model()
 class LoginForm(forms.Form):
     username = forms.CharField(
         max_length=150,
-        widget=forms.TextInput(attrs={"class": "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"}),
+        widget=forms.TextInput(attrs={"placeholder": "Username", "class": "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"}),
         label='Username'
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"}),
+        widget=forms.PasswordInput(attrs={"placeholder": "Password", "class": "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"}),
         label='Password'
     )
 
@@ -38,6 +38,7 @@ class SignupForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
         for field_name, field in self.fields.items():
             if field_name != 'role' and field_name != 'password' and field_name != 'confirm_password':
                 field.widget.attrs['class'] = 'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6'
@@ -52,6 +53,7 @@ class SignupForm(forms.ModelForm):
             if field_name == 'role':
                 field.widget.attrs['class'] = 'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6'
                 field.widget.attrs['placeholder'] = 'Role'
+                field.choices = [('FARMER', 'farmer'), ('TECHNICIAN', 'technician')]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -77,11 +79,11 @@ class PasswordResetForm(forms.Form):
     
 class PasswordResetConfirmForm(forms.Form):
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password', "class": "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"}),
         label='Password'
     )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password', "class": "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"}),
         label='Confirm Password'
     )
     
