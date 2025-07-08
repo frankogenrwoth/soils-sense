@@ -66,8 +66,16 @@ class DataProcessor:
         # Scale features
         self.scalers[model_type] = StandardScaler()
         self.label_encoders[model_type] = LabelEncoder()
-        x_train_scaled = self.scalers[model_type].transform(x_test)
-        return x_train_scaled, x_test_scaled, y_train, y_test, features
+        x_train_scaled = self.scalers[model_type].fit_transform(x_train)
+        x_test_scaled = self.scalers[model_type].transform(x_test)
+        return (
+            x_train_scaled,
+            x_test_scaled,
+            y_train.values,
+            y_test.values,
+            features
+        )
+      
 
     def save_training_data(self, data, model_type):
         """Save training data to file
