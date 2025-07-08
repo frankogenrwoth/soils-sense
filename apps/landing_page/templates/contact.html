@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Soils Sense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Navbar Start -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="/" class="text-2xl font-extrabold text-blue-700 tracking-tight">Soils Sense</a>
+                
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-6">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Home</a>
+                    <a href="/about" class="text-gray-700 hover:text-blue-600 font-medium transition">About</a>
+                    <a href="/contact" class="text-blue-600 font-semibold underline">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Contact Form Start -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Get in Touch</h2>
+            <form action="#" method="POST" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-gray-700 font-medium mb-2">Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Your name"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-gray-700 font-medium mb-2">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="you@example.com"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="message" class="block text-gray-700 font-medium mb-2">Message</label>
+                    <textarea id="message" name="message" rows="5" required placeholder="Type your message here..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-md transition duration-200">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </main>
+    <!-- Contact Form End -->
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-sm mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-4 text-center text-gray-500 text-sm">
+            &copy; 2025 Soils Sense. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
