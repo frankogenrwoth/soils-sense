@@ -8,6 +8,15 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.views.generic.edit import FormView
 from .forms import SignupForm
+from django.views.generic import FormView
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from .forms import PasswordResetForm, PasswordResetConfirmForm
+from django.template.loader import render_to_string
 
 from .models import Role, User
 
@@ -55,3 +64,55 @@ class SignupView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+class PasswordResetRequestView(FormView):
+    template_name = 'authentication/password_reset_request.html'
+    form_class = PasswordResetForm
+    success_url = '/authentication/login/'
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = self.request.build_absolute_uri(
+                f"/authentication/reset/{uid}/{token}/"
+            )
+            subject = 'Password Reset Request'
+            message = render_to_string('authentication/password_reset_email.txt', {
+                'reset_url': reset_url,
+                'user': user,
+            })
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+        except User.DoesNotExist:
+            pass  # Do not reveal if email exists
+        return super().form_valid(form)
+
+class PasswordResetConfirmView(FormView):
+    template_name = 'authentication/password_reset_confirm.html'
+    form_class = PasswordResetConfirmForm
+    success_url = '/authentication/login/'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.uidb64 = kwargs.get('uidb64')
+        self.token = kwargs.get('token')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        try:
+            uid = force_str(urlsafe_base64_decode(self.uidb64))
+            User = get_user_model()
+            user = User.objects.get(pk=uid)
+            if default_token_generator.check_token(user, self.token):
+                password = form.cleaned_data['password']
+                user.set_password(password)
+                user.save()
+                return super().form_valid(form)
+            else:
+                form.add_error(None, 'Invalid or expired token.')
+                return self.form_invalid(form)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            form.add_error(None, 'Invalid reset link.')
+            return self.form_invalid(form)
