@@ -29,7 +29,7 @@ class DataProcessor:
         if data_path.exists():
             return pd.read_csv(data_path)
         else:
-            raise FileNotFoundError(f"Training data for {model_type} not found at {file_path}")
+            raise FileNotFoundError(f"Training data for {model_type} not found at {data_path}")
 
     def _generate_sample_data(self, model_type):
         """Generate sample training data for testing
@@ -54,7 +54,19 @@ class DataProcessor:
         Returns:
             tuple: (X_train_scaled, X_test_scaled, y_train, y_test, feature_names)
         """
-        pass
+        data = self.load_training_data(model_type)
+        df =pd.DataFrame(data)
+        x_train, x_test, y_train, y_test = train_test_split(
+            df[features],
+            df[target],
+            test_size=0.2,
+            random_state=42
+        )
+        # Scale features
+        self.scalers[model_type] = StandardScaler()
+        self.label_encoders[model_type] = LabelEncoder()
+        x_train_scaled = self.scalers[model_type].transform(x_test)
+        return x_train_scaled, x_test_scaled, y_train, y_test, features
 
     def save_training_data(self, data, model_type):
         """Save training data to file
