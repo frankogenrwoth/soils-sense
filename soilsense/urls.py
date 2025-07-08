@@ -10,6 +10,6 @@ def redirect_to_farmer(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", redirect_to_farmer, name='home'),
+    path("authentication/", include("authentication.urls")),
     path("farmer/", include("apps.farmer.urls")),
-    
 ]

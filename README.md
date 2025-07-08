@@ -91,7 +91,7 @@
 
 5. **Run database migrations**
    ```bash
-   python manage.py makemigrations
+   python manage.py makemigrations authentication
    python manage.py migrate
    ```
 
@@ -271,6 +271,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Student Name 2] - Frontend Development  
 - [Student Name 3] - Machine Learning
 - [Student Name 4] - Database Design
+- ARIKO SOSSY JOEL- Authentication
 
 ## Support
 
