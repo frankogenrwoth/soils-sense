@@ -4,7 +4,15 @@
 {% block sub_title %}Welcome back to soil sense{% endblock %}
 
 {% block form %}
+{% if messages %}
+  <ul class="mb-4">
+    {% for message in messages %}
+      <li class="text-green-600 text-center">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 <form class="space-y-6" action="#" method="POST">
+    {% csrf_token %}
     <div>
       <label for="email" class="block text-sm/6 font-medium text-gray-900">Username</label>
       <div class="mt-2">
