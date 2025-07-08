@@ -11,5 +11,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", redirect_to_farmer, name='home'),
     path("farmer/", include("apps.farmer.urls")),
-    
+    path("technician/", include("apps.technician.urls")),
 ]
