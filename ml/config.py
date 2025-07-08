@@ -1,6 +1,13 @@
 from pathlib import Path
 
-
+_all_ = [
+    "BASE_DIR",
+    "MODELS_DIR",
+    "DATA_DIR",
+    "MODEL_CONFIGS",
+    "TRAINING_CONFIG",
+    "PREDICTION_CONFIG",
+]
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,8 +18,14 @@ DATA_DIR = BASE_DIR / "ml" / "data"
 # Model configurations - define structure for different prediction models
 MODEL_CONFIGS = {
     "soil_moisture_predictor": {
-        "features": [],
-        "target": "",
+        "features": [
+            "location",
+            "status",
+            "temperature_celsius",
+            "humidity_percent",
+            "battery_voltage",
+        ],
+        "target": "soil_moisture_percent",
     },
     "irrigation_recommendation": {
         "features": [],
