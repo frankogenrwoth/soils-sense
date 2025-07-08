@@ -1,6 +1,13 @@
 from pathlib import Path
 
-
+_all_ = [
+    "BASE_DIR",
+    "MODELS_DIR",
+    "DATA_DIR",
+    "MODEL_CONFIGS",
+    "TRAINING_CONFIG",
+    "PREDICTION_CONFIG",
+]
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
