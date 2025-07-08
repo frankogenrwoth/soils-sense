@@ -2,9 +2,8 @@ from django.shortcuts import render
 
 from django.views import View
 from django.contrib.auth import get_user_model
-
-from django.contrib.auth.forms import AuthenticationForm
-# from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate
+from .forms import LoginForm
 from django.urls import reverse
 from django.shortcuts import redirect
 
@@ -15,40 +14,33 @@ from .models import Role, User
 class LoginView(View):
     def get(self, request):
         context = {
-            'form': AuthenticationForm()
+            'form': LoginForm()
         }
-        
-        return render(request, 'authentication/login.html')
+        return render(request, 'authentication/login.html', context)
     
     def post(self, request):
-        # Handle login logic here
-        form = AuthenticationForm(request, data=request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
-            user = form.get_user()
-            # Log the user in, set session, etc.
-            
-            # For example: login(request, user)
-            
-            if user.role == Role.ADMIN:
-                # Redirect to admin dashboard
-                admin_dashboard_url = reverse("admin:dashboard")
-                return redirect(admin_dashboard_url)
-            
-            if user.role == Role.FARMER:
-                # Redirect to user dashboard
-                user_dashboard_url = reverse("farmer:dashboard")
-                return redirect(user_dashboard_url)
-            
-            if user.role == Role.TECHNICIAN:
-                # Redirect to technician dashboard
-                technician_dashboard_url = reverse("technician:dashboard")
-                return redirect(technician_dashboard_url)
-            
-            
-            # redirect the user based on his or her role
-            
-            return render(request, 'authentication/login.html', {'message': 'Login successful'})
-        return render(request, 'authentication/login.html', {'message': 'Login successful'})
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                if user.role == Role.ADMIN:
+                    admin_dashboard_url = reverse("admin:dashboard")
+                    return redirect(admin_dashboard_url)
+                if user.role == Role.FARMER:
+                    user_dashboard_url = reverse("farmer:dashboard")
+                    return redirect(user_dashboard_url)
+                if user.role == Role.TECHNICIAN:
+                    technician_dashboard_url = reverse("technician:dashboard")
+                    return redirect(technician_dashboard_url)
+                return render(request, 'authentication/login.html', {'message': 'Login successful', 'form': form})
+            else:
+                return render(request, 'authentication/login.html', {'form': form, 'message': 'Invalid credentials'})
+        return render(request, 'authentication/login.html', {'form': form})
 
 class LogoutView(View):
-    pass
+    def get(self, request):
+        logout(request)
+        return redirect('authentication:login')
