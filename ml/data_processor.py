@@ -1,10 +1,11 @@
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
 import json
 import os
-from .config import DATA_DIR, TRAINING_CONFIG
+from .config import DATA_DIR, TRAINING_CONFIG, MODEL_CONFIGS
 
 
 class DataProcessor:
@@ -124,7 +125,7 @@ class DataProcessor:
         if model_type not in self.label_encoders:
             self.load_encoders(model_type)
             df = pd.DataFrame(input_data)
-            required_features = MODEL_CONFIG[model_type]['features']
+            required_features = MODEL_CONFIGS[model_type]['features']
             assert required_features.sort() == list(input_data.keys()).sort(), \
                 f"Required features {required_features} not found in input data"
                 #encode the feature status
@@ -159,8 +160,8 @@ class DataProcessor:
         #get the std of the target column in the dataset
         data = self.load_training_data(model_type)
         df = pd.DataFrame(data)
-        std = df[MODEL_CONFIG[model_type]['target']].std()
-        mean = df[MODEL_CONFIG[model_type]['target']].mean()
+        std = df[MODEL_CONFIGS[model_type]['target']].std()
+        mean = df[MODEL_CONFIGS[model_type]['target']].mean()
         #validate the prediction
         if prediction < mean - 3*std or prediction > mean + 3*std:
             return {
