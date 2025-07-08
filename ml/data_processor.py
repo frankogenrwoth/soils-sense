@@ -88,7 +88,13 @@ class DataProcessor:
         Args:
             model_type (str): Type of model
         """
-        pass
+        encoder_path = DATA_DIR / f"{model_type}_encoders.pkl"
+        scaler_path = DATA_DIR / f"{model_type}_scaler.pkl"
+        with open(encoder_path, 'rb') as f:
+            self.label_encoders[model_type] = pickle.load(f)
+        with open(scaler_path, 'rb') as f:
+            self.scalers[model_type] = pickle.load(f)
+        return self.label_encoders[model_type], self.scalers[model_type]
 
     def save_encoders(self, model_type):
         """Save encoders and scalers to file
