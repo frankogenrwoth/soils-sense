@@ -12,4 +12,6 @@ urlpatterns = [
     path("", redirect_to_farmer, name='home'),
     path("authentication/", include("authentication.urls")),
     path("farmer/", include("apps.farmer.urls")),
+	  path("landing_page/", include("apps.landing_page.urls")),
+	
 ]
