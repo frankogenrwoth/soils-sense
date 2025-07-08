@@ -269,7 +269,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Year 3 Students - Makerere University COCIS**
 - [Student Name 1] - Backend Development
 - [Student Name 2] - Frontend Development  
-- [Student Name 3] - Machine Learning
+- [SABUNYO SAUL] - Machine Learning
 - [Student Name 4] - Database Design
 - ARIKO SOSSY JOEL- Authentication
 

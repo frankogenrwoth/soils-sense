@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SoilSense - Smart Soil Moisture Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #bg-slider-img {
+            transition: opacity 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 relative">
+
+<!-- ✅ NAVIGATION BAR -->
+<nav class="bg-gray-800 text-white px-6 py-4 fixed w-full top-0 z-50 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+        <div class="text-2xl font-bold"><a href="/">SoilSense</a></div>
+        <ul class="flex space-x-6 text-sm">
+            <li><a href="#features" class="hover:text-green-400">Features</a></li>
+            <li><a href="#how" class="hover:text-green-400">How It Works</a></li>
+            <li><a href="/about" class="hover:text-green-400">About</a></li>
+            <li><a href="/contact" class="hover:text-green-400">Contact</a></li>
+        </ul>
+        <div class="flex space-x-3">
+            <a href="/login" class="hover:text-green-400">Login</a>
+            <a href="/signup" class="bg-green-500 px-4 py-1 rounded hover:bg-green-600">Sign Up</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ✅ HERO SECTION -->
+<section class="relative h-screen">
+    <img id="bg-slider-img" src="{% static 'images/slide1.jpg' %}" alt="Slider"
+        class="w-full h-full object-cover absolute top-0 left-0 z-0 opacity-100" />
+    <div class="absolute inset-0 bg-black bg-opacity-50 z-10 flex flex-col items-center justify-center text-white text-center">
+        <h1 class="text-5xl font-bold drop-shadow">Monitor Your Soil in Real Time</h1>
+        <p class="text-xl mt-4 drop-shadow">Smart farming starts with smart data</p>
+        <a href="/signup" class="mt-6 bg-white text-gray-800 font-semibold px-6 py-2 rounded shadow hover:bg-green-100">Get Started</a>
+    </div>
+</section>
+
+<!-- ✅ FEATURES SECTION -->
+<section id="features" class="py-20 bg-white">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+        <h2 class="text-4xl font-bold mb-4 text-gray-800">Powerful Features for Smart Farming</h2>
+        <p class="text-gray-600 mb-12 text-lg">Everything you need to monitor, analyze, and improve your soil's health.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-lg p-6 transition-all shadow-md hover:shadow-lg">
+                <div class="flex items-center justify-center mb-4 text-green-600">
+                    <!-- Heroicon: Chart Bar -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V9m4 6v-3M5 19h14" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Live Soil Monitoring</h3>
+                <p class="text-gray-600">Access real-time moisture readings from all your fields on one smart dashboard.</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-lg p-6 transition-all shadow-md hover:shadow-lg">
+                <div class="flex items-center justify-center mb-4 text-green-600">
+                    <!-- Heroicon: Trending Up -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17l6-6 4 4 8-8" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Visual Reports & Trends</h3>
+                <p class="text-gray-600">Track moisture over time with easy-to-read charts that support seasonal planning.</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-lg p-6 transition-all shadow-md hover:shadow-lg">
+                <div class="flex items-center justify-center mb-4 text-green-600">
+                    <!-- Heroicon: Bell Alert -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .386-.146.735-.405 1.005L4 17h5m6 0v1a3 3 0 11-6 0v-1h6z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Smart Notifications</h3>
+                <p class="text-gray-600">Get instant alerts when your soil is too dry or too wet — never over- or under-water again.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- ✅ HOW IT WORKS -->
+<section id="how" class="py-16 bg-gray-100">
+    <h2 class="text-3xl font-bold text-center mb-10">How It Works</h2>
+    <div class="flex flex-col md:flex-row justify-around items-center max-w-5xl mx-auto gap-10 px-6">
+        <div class="text-center">
+            <div class="text-5xl mb-2">1️⃣</div>
+            <h4 class="font-bold text-lg mb-1">Install Sensors</h4>
+            <p>Place wireless soil moisture sensors in your field.</p>
+        </div>
+        <div class="text-center">
+            <div class="text-5xl mb-2">2️⃣</div>
+            <h4 class="font-bold text-lg mb-1">Connect & Stream</h4>
+            <p>Data is automatically sent to the web app via API.</p>
+        </div>
+        <div class="text-center">
+            <div class="text-5xl mb-2">3️⃣</div>
+            <h4 class="font-bold text-lg mb-1">View & Act</h4>
+            <p>Log in, monitor graphs, and take action accordingly.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ✅ WHO IT’S FOR -->
+<section id="users" class="py-16 bg-white text-center">
+    <h2 class="text-3xl font-bold mb-10">Who Uses SoilSense?</h2>
+    <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto px-8">
+        <div>
+            <h4 class="text-xl font-semibold mb-2">🌾 Farmers</h4>
+            <p>Maximize yields and reduce irrigation costs with data-driven decisions.</p>
+        </div>
+        <div>
+            <h4 class="text-xl font-semibold mb-2">👨‍🔬 Researchers</h4>
+            <p>Collect consistent, exportable soil moisture data for experiments.</p>
+        </div>
+        <div>
+            <h4 class="text-xl font-semibold mb-2">🏢 Agencies</h4>
+            <p>Monitor soil conditions in districts or regions for climate-smart planning.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ✅ SCREENSHOTS -->
+<section class="py-16 bg-gray-100 text-center">
+    <h2 class="text-3xl font-bold mb-8">App Preview</h2>
+    <div class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto px-6">
+        <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="rounded shadow-md">
+        <img src="{% static 'images/chart-preview.png' %}" alt="Chart" class="rounded shadow-md">
+    </div>
+</section>
+
+<!-- ✅ CONTACT FORM -->
+<section id="contact" class="py-16 bg-white">
+    <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
+        <p class="mb-8">Need help? Want a demo? Fill in the form below:</p>
+        <form method="post" action="/contact/" class="space-y-4 text-left">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Your Name" required class="w-full px-4 py-2 border rounded">
+            <input type="email" name="email" placeholder="Your Email" required class="w-full px-4 py-2 border rounded">
+            <textarea name="message" rows="4" placeholder="Your Message" required class="w-full px-4 py-2 border rounded"></textarea>
+            <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<!-- ✅ FOOTER -->
+<footer class="bg-gray-800 text-white py-6 mt-10 text-center">
+    <p>&copy; 2025 SoilSense. All rights reserved.</p>
+    <div class="text-sm mt-2">
+        <a href="/privacy" class="hover:underline mx-2">Privacy Policy</a> |
+        <a href="/terms" class="hover:underline mx-2">Terms of Use</a>
+    </div>
+</footer>
+
+<!-- ✅ SLIDER SCRIPT -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const images = [
+            "{% static 'images/slide1.jpg' %}",
+            "{% static 'images/slide2.jpg' %}",
+            "{% static 'images/slide3.jpg' %}"
+        ];
+        let idx = 0;
+        const img = document.getElementById('bg-slider-img');
+
+        setInterval(() => {
+            idx = (idx + 1) % images.length;
+            img.style.opacity = 0;
+            setTimeout(() => {
+                img.src = images[idx];
+                img.style.opacity = 1;
+            }, 500);
+        }, 5000);
+    });
+</script>
+
+</body>
+</html>
