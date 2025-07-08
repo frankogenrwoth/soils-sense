@@ -1,16 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 
 
 class Role(models.TextChoices):
     ADMIN = "admin"
-    USER = "user"
+    FARMER = "farmer"
     TECHNICIAN = "technician"
 
 
 # Create your models here.
 class User(AbstractUser):
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.USER)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.FARMER)
     image = models.ImageField(
         upload_to="users/profile_images/",
         default="users/profile_images/default.webp",
@@ -19,7 +19,7 @@ class User(AbstractUser):
     )
     phone_number = models.CharField(max_length=15, null=True, blank=True)
 
-    objects = models.Manager()
+    objects = UserManager()
 
     def __str__(self):
         return self.username
