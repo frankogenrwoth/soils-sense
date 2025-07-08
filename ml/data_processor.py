@@ -102,7 +102,14 @@ class DataProcessor:
         Args:
             model_type (str): Type of model
         """
-        pass
+        encoder_path = DATA_DIR / f"{model_type}_encoders.pkl"
+        scaler_path = DATA_DIR / f"{model_type}_scaler.pkl"
+        with open(encoder_path, 'wb') as f:
+            pickle.dump(self.label_encoders[model_type], f)
+        with open(scaler_path, 'wb') as f:
+            pickle.dump(self.scalers[model_type], f)
+        print(f"Encoders and scalers saved to {encoder_path} and {scaler_path}")
+        return encoder_path, scaler_path
 
     def preprocess_input(self, input_data, model_type):
         """Preprocess input data for prediction
