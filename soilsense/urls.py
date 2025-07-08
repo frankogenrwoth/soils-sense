@@ -22,6 +22,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # path("accounts/", include("authentication.urls")),
     # Include the landing page URLs
-    path("", include("apps.landing_page.urls")),
+    path("landing_page/", include("apps.landing_page.urls")),
 
 ]
