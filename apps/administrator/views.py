@@ -19,3 +19,11 @@ class DataManagementView(View):
     def get(self, request):
         context = {}
         return render(request, self.template_name, context=context)
+
+
+class ReportManagementView(View):
+    template_name = "administrator/report_management.html"
+
+    def get(self, request):
+        context = {}
+        return render(request, self.template_name, context=context)
