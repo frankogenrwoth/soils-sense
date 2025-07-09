@@ -19,10 +19,10 @@
                 <span class="font-bold text-xl text-gray-800">SoilSense Admin</span>
             </div>
             <div class="flex items-center space-x-6">
-                <a href="{% url 'users' %}" class="text-gray-700 hover:text-green-600 flex items-center">
+                <a href="{% url 'administrator:users' %}" class="text-gray-700 hover:text-green-600 flex items-center">
                     <i class="fas fa-users mr-1"></i> Users
                 </a>
-                <a href="{% url 'admin:logout' %}" class="text-gray-700 hover:text-red-600 flex items-center">
+                <a href="{% url 'authentication:logout' %}" class="text-gray-700 hover:text-red-600 flex items-center">
                     <i class="fas fa-sign-out-alt mr-1"></i> Logout
                 </a>
             </div>
