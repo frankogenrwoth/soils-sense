@@ -71,6 +71,8 @@ class ModelTrainer:
             model: Trained model instance
         """
         model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        joblib.dump(model, model_path)
+        print(f"Model saved to {model_path}")
 
     def load_model(self, model_type):
         """Load a trained model from file
