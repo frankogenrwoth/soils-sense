@@ -114,6 +114,7 @@ class ModelTrainer:
             list: List of dictionaries containing model information
         """
         model_files = list(Path(MODELS_DIR).glob("*.joblib"))
+        models = []
 
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model with new data
