@@ -137,7 +137,18 @@ class Predictor:
         Returns:
             tuple: (lower_bound, upper_bound) confidence interval
         """
-        pass
+        import scipy.stats
+        # RandomForestRegressor: use predictions from all estimators
+        if hasattr(model, "estimators_"):
+            all_preds = np.array([est.predict(X)[0] for est in model.estimators_])
+            mean_pred = np.mean(all_preds)
+            std_pred = np.std(all_preds)
+            z = scipy.stats.norm.ppf(1 - (1 - confidence_level) / 2)
+            lower = mean_pred - z * std_pred
+            upper = mean_pred + z * std_pred
+            return lower, upper
+        # For other models, return None (not implemented)
+        return None, None
 
 
 class SoilMoisturePredictor:
