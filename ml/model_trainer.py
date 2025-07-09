@@ -97,7 +97,7 @@ class ModelTrainer:
         Returns:
             dict: Model information including R² score, RMSE, training time, etc.
         """
-        pass
+        model = self.load_model(model_type)
 
     def list_trained_models(self):
         """List all trained models with their information
