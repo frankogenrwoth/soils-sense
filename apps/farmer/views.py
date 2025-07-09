@@ -4,11 +4,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from authentication.models import Role
+from authentication.models import Role, User
 from django.core.exceptions import PermissionDenied
-from .models import SoilDataFile
+from .models import SoilDataFile, Farm, Crop
 from django.db.models import Q
 from datetime import datetime
+import json
 
 # Keeping the decorator definition for future use, but not applying it
 def farmer_required(view_func):
@@ -34,28 +35,93 @@ def dashboard(request):
 def profile(request):
     """Profile management view"""
     if request.method == 'POST':
-        # Get form data
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
         email = request.POST.get('email')
-        phone_number = request.POST.get('phone_number')
         
         # Update user object
         user = request.user
-        user.first_name = first_name
-        user.last_name = last_name
         user.email = email
-        user.phone_number = phone_number
-        
-        # Handle profile image upload
-        if 'profile_image' in request.FILES:
-            user.image = request.FILES['profile_image']
-        
         user.save()
+        
         messages.success(request, 'Profile updated successfully!')
         return redirect('farmer:profile')
     
     return render(request, 'farmer/profile.html')
+
+def farm_management(request):
+    """Farm management view"""
+    # Get test user for development
+    test_user, created = User.objects.get_or_create(
+        username='testuser',
+        defaults={
+            'email': 'test@example.com',
+            'role': Role.FARMER
+        }
+    )
+    
+    farms = Farm.objects.filter(user=test_user)
+    crops = Crop.objects.filter(farm__user=test_user)
+    
+    context = {
+        'farms': farms,
+        'crops': crops
+    }
+    return render(request, 'farmer/farm_management.html', context)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def add_farm(request):
+    """Add new farm location"""
+    try:
+        # Get test user for development
+        test_user, created = User.objects.get_or_create(
+            username='testuser',
+            defaults={
+                'email': 'test@example.com',
+                'role': Role.FARMER
+            }
+        )
+        
+        # Create farm
+        farm = Farm.objects.create(
+            user=test_user,
+            farm_name=request.POST.get('farm_name'),
+            location=request.POST.get('location'),
+            area_size=request.POST.get('area_size'),
+            soil_type=request.POST.get('soil_type'),
+            description=request.POST.get('description')
+        )
+        
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def add_crop(request):
+    """Add new crop"""
+    try:
+        # Get the farm
+        farm = Farm.objects.get(id=request.POST.get('farm'))
+        
+        # Create crop
+        crop = Crop.objects.create(
+            farm=farm,
+            crop_name=request.POST.get('crop_name'),
+            variety=request.POST.get('variety'),
+            planting_date=request.POST.get('planting_date'),
+            expected_harvest_date=request.POST.get('expected_harvest_date'),
+            status=request.POST.get('status'),
+            area_planted=request.POST.get('area_planted'),
+            notes=request.POST.get('notes')
+        )
+        
+        return JsonResponse({'success': True})
+        
+    except Farm.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Farm not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 def manage_files(request):
     """File management view"""
@@ -67,8 +133,8 @@ def view_history(request):
     file_type = request.GET.get('file_type', '')
     date_str = request.GET.get('date', '')
 
-    # Query files for the current user
-    files = SoilDataFile.objects.filter(user=request.user)
+    # Get all files for testing purposes
+    files = SoilDataFile.objects.all()
 
     # Apply filters if provided
     if file_type:
@@ -139,7 +205,6 @@ def upload_file(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@login_required
 def download_file(request):
     """Download a file"""
     file_id = request.GET.get('file_id')
@@ -147,7 +212,7 @@ def download_file(request):
         return JsonResponse({'error': 'No file ID provided'}, status=400)
     
     try:
-        soil_file = SoilDataFile.objects.get(id=file_id, user=request.user)
+        soil_file = SoilDataFile.objects.get(id=file_id)
         response = FileResponse(soil_file.file)
         response['Content-Type'] = 'text/csv' if soil_file.file_type == 'csv' else 'application/json'
         response['Content-Disposition'] = f'attachment; filename="{soil_file.file_name}"'
@@ -159,7 +224,6 @@ def download_file(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
 def delete_file(request):
     """Delete a file"""
     file_id = request.POST.get('file_id')
@@ -167,7 +231,7 @@ def delete_file(request):
         return JsonResponse({'error': 'No file ID provided'}, status=400)
     
     try:
-        soil_file = SoilDataFile.objects.get(id=file_id, user=request.user)
+        soil_file = SoilDataFile.objects.get(id=file_id)
         soil_file.file.delete()  # Delete the actual file
         soil_file.delete()  # Delete the database record
         return JsonResponse({'success': True})

@@ -1,0 +1,421 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+
+{% block base_title %}Farm Management{% endblock %}
+
+{% block page_title %}Farm Management{% endblock %}
+{% block page_subtitle %}Manage your farms and crops{% endblock %}
+
+{% block header_actions %}
+<div class="flex gap-2">
+    <button class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors" data-bs-toggle="modal" data-bs-target="#addFarmModal">
+        <i class="fas fa-plus-circle"></i>
+        <span>Add Farm</span>
+    </button>
+    <button class="bg-accent hover:bg-secondary text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors" data-bs-toggle="modal" data-bs-target="#addCropModal">
+        <i class="fas fa-seedling"></i>
+        <span>Add Crop</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Farms Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4">My Farms</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area Size</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Soil Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for farm in farms %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.farm_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.location }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.area_size }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.soil_type }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.description }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No farms added yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Crops Section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">My Crops</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Crop Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variety</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Planting Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Harvest</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for crop in crops %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.farm.farm_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.crop_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.variety }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.planting_date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.expected_harvest_date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if crop.status == 'Growing' %}bg-green-100 text-green-800
+                                {% elif crop.status == 'Harvested' %}bg-blue-100 text-blue-800
+                                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                {{ crop.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No crops added yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Farm Modal -->
+<div class="modal fade" id="addFarmModal" tabindex="-1" aria-labelledby="addFarmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gray-50">
+                <h5 class="modal-title text-xl font-semibold" id="addFarmModalLabel">Add New Farm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-6">
+                <form id="addFarmForm" action="{% url 'farmer:add_farm' %}" method="POST">
+                    <div class="mb-4">
+                        <label for="farm_name" class="block text-gray-700 text-sm font-bold mb-2">Farm Name</label>
+                        <input type="text" id="farm_name" name="farm_name" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="location" class="block text-gray-700 text-sm font-bold mb-2">Location</label>
+                        <input type="text" id="location" name="location" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="area_size" class="block text-gray-700 text-sm font-bold mb-2">Area Size (acres)</label>
+                        <input type="number" id="area_size" name="area_size" step="0.01" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="soil_type" class="block text-gray-700 text-sm font-bold mb-2">Soil Type</label>
+                        <select id="soil_type" name="soil_type" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Select soil type</option>
+                            <option value="Clay">Clay</option>
+                            <option value="Sandy">Sandy</option>
+                            <option value="Loam">Loam</option>
+                            <option value="Silt">Silt</option>
+                            <option value="Peat">Peat</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                        <textarea id="description" name="description" rows="3"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center" data-bs-dismiss="modal">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancel
+                        </button>
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-save mr-2"></i>
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Crop Modal -->
+<div class="modal fade" id="addCropModal" tabindex="-1" aria-labelledby="addCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gray-50">
+                <h5 class="modal-title text-xl font-semibold" id="addCropModalLabel">Add New Crop</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-6">
+                <form id="addCropForm" action="{% url 'farmer:add_crop' %}" method="POST">
+                    <div class="mb-4">
+                        <label for="farm" class="block text-gray-700 text-sm font-bold mb-2">Select Farm</label>
+                        <select id="farm" name="farm" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Select a farm</option>
+                            {% for farm in farms %}
+                            <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="crop_name" class="block text-gray-700 text-sm font-bold mb-2">Crop Name</label>
+                        <input type="text" id="crop_name" name="crop_name" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="variety" class="block text-gray-700 text-sm font-bold mb-2">Variety</label>
+                        <input type="text" id="variety" name="variety" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="planting_date" class="block text-gray-700 text-sm font-bold mb-2">Planting Date</label>
+                        <input type="date" id="planting_date" name="planting_date" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="expected_harvest_date" class="block text-gray-700 text-sm font-bold mb-2">Expected Harvest Date</label>
+                        <input type="date" id="expected_harvest_date" name="expected_harvest_date" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+                        <select id="status" name="status" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Select status</option>
+                            <option value="Growing">Growing</option>
+                            <option value="Harvested">Harvested</option>
+                            <option value="Planned">Planned</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="area_planted" class="block text-gray-700 text-sm font-bold mb-2">Area Planted (acres)</label>
+                        <input type="number" id="area_planted" name="area_planted" step="0.01" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="notes" class="block text-gray-700 text-sm font-bold mb-2">Notes</label>
+                        <textarea id="notes" name="notes" rows="3"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center" data-bs-dismiss="modal">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancel
+                        </button>
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-save mr-2"></i>
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Override Tailwind's preflight styles for modals */
+.modal-header .btn-close {
+    box-sizing: content-box;
+    width: 1em;
+    height: 1em;
+    padding: 0.25em 0.25em;
+    color: #000;
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+    border: 0;
+    border-radius: 0.25rem;
+    opacity: .5;
+}
+
+.modal-header .btn-close:hover {
+    opacity: .75;
+}
+
+/* Ensure modal appears above everything */
+.modal {
+    z-index: 1050;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}
+
+/* Toast animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.toast-enter {
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast-exit {
+    animation: slideOut 0.3s ease-in;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all modals
+    const modals = {};
+    document.querySelectorAll('.modal').forEach(function(modalElement) {
+        modals[modalElement.id] = new bootstrap.Modal(modalElement);
+    });
+
+    // Success message toast
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-[1060] p-4 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white toast-enter`;
+        toast.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.add('toast-exit');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    // Form submission handling
+    ['addFarmForm', 'addCropForm'].forEach(function(formId) {
+        const form = document.getElementById(formId);
+        console.log('Found form:', formId, form); // Debug log
+
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('Form submitted:', formId); // Debug log
+                
+                // Find the submit button within this specific form
+                const submitBtn = form.querySelector('button[type="submit"]');
+                console.log('Submit button:', submitBtn); // Debug log
+
+                if (!submitBtn) {
+                    console.error('Submit button not found');
+                    return;
+                }
+                
+                // Store original button content
+                const originalContent = submitBtn.innerHTML;
+                
+                try {
+                    // Update button to loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </div>
+                    `;
+
+                    // Get form data
+                    const formData = new FormData(form);
+                    console.log('Form data:', Object.fromEntries(formData)); // Debug log
+
+                    // Log the URL we're submitting to
+                    console.log('Submitting to:', form.action);
+
+                    // Send request
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    console.log('Response:', response); // Debug log
+
+                    const data = await response.json();
+                    console.log('Response data:', data); // Debug log
+
+                    if (data.success) {
+                        // Hide modal
+                        const modalId = form.closest('.modal').id;
+                        if (modals[modalId]) {
+                            modals[modalId].hide();
+                        }
+
+                        // Show success message
+                        showToast(formId === 'addFarmForm' ? 'Farm added successfully!' : 'Crop added successfully!');
+
+                        // Reset form
+                        form.reset();
+
+                        // Reload page after a short delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        throw new Error(data.error || 'An error occurred');
+                    }
+                } catch (error) {
+                    console.error('Error details:', error); // Detailed error log
+                    showToast(error.message || 'An error occurred. Please try again.', 'error');
+                    
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                }
+            });
+
+            // Add form validation
+            form.querySelectorAll('input[required], select[required]').forEach(input => {
+                input.addEventListener('invalid', (e) => {
+                    e.preventDefault();
+                    showToast(`Please fill in the ${input.name.replace('_', ' ')} field`, 'error');
+                });
+            });
+        }
+    });
+});
+</script>
+{% endblock %} 
