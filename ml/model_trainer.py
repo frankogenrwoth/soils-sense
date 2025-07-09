@@ -216,8 +216,23 @@ class ModelTrainer:
             except Exception:
                 lower_bound, upper_bound = None, None
 
-        
+        # If ground truth is available, calculate metrics
+        metrics = {}
+        if self.target in test_df.columns:
+            y_true = test_df[self.target]
+            y_pred = predictions
+            # Regression metrics
+            if hasattr(model, "predict"):
+                from sklearn.metrics import mean_squared_error, r2_score
+                metrics["mse"] = mean_squared_error(y_true, y_pred)
+                metrics["r2"] = r2_score(y_true, y_pred)
+            # Classification metrics
+            if hasattr(model, "predict_proba"):
+                from sklearn.metrics import accuracy_score, f1_score
+                metrics["accuracy"] = accuracy_score(y_true, y_pred)
+                metrics["f1"] = f1_score(y_true, y_pred, average="weighted")
 
+       
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
 
