@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .config import MODELS_DIR, MODEL_CONFIGS
 from .data_processor import DataProcessor
+from scipy.stats import t
 
 
 class ModelTrainer:
@@ -197,7 +198,50 @@ class ModelTrainer:
         else:
             test_df = pd.DataFrame(test_data)
 
-       
+        # Ensure all required features are present
+        required_features = self.features
+        missing = set(required_features) - set(test_df.columns)
+        if missing:
+            raise ValueError(f"Test data is missing required features: {missing}")
+
+        X_test = test_df[required_features]
+
+        # Make predictions
+        predictions = model.predict(X_test)
+
+        # Calculate prediction intervals if regression
+        lower_bound, upper_bound = None, None
+        if hasattr(model, "predict") and hasattr(self, "calculate_prediction_interval"):
+            try:
+                lower_bound, upper_bound = self.calculate_prediction_interval(model, X_test)
+            except Exception:
+                lower_bound, upper_bound = None, None
+
+        # If ground truth is available, calculate metrics
+        metrics = {}
+        if self.target in test_df.columns:
+            y_true = test_df[self.target]
+            y_pred = predictions
+            # Regression metrics
+            if hasattr(model, "predict"):
+                from sklearn.metrics import mean_squared_error, r2_score
+                metrics["mse"] = mean_squared_error(y_true, y_pred)
+                metrics["r2"] = r2_score(y_true, y_pred)
+            # Classification metrics
+            if hasattr(model, "predict_proba"):
+                from sklearn.metrics import accuracy_score, f1_score
+                metrics["accuracy"] = accuracy_score(y_true, y_pred)
+                metrics["f1"] = f1_score(y_true, y_pred, average="weighted")
+
+        results = {
+            "predictions": predictions.tolist(),
+            "prediction_interval": (
+                lower_bound.tolist() if lower_bound is not None else None,
+                upper_bound.tolist() if upper_bound is not None else None,
+            ),
+            "metrics": metrics,
+        }
+        return results
 
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
@@ -210,4 +254,38 @@ class ModelTrainer:
         Returns:
             tuple: (lower_bound, upper_bound) prediction intervals
         """
-        pass
+       
+
+        # Get predictions
+        y_pred = model.predict(X_test)
+
+        # Calculate standard error of predictions
+        if hasattr(model, "predict"):
+            # For scikit-learn regressors, we can estimate residuals from training data if available
+            if hasattr(model, "X_train_") and hasattr(model, "y_train_"):
+                X_train = model.X_train_
+                y_train = model.y_train_
+                y_train_pred = model.predict(X_train)
+                residuals = y_train - y_train_pred
+                dof = max(0, len(X_train) - X_train.shape[1] - 1)
+                residual_std = np.std(residuals, ddof=1)
+            else:
+                # Fallback: use std of predictions as proxy (not ideal)
+                residual_std = np.std(y_pred, ddof=1)
+                dof = max(0, len(y_pred) - 1)
+
+            # t-score for the confidence interval
+            alpha = 1 - confidence_level
+            t_score = t.ppf(1 - alpha / 2, dof) if dof > 0 else 1.96  # fallback to normal
+
+            # Standard error for each prediction (assume homoscedasticity)
+            se = residual_std * np.sqrt(1 + np.zeros_like(y_pred))
+
+            margin = t_score * se
+            lower_bound = y_pred - margin
+            upper_bound = y_pred + margin
+        else:
+            lower_bound = None
+            upper_bound = None
+
+        return lower_bound, upper_bound

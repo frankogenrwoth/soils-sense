@@ -7,9 +7,19 @@
     <!-- Contact Form Start -->
     <main class="flex-grow flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-8">
+                    {% if messages %}
+           <div>
+           {% for message in messages %}
+                <div   class="p-4 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+                    {{ message }}
+                 </div>
+           {% endfor %}
+           </div>
+        {% endif %}
+
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Get in Touch</h2>
             <form action="#" method="POST" class="space-y-6">
-                {% csrf_token %}
+                    {% csrf_token %}
                 <div>
                     <label for="name" class="block text-gray-700 font-medium mb-2">Name</label>
                     <input type="text" id="name" name="name" required placeholder="Your name"

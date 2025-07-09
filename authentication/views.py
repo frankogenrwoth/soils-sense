@@ -20,6 +20,9 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 
 from .models import Role, User
+import random
+from datetime import timedelta
+from django.utils import timezone
 
 
 # Create your views here.
@@ -70,24 +73,25 @@ class SignupView(FormView):
 class PasswordResetRequestView(FormView):
     template_name = 'authentication/password_reset_request.html'
     form_class = PasswordResetForm
-    success_url = '/authentication/login/'
+    success_url = '/authentication/reset/confirm/'
 
     def form_valid(self, form):
         email = form.cleaned_data['email']
         User = get_user_model()
         try:
             user = User.objects.get(email=email)
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_url = self.request.build_absolute_uri(
-                f"/authentication/reset/{uid}/{token}/"
-            )
-            subject = 'Password Reset Request'
+            # Generate a 6-digit code
+            code = f"{random.randint(100000, 999999)}"
+            user.reset_code = code
+            user.reset_code_expiry = timezone.now() + timedelta(minutes=15)
+            user.save()
+            subject = 'Your Password Reset Code'
             message = render_to_string('authentication/password_reset_email.txt', {
-                'reset_url': reset_url,
+                'code': code,
                 'user': user,
             })
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+            self.request.session['reset_email'] = email
         except User.DoesNotExist:
             pass  # Do not reveal if email exists
         return super().form_valid(form)
@@ -97,24 +101,27 @@ class PasswordResetConfirmView(FormView):
     form_class = PasswordResetConfirmForm
     success_url = '/authentication/login/'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.uidb64 = kwargs.get('uidb64')
-        self.token = kwargs.get('token')
-        return super().dispatch(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        try:
-            uid = force_str(urlsafe_base64_decode(self.uidb64))
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            email = request.session.get('reset_email')
+            code = form.cleaned_data['code']
+            password = form.cleaned_data['password']
             User = get_user_model()
-            user = User.objects.get(pk=uid)
-            if default_token_generator.check_token(user, self.token):
-                password = form.cleaned_data['password']
+            try:
+                user = User.objects.get(email=email, reset_code=code)
+                if user.reset_code_expiry and user.reset_code_expiry < timezone.now():
+                    form.add_error('code', 'Reset code has expired.')
+                    return self.form_invalid(form)
                 user.set_password(password)
+                user.reset_code = None
+                user.reset_code_expiry = None
                 user.save()
                 return super().form_valid(form)
-            else:
-                form.add_error(None, 'Invalid or expired token.')
+            except User.DoesNotExist:
+                form.add_error('code', 'Invalid reset code or email.')
                 return self.form_invalid(form)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            form.add_error(None, 'Invalid reset link.')
-            return self.form_invalid(form)
+        return self.form_invalid(form)
