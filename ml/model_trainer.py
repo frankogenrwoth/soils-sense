@@ -99,6 +99,12 @@ class ModelTrainer:
         """
         model = self.load_model(model_type)
         return {
+            "model_type": model_type,
+            "model_name": model.__class__.__name__,
+            "features": self.features,
+            "target": self.target,
+            "training_time": self.training_results[model_type]["training_time"],
+        }
 
     def list_trained_models(self):
         """List all trained models with their information
