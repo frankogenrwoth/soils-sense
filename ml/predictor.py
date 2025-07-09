@@ -43,6 +43,12 @@ class Predictor:
         except Exception as e:
             return {"success": False, "message": f"Prediction failed: {str(e)}"}
 
+        # Calculate confidence interval (optional)
+        try:
+            lower, upper = self.calculate_confidence_interval(model, X)
+        except Exception:
+            lower, upper = None, None
+
         
 
     def _load_model(self, model_type):
