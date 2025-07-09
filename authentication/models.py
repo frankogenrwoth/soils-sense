@@ -17,9 +17,6 @@ class User(AbstractUser):
         blank=True,
     )
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    # email = models.EmailField(unique=True)
-    # reset_code = models.CharField(max_length=10, null=True, blank=True)
-    # reset_code_expiry = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
 

@@ -226,16 +226,31 @@ def download_file(request):
 @require_http_methods(["POST"])
 def delete_file(request):
     """Delete a file"""
-    file_id = request.POST.get('file_id')
-    if not file_id:
-        return JsonResponse({'error': 'No file ID provided'}, status=400)
-    
     try:
+        # Try to get file_id from JSON data first
+        try:
+            data = json.loads(request.body)
+            file_id = data.get('file_id')
+        except json.JSONDecodeError:
+            # If not JSON, try form data
+            file_id = request.POST.get('file_id')
+
+        if not file_id:
+            return JsonResponse({'error': 'No file ID provided'}, status=400)
+        
         soil_file = SoilDataFile.objects.get(id=file_id)
+        
+        # Check if user owns the file
+        if soil_file.user != request.user:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+            
         soil_file.file.delete()  # Delete the actual file
         soil_file.delete()  # Delete the database record
         return JsonResponse({'success': True})
     except SoilDataFile.DoesNotExist:
         return JsonResponse({'error': 'File not found'}, status=404)
     except Exception as e:
+        import traceback
+        print("Error deleting file:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
