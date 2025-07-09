@@ -100,7 +100,9 @@ class Predictor:
         """
         if not MODELS_DIR.exists():
             return []
-       
+        model_files = [f for f in MODELS_DIR.iterdir() if f.is_file() and f.suffix == '.joblib']
+        model_types = [f.stem for f in model_files]
+        return model_types
 
     def validate_input(self, model_type, input_data):
         """Validate input data for a specific model
