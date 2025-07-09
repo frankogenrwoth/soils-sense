@@ -133,6 +133,14 @@ class ModelTrainer:
             dict: Updated training results
         """
         if new_data is None:
+        # If no new_data is provided, reload the original training data
+        data = self.data_processor.load_training_data(model_type)
+        df = pd.DataFrame(data)
+        X = df[self.features]
+        y = df[self.target]
+
+            
+
 
     def evaluate_model(self, model_type, test_data):
         """Evaluate a model on new test data
