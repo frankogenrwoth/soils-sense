@@ -119,7 +119,12 @@ class Predictor:
             return {"valid": False, "message": f"Unknown model type: {model_type}"}
         required_features = MODEL_CONFIGS[model_type].get("features", [])
         missing = [f for f in required_features if f not in input_data]
-       
+        if missing:
+            return {
+                "valid": False,
+                "message": f"Missing required features: {', '.join(missing)}"
+            }
+        return {"valid": True, "message": "All required features are present."}
 
     def calculate_confidence_interval(self, model, X, confidence_level=0.95):
         """Calculate confidence interval for prediction
