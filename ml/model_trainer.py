@@ -168,6 +168,7 @@ class ModelTrainer:
         }
 
         return self.training_results[model_type]
+        
             
 
 
@@ -181,7 +182,15 @@ class ModelTrainer:
         Returns:
             dict: Evaluation results including predictions and confidence intervals
         """
-        pass
+        # Evaluate a model on new test data
+        # test_data is expected to be a dict or DataFrame with all required features
+
+        # Load the trained model
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        if not model_path.exists():
+            raise FileNotFoundError(f"Trained model for '{model_type}' not found at {model_path}")
+        model = joblib.load(model_path)
+
 
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
