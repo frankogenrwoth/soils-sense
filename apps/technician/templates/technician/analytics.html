@@ -1,0 +1,87 @@
+{% extends 'technician/base.html' %}
+
+{% block page_title %}Analytics{% endblock %}
+
+{% block breadcrumb %}Analytics{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Soil Moisture Trends</h5>
+            <div class="chart-container">
+                <p class="text-muted">Soil moisture trend chart will be displayed here</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">pH Level Analysis</h5>
+            <div class="chart-container">
+                <p class="text-muted">pH level analysis chart will be displayed here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Sensor Performance Metrics</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sensor ID</th>
+                            <th>Type</th>
+                            <th>Uptime</th>
+                            <th>Data Quality</th>
+                            <th>Battery Health</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>S001</td>
+                            <td>Soil Moisture</td>
+                            <td>99.8%</td>
+                            <td>High</td>
+                            <td>Good</td>
+                            <td><span class="badge bg-success">Optimal</span></td>
+                        </tr>
+                        <tr>
+                            <td>S002</td>
+                            <td>pH Sensor</td>
+                            <td>98.5%</td>
+                            <td>Medium</td>
+                            <td>Fair</td>
+                            <td><span class="badge bg-warning">Needs Attention</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Data Quality Overview</h5>
+            <div class="chart-container">
+                <p class="text-muted">Data quality metrics will be displayed here</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">System Health</h5>
+            <div class="chart-container">
+                <p class="text-muted">System health metrics will be displayed here</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

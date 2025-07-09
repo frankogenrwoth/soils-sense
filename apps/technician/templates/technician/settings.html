@@ -1,0 +1,120 @@
+{% extends 'technician/base.html' %}
+
+{% block page_title %}Settings{% endblock %}
+
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Notification Settings</h5>
+            <form>
+                <div class="mb-4">
+                    <h6 class="mb-3">Alert Preferences</h6>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="emailAlerts" checked>
+                        <label class="form-check-label" for="emailAlerts">Email Alerts</label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="smsAlerts" checked>
+                        <label class="form-check-label" for="smsAlerts">SMS Alerts</label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="systemAlerts" checked>
+                        <label class="form-check-label" for="systemAlerts">System Notifications</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="mb-3">Alert Thresholds</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Critical Alert Level</label>
+                        <select class="form-select">
+                            <option>High Priority Only</option>
+                            <option>Medium and High Priority</option>
+                            <option>All Alerts</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Notification Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">System Settings</h5>
+            <form>
+                <div class="mb-4">
+                    <h6 class="mb-3">Data Collection</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Data Refresh Interval</label>
+                        <select class="form-select">
+                            <option>Every 5 minutes</option>
+                            <option>Every 15 minutes</option>
+                            <option>Every 30 minutes</option>
+                            <option>Every hour</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data Retention Period</label>
+                        <select class="form-select">
+                            <option>1 Month</option>
+                            <option>3 Months</option>
+                            <option>6 Months</option>
+                            <option>1 Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="mb-3">Display Settings</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Default View</label>
+                        <select class="form-select">
+                            <option>Map View</option>
+                            <option>List View</option>
+                            <option>Grid View</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Time Zone</label>
+                        <select class="form-select">
+                            <option>UTC</option>
+                            <option>Local Time</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save System Settings</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Backup & Maintenance</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6 class="mb-3">Data Backup</h6>
+                        <p class="text-muted mb-3">Last backup: March 1, 2024 10:30 AM</p>
+                        <button class="btn btn-primary">Start Backup</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6 class="mb-3">System Maintenance</h6>
+                        <p class="text-muted mb-3">Next scheduled maintenance: March 15, 2024</p>
+                        <button class="btn btn-secondary">View Schedule</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
