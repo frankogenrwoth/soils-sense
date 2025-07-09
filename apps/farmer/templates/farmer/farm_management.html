@@ -107,6 +107,7 @@
             </div>
             <div class="modal-body p-6">
                 <form id="addFarmForm" action="{% url 'farmer:add_farm' %}" method="POST">
+                    {% csrf_token %}
                     <div class="mb-4">
                         <label for="farm_name" class="block text-gray-700 text-sm font-bold mb-2">Farm Name</label>
                         <input type="text" id="farm_name" name="farm_name" required
@@ -165,6 +166,7 @@
             </div>
             <div class="modal-body p-6">
                 <form id="addCropForm" action="{% url 'farmer:add_crop' %}" method="POST">
+                    {% csrf_token %}
                     <div class="mb-4">
                         <label for="farm" class="block text-gray-700 text-sm font-bold mb-2">Select Farm</label>
                         <select id="farm" name="farm" required
