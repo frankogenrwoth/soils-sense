@@ -205,7 +205,19 @@ class ModelTrainer:
 
         X_test = test_df[required_features]
 
-        #
+        # Make predictions
+        predictions = model.predict(X_test)
+
+        # Calculate prediction intervals if regression
+        lower_bound, upper_bound = None, None
+        if hasattr(model, "predict") and hasattr(self, "calculate_prediction_interval"):
+            try:
+                lower_bound, upper_bound = self.calculate_prediction_interval(model, X_test)
+            except Exception:
+                lower_bound, upper_bound = None, None
+
+        
+
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
 
