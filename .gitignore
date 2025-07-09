@@ -34,6 +34,14 @@ db.sqlite3
 *.sqlite3
 
 logs
+*.log
+
+# media files
+media/
+mediafiles/
+staticfiles/
+static/
+
 
 
 

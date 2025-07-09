@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 from .forms import PasswordResetForm, PasswordResetConfirmForm
 from django.template.loader import render_to_string
 from django.contrib import messages
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from .models import Role, User
 import random
