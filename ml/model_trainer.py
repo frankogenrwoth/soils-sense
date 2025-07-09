@@ -84,6 +84,9 @@ class ModelTrainer:
             sklearn.base.BaseEstimator: Loaded model instance
         """
         model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model file not found: {model_path}")
+        return joblib.load(model_path)
 
     def get_model_info(self, model_type):
         """Get information about a trained model
