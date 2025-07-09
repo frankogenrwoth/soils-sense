@@ -27,3 +27,11 @@ class ReportManagementView(View):
     def get(self, request):
         context = {}
         return render(request, self.template_name, context=context)
+
+
+class MLModelManagementView(View):
+    template_name = "administrator/ml_model_management.html"
+
+    def get(self, request):
+        context = {}
+        return render(request, self.template_name, context=context)

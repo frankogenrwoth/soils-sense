@@ -39,7 +39,7 @@
             <a href="{% url 'administrator:users' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
                 <i class="fas fa-users mr-3"></i> Users
             </a>
-            <a href="#" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+            <a href="{% url 'administrator:ml' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
                 <i class="fas fa-robot mr-3"></i> ML Models
             </a>
             <a href="{% url 'administrator:data' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
@@ -76,7 +76,7 @@
                     <li class="inline-flex items-center">
                         <a href="#" class="inline-flex items-center text-gray-600 hover:text-green-700">
                             <i class="fas fa-home mr-1"></i>
-                            Home
+                            <span class="ps-1">Dashboard</span>
                         </a>
                     </li>
                     {% block breadcrumb %}
