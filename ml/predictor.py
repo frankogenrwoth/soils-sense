@@ -26,7 +26,12 @@ class Predictor:
         Returns:
             dict: Prediction results including predicted value, confidence interval, and uncertainty
         """
-        pass
+        # Load the model
+        model = self._load_model(model_type)
+        if model is None:
+            return {"success": False, "message": f"Model '{model_type}' not found."}
+
+        
 
     def _load_model(self, model_type):
         """Load a trained model from file
