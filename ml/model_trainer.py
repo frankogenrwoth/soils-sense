@@ -156,6 +156,10 @@ class ModelTrainer:
         model.fit(X, y)
         training_time = time.time() - start_time
 
+        # Save the retrained model
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        joblib.dump(model, model_path)
+
             
 
 
