@@ -121,6 +121,7 @@ class ModelTrainer:
             models.append(model_info)
         return models
 
+
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model with new data
 
@@ -131,7 +132,7 @@ class ModelTrainer:
         Returns:
             dict: Updated training results
         """
-        pass
+        if new_data is None:
 
     def evaluate_model(self, model_type, test_data):
         """Evaluate a model on new test data
