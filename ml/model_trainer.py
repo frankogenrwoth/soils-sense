@@ -33,7 +33,17 @@ class ModelTrainer:
         Returns:
             dict: Training results including R² score, RMSE, and model info
         """
-        pass
+        if custom_data is None:
+            data = self.data_processor.load_training_data(model_type)
+        else:
+            data = custom_data
+        X, y = self.data_processor.prepare_data(data, model_type, self.features, self.target)
+        model = self._create_model(MODEL_CONFIGS[model_type])
+        model.fit(X, y)
+        self._save_model(model_type, model)
+        self.training_results[model_type] = self._get_model_info(model_type)
+        return self.training_results[model_type]
+        
 
     def _create_model(self, config):
         """Create regression model based on configuration
