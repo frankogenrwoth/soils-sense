@@ -73,7 +73,7 @@ class SignupView(FormView):
 class PasswordResetRequestView(FormView):
     template_name = 'authentication/password_reset_request.html'
     form_class = PasswordResetForm
-    success_url = '/authentication/login/'
+    success_url = '/authentication/reset/confirm/'
 
     def form_valid(self, form):
         email = form.cleaned_data['email']
