@@ -1,8 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from authentication.models import Role
 from django.contrib import messages
+from apps.farmer.models import Farm
+from django.shortcuts import get_object_or_404, redirect, render
+from django.core.exceptions import PermissionDenied
+
 
 # Keeping the decorator definition for future use, but not applying it
 def technician_required(view_func):
@@ -17,7 +21,11 @@ def technician_required(view_func):
 
 def dashboard(request):
     """Main technician dashboard view"""
-    return render(request, 'technician/dashboard.html')
+    farm_count = Farm.objects.count()
+    return render(request, 'technician/dashboard.html', {
+        'farm_count': farm_count,
+        # ... any other context ...
+    })
 
 def profile(request):
     """Profile management view"""
@@ -47,7 +55,26 @@ def profile(request):
 
 def farm_locations(request):
     """Farm locations management view"""
-    return render(request, 'technician/farm_locations.html')
+    farms = Farm.objects.all()  # Or filter as needed
+    return render(request, 'technician/farm_locations.html', {
+        'farms': farms
+    })
+
+def delete_farm(request, pk):
+    """
+    View to delete a farm.
+    Only allow POST requests for deletion.
+    """
+    farm = get_object_or_404(Farm, pk=pk)
+    if request.method == 'POST':
+        farm.delete()
+        messages.success(request, 'Farm deleted successfully!')
+        return redirect('technician:farm_locations')
+    return render(request, 'technician/confirm_delete_farm.html', {'farm': farm})
+
+def farm_detail(request, pk):
+    farm = get_object_or_404(Farm, pk=pk)
+    return render(request, 'technician/farm_detail.html', {'farm': farm})
 
 def sensor_config(request):
     """Sensor configuration view"""
@@ -64,3 +91,8 @@ def reports(request):
 def settings(request):
     """Settings configuration view"""
     return render(request, 'technician/settings.html')
+
+def edit_farm(request, pk):
+    farm = get_object_or_404(Farm, pk=pk)
+    # Add your edit logic here
+    return render(request, 'technician/edit_farm.html', {'farm': farm})
