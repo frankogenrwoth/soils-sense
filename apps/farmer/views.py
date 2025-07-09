@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from authentication.models import Role
 from django.core.exceptions import PermissionDenied
+from .models import SoilDataFile
+from django.db.models import Q
+from datetime import datetime
 
 # Keeping the decorator definition for future use, but not applying it
 def farmer_required(view_func):
@@ -60,11 +63,34 @@ def manage_files(request):
 
 def view_history(request):
     """File history view with filtering"""
+    # Get filter parameters
+    file_type = request.GET.get('file_type', '')
+    date_str = request.GET.get('date', '')
+
+    # Query files for the current user
+    files = SoilDataFile.objects.filter(user=request.user)
+
+    # Apply filters if provided
+    if file_type:
+        files = files.filter(file_type=file_type)
+    
+    if date_str:
+        try:
+            filter_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            files = files.filter(upload_date__date=filter_date)
+        except ValueError:
+            pass  # Invalid date format, ignore filter
+
+    # Calculate totals
+    total_files = files.count()
+    csv_files = files.filter(file_type='csv').count()
+    json_files = files.filter(file_type='json').count()
+
     context = {
-        'total_files': 0,
-        'csv_files': 0,
-        'json_files': 0,
-        'uploaded_files': []
+        'total_files': total_files,
+        'csv_files': csv_files,
+        'json_files': json_files,
+        'uploaded_files': files
     }
     return render(request, 'farmer/view_history.html', context)
 
@@ -93,34 +119,59 @@ def upload_file(request):
         if file.size > 10 * 1024 * 1024:  # 10MB limit
             return JsonResponse({'error': 'File size must be less than 10MB'}, status=400)
         
-        # TODO: Save file and process it
+        # Create file record
+        file_type = 'csv' if file_name.endswith('.csv') else 'json'
+        soil_data_file = SoilDataFile.objects.create(
+            file=file,
+            file_name=file_name,
+            file_type=file_type,
+            file_size=file.size,
+            user=request.user
+        )
         
         return JsonResponse({
             'success': True,
             'file_name': file_name,
-            'file_size': f"{file.size / 1024 / 1024:.2f}MB",
-            'file_type': 'CSV' if file_name.endswith('.csv') else 'JSON'
+            'file_size': soil_data_file.get_file_size_mb(),
+            'file_type': file_type.upper()
         })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+@login_required
 def download_file(request):
     """Download a file"""
     file_id = request.GET.get('file_id')
     if not file_id:
         return JsonResponse({'error': 'No file ID provided'}, status=400)
     
-    # TODO: Implement file download logic
-    return JsonResponse({'error': 'Not implemented yet'}, status=501)
+    try:
+        soil_file = SoilDataFile.objects.get(id=file_id, user=request.user)
+        response = FileResponse(soil_file.file)
+        response['Content-Type'] = 'text/csv' if soil_file.file_type == 'csv' else 'application/json'
+        response['Content-Disposition'] = f'attachment; filename="{soil_file.file_name}"'
+        return response
+    except SoilDataFile.DoesNotExist:
+        return JsonResponse({'error': 'File not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])
+@login_required
 def delete_file(request):
     """Delete a file"""
     file_id = request.POST.get('file_id')
     if not file_id:
         return JsonResponse({'error': 'No file ID provided'}, status=400)
     
-    # TODO: Implement file deletion logic
-    return JsonResponse({'error': 'Not implemented yet'}, status=501)
+    try:
+        soil_file = SoilDataFile.objects.get(id=file_id, user=request.user)
+        soil_file.file.delete()  # Delete the actual file
+        soil_file.delete()  # Delete the database record
+        return JsonResponse({'success': True})
+    except SoilDataFile.DoesNotExist:
+        return JsonResponse({'error': 'File not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

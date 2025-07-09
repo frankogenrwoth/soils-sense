@@ -35,9 +35,9 @@
                     <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
                     <h4 class="text-lg font-medium text-gray-900 mb-2">Drop your files here</h4>
                     <p class="text-gray-600 mb-4">or click to browse</p>
-                    <input type="file" id="file-input" accept=".csv,.json" multiple class="hidden">
+                    <input type="file" id="file-input" accept=".csv,.json" class="hidden">
                     <button onclick="document.getElementById('file-input').click()" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors">
-                        Choose Files
+                        Choose File
                     </button>
                 </div>
                 <p class="text-sm text-gray-500">Supports CSV and JSON files up to 10MB</p>
@@ -45,10 +45,10 @@
 
             <!-- File List -->
             <div id="file-list" class="mt-6 space-y-3 hidden">
-                <h4 class="font-medium text-gray-900 mb-3">Selected Files:</h4>
+                <h4 class="font-medium text-gray-900 mb-3">Selected File:</h4>
                 <div id="selected-files" class="space-y-2"></div>
                 <button id="upload-btn" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-secondary transition-colors mt-4">
-                    Upload Files
+                    Upload File
                 </button>
             </div>
         </div>
@@ -129,10 +129,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     uploadBtn.addEventListener('click', async () => {
+        if (!fileInput.files.length) {
+            showNotification('Please select a file first', 'error');
+            return;
+        }
+
         const formData = new FormData();
-        Array.from(fileInput.files).forEach(file => {
-            formData.append('files[]', file);
-        });
+        formData.append('file', fileInput.files[0]); // Changed from 'files[]' to 'file'
 
         try {
             const response = await fetch('{% url "farmer:upload_file" %}', {
@@ -145,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const result = await response.json();
             if (response.ok) {
-                showNotification('Files uploaded successfully!', 'success');
+                showNotification('File uploaded successfully!', 'success');
                 fileInput.value = '';
                 fileList.classList.add('hidden');
             } else {
