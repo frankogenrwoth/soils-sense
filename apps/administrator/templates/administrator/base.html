@@ -25,7 +25,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-50 text-gray-900 flex flex-col min-h-screen shadow-lg border-r border-gray-200">
+    <aside class="w-64 bg-gray-50 text-gray-900 flex flex-col min-h-screen shadow-lg">
         <div class="flex items-center px-6 py-6 space-x-3">
             <div class="bg-white rounded-full p-2 shadow">
                 <i class="fas fa-leaf text-green-600 text-2xl"></i>
@@ -65,7 +65,7 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-h-screen">
         <!-- Optional: Top Navbar -->
-        <header class="bg-white shadow px-6 py-4 flex items-center justify-between">
+        <header class="bg-gray-50 text-gray-900 px-6 py-4 flex items-center justify-between shadow-sm">
             <h1 class="text-2xl font-bold text-green-700">{% block header_title %}{% endblock %}</h1>
             {% block header_tools %}{% endblock %}
         </header>
