@@ -26,7 +26,37 @@ class Predictor:
         Returns:
             dict: Prediction results including predicted value, confidence interval, and uncertainty
         """
-        pass
+        # Load the model
+        model = self._load_model(model_type)
+        if model is None:
+            return {"success": False, "message": f"Model '{model_type}' not found."}
+
+        # Preprocess the input data
+        try:
+            X = self.data_processor.preprocess_input(input_data, model_type)
+        except Exception as e:
+            return {"success": False, "message": f"Input preprocessing failed: {str(e)}"}
+
+        # Make prediction
+        try:
+            prediction = model.predict(X)
+        except Exception as e:
+            return {"success": False, "message": f"Prediction failed: {str(e)}"}
+
+        # Calculate confidence interval (optional)
+        try:
+            lower, upper = self.calculate_confidence_interval(model, X)
+        except Exception:
+            lower, upper = None, None
+
+        result = {
+            "success": True,
+            "predicted_value": float(prediction[0]) if hasattr(prediction, '__getitem__') else float(prediction),
+            "confidence_interval": (float(lower), float(upper)) if lower is not None and upper is not None else None,
+            "uncertainty": float(upper - lower) if lower is not None and upper is not None else None
+        }
+        return result
+
 
     def _load_model(self, model_type):
         """Load a trained model from file
@@ -34,7 +64,18 @@ class Predictor:
         Args:
             model_type (str): Type of model to load
         """
-        pass
+        if model_type in self.models:
+            return self.models[model_type]
+        model_path = MODELS_DIR / f"{model_type}.joblib"
+        if not model_path.exists():
+            return None
+        try:
+            model = joblib.load(model_path)
+            self.models[model_type] = model
+            return model
+        except Exception as e:
+            print(f"Failed to load model '{model_type}': {e}")
+            return None
 
     def predict_multiple(self, input_data):
         """Make predictions using all available models
@@ -45,7 +86,11 @@ class Predictor:
         Returns:
             dict: Dictionary of predictions from all available models
         """
-        pass
+        results = {}
+        model_types = self.get_available_models()
+        for model_type in model_types:
+            results[model_type] = self.predict(model_type, input_data)
+        return results
 
     def get_available_models(self):
         """Get list of available trained models
@@ -53,7 +98,11 @@ class Predictor:
         Returns:
             list: List of available model types
         """
-        pass
+        if not MODELS_DIR.exists():
+            return []
+        model_files = [f for f in MODELS_DIR.iterdir() if f.is_file() and f.suffix == '.joblib']
+        model_types = [f.stem for f in model_files]
+        return model_types
 
     def validate_input(self, model_type, input_data):
         """Validate input data for a specific model
@@ -65,7 +114,17 @@ class Predictor:
         Returns:
             dict: Validation result with 'valid' boolean and 'message' string
         """
-        pass
+        from .config import MODEL_CONFIGS
+        if model_type not in MODEL_CONFIGS:
+            return {"valid": False, "message": f"Unknown model type: {model_type}"}
+        required_features = MODEL_CONFIGS[model_type].get("features", [])
+        missing = [f for f in required_features if f not in input_data]
+        if missing:
+            return {
+                "valid": False,
+                "message": f"Missing required features: {', '.join(missing)}"
+            }
+        return {"valid": True, "message": "All required features are present."}
 
     def calculate_confidence_interval(self, model, X, confidence_level=0.95):
         """Calculate confidence interval for prediction
@@ -78,7 +137,18 @@ class Predictor:
         Returns:
             tuple: (lower_bound, upper_bound) confidence interval
         """
-        pass
+        import scipy.stats
+        # RandomForestRegressor: use predictions from all estimators
+        if hasattr(model, "estimators_"):
+            all_preds = np.array([est.predict(X)[0] for est in model.estimators_])
+            mean_pred = np.mean(all_preds)
+            std_pred = np.std(all_preds)
+            z = scipy.stats.norm.ppf(1 - (1 - confidence_level) / 2)
+            lower = mean_pred - z * std_pred
+            upper = mean_pred + z * std_pred
+            return lower, upper
+        # For other models, return None (not implemented)
+        return None, None
 
 
 class SoilMoisturePredictor:
