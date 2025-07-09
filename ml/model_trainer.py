@@ -98,6 +98,7 @@ class ModelTrainer:
             dict: Model information including R² score, RMSE, training time, etc.
         """
         model = self.load_model(model_type)
+        return {
 
     def list_trained_models(self):
         """List all trained models with their information
