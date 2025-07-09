@@ -1,0 +1,214 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Dashboard - SoilSense Technician Portal{% endblock %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <button class="btn btn-light"><i class="fas fa-sync-alt me-2"></i>Refresh</button>
+    <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>New Report</button>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-farm icon"></i>
+            <div class="title">Active Farms</div>
+            <h3>24</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" style="width: 85%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-microchip icon"></i>
+            <div class="title">Active Sensors</div>
+            <h3>156</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-info" style="width: 75%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-exclamation-triangle icon"></i>
+            <div class="title">Active Alerts</div>
+            <h3>7</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-warning" style="width: 45%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-file-alt icon"></i>
+            <div class="title">Pending Reports</div>
+            <h3>3</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-danger" style="width: 25%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="row g-3">
+    <!-- Farm Monitoring Section -->
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Farm Locations Overview</h5>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary btn-sm">Day</button>
+                    <button class="btn btn-outline-secondary btn-sm active">Week</button>
+                    <button class="btn btn-outline-secondary btn-sm">Month</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="text-center text-muted">
+                    <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+                    <p>Interactive Map View</p>
+                    <small>To be implemented by backend team</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Recent Alerts</h5>
+                <a href="#" class="text-decoration-none">View All</a>
+            </div>
+            <div class="alert-list">
+                <div class="alert-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="status-indicator status-alert"></span>
+                            <strong>Moisture Level Critical</strong>
+                            <div class="text-muted small mt-1">Farm ID: F123</div>
+                        </div>
+                        <span class="time">2m ago</span>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="status-indicator status-warning"></span>
+                            <strong>pH Level Warning</strong>
+                            <div class="text-muted small mt-1">Farm ID: F145</div>
+                        </div>
+                        <span class="time">15m ago</span>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="status-indicator status-normal"></span>
+                            <strong>Sensor Maintenance Due</strong>
+                            <div class="text-muted small mt-1">Farm ID: F156</div>
+                        </div>
+                        <span class="time">1h ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sensor Thresholds -->
+    <div class="col-lg-6">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Sensor Thresholds</h5>
+                <button class="btn btn-light btn-sm"><i class="fas fa-sliders-h me-2"></i>Configure</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Min</th>
+                            <th>Max</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-tint me-2 text-primary"></i>
+                                    Soil Moisture
+                                </div>
+                            </td>
+                            <td>30%</td>
+                            <td>70%</td>
+                            <td><span class="badge bg-success">Normal</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-flask me-2 text-warning"></i>
+                                    pH Level
+                                </div>
+                            </td>
+                            <td>6.0</td>
+                            <td>7.5</td>
+                            <td><span class="badge bg-warning">Warning</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-thermometer-half me-2 text-danger"></i>
+                                    Temperature
+                                </div>
+                            </td>
+                            <td>15°C</td>
+                            <td>35°C</td>
+                            <td><span class="badge bg-success">Normal</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Reports -->
+    <div class="col-lg-6">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Recent Reports</h5>
+                <button class="btn btn-light btn-sm"><i class="fas fa-download me-2"></i>Export</button>
+            </div>
+            <div class="list-group">
+                <div class="list-group-item border-0 mb-2 bg-light rounded">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Monthly Soil Analysis Report</h6>
+                            <p class="mb-1 text-muted small">Farm ID: F123 - Comprehensive soil health analysis</p>
+                            <small class="text-muted"><i class="fas fa-robot me-1"></i>Generated by System</small>
+                        </div>
+                        <small class="text-muted">3d ago</small>
+                    </div>
+                </div>
+                <div class="list-group-item border-0 mb-2 bg-light rounded">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Sensor Maintenance Log</h6>
+                            <p class="mb-1 text-muted small">Routine check and calibration report</p>
+                            <small class="text-muted"><i class="fas fa-users me-1"></i>Generated by Tech Team</small>
+                        </div>
+                        <small class="text-muted">1w ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from .forms import PasswordResetForm, PasswordResetConfirmForm
 from django.template.loader import render_to_string
+from django.contrib import messages
 
 from .models import Role, User
 
@@ -63,6 +64,7 @@ class SignupView(FormView):
 
     def form_valid(self, form):
         form.save()
+        messages.success(self.request, 'Signup successful! Please log in.')
         return super().form_valid(form)
 
 class PasswordResetRequestView(FormView):

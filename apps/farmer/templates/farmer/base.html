@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Sense | {% block base_title %}{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#059669',
+                        accent: '#34D399',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50">
+<div class="flex h-screen">
+    <!-- Left Sidebar Navigation -->
+    <div class="w-64 bg-white shadow-lg border-r border-gray-200">
+        <!-- Logo Section -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center">
+                <i class="fas fa-seedling text-primary text-2xl mr-3"></i>
+                <span class="text-xl font-bold text-gray-900">Soil Sense</span>
+            </div>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User avatar">
+                <div>
+                    <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username|default:"Farmer" }}</p>
+                    <p class="text-xs text-gray-500">{{ user.email|default:"farmer@example.com" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-4">
+            <ul class="space-y-2">
+                <li>
+                    <a href="{% url 'farmer:dashboard' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'dashboard' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-home w-5 h-5 mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'farmer:profile' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'profile' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-user w-5 h-5 mr-3"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'farmer:manage_files' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'manage_files' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-file-upload w-5 h-5 mr-3"></i>
+                        <span>Manage Files</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'farmer:view_history' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'view_history' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-history w-5 h-5 mr-3"></i>
+                        <span>View History</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'farmer:analytics' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'analytics' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-chart-line w-5 h-5 mr-3"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'farmer:recommendations' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'recommendations' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-lightbulb w-5 h-5 mr-3"></i>
+                        <span>Recommendations</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'farmer:farm_management' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'farm_management' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-farm w-5 h-5 mr-3"></i>
+                        <span>Farm Management</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Logout Section -->
+        <div class="absolute bottom-0 w-64 p-4 border-t border-gray-200">
+            <a href="{% url 'authentication:logout' %}" class="w-full flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors">
+                <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">{% block page_title %}{% endblock %}</h1>
+                    <p class="text-gray-600">{% block page_subtitle %}{% endblock %}</p>
+                </div>
+                {% block header_actions %}{% endblock %}
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
