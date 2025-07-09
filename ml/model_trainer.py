@@ -167,7 +167,7 @@ class ModelTrainer:
             "model_name": model.__class__.__name__,
         }
 
-        
+        return self.training_results[model_type]
             
 
 
