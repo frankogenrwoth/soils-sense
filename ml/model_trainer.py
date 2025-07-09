@@ -232,7 +232,16 @@ class ModelTrainer:
                 metrics["accuracy"] = accuracy_score(y_true, y_pred)
                 metrics["f1"] = f1_score(y_true, y_pred, average="weighted")
 
-       
+        results = {
+            "predictions": predictions.tolist(),
+            "prediction_interval": (
+                lower_bound.tolist() if lower_bound is not None else None,
+                upper_bound.tolist() if upper_bound is not None else None,
+            ),
+            "metrics": metrics,
+        }
+        return results
+
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
 
