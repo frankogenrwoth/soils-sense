@@ -259,4 +259,19 @@ class ModelTrainer:
         # Get predictions
         y_pred = model.predict(X_test)
 
-        
+        # Calculate standard error of predictions
+        if hasattr(model, "predict"):
+            # For scikit-learn regressors, we can estimate residuals from training data if available
+            if hasattr(model, "X_train_") and hasattr(model, "y_train_"):
+                X_train = model.X_train_
+                y_train = model.y_train_
+                y_train_pred = model.predict(X_train)
+                residuals = y_train - y_train_pred
+                dof = max(0, len(X_train) - X_train.shape[1] - 1)
+                residual_std = np.std(residuals, ddof=1)
+            else:
+                # Fallback: use std of predictions as proxy (not ideal)
+                residual_std = np.std(y_pred, ddof=1)
+                dof = max(0, len(y_pred) - 1)
+
+          
