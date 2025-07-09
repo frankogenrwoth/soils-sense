@@ -86,7 +86,8 @@ class Predictor:
         Returns:
             dict: Dictionary of predictions from all available models
         """
-        pass
+        results = {}
+        
 
     def get_available_models(self):
         """Get list of available trained models
