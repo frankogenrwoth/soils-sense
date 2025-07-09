@@ -1,47 +1,19 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>SoilSense - Smart Soil Moisture Monitoring</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        #bg-slider-img {
-            transition: opacity 1s ease-in-out;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 text-gray-800 relative">
 
-<!-- ✅ NAVIGATION BAR -->
-<nav class="bg-gray-800 text-white px-6 py-4 fixed w-full top-0 z-50 shadow-md">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="text-2xl font-bold"><a href="/">SoilSense</a></div>
-        <ul class="flex space-x-6 text-sm">
-            <li><a href="#features" class="hover:text-green-400">Features</a></li>
-            <li><a href="#how" class="hover:text-green-400">How It Works</a></li>
-            <li><a href="/about" class="hover:text-green-400">About</a></li>
-            <li><a href="/contact" class="hover:text-green-400">Contact</a></li>
-        </ul>
-        <div class="flex space-x-3">
-            <a href="/login" class="hover:text-green-400">Login</a>
-            <a href="/signup" class="bg-green-500 px-4 py-1 rounded hover:bg-green-600">Sign Up</a>
-        </div>
-    </div>
-</nav>
+{% block title %}Home | SoilSense{% endblock %}
 
+{% block content %}
 <!-- ✅ HERO SECTION -->
 <section class="relative h-screen">
     <img id="bg-slider-img" src="{% static 'images/slide1.jpg' %}" alt="Slider"
-        class="w-full h-full object-cover absolute top-0 left-0 z-0 opacity-100" />
+         class="w-full h-full object-cover absolute top-0 left-0 z-0 opacity-100" />
     <div class="absolute inset-0 bg-black bg-opacity-50 z-10 flex flex-col items-center justify-center text-white text-center">
         <h1 class="text-5xl font-bold drop-shadow">Monitor Your Soil in Real Time</h1>
         <p class="text-xl mt-4 drop-shadow">Smart farming starts with smart data</p>
-        <a href="/signup" class="mt-6 bg-white text-gray-800 font-semibold px-6 py-2 rounded shadow hover:bg-green-100">Get Started</a>
+        <a href="{% url 'authentication:signup' %}" class="mt-6 bg-white text-gray-800 font-semibold px-6 py-2 rounded shadow hover:bg-green-100">Get Started</a>
     </div>
 </section>
-
 <!-- ✅ FEATURES SECTION -->
 <section id="features" class="py-20 bg-white">
     <div class="max-w-6xl mx-auto px-6 text-center">
@@ -154,37 +126,5 @@
         </form>
     </div>
 </section>
+{% endblock %}
 
-<!-- ✅ FOOTER -->
-<footer class="bg-gray-800 text-white py-6 mt-10 text-center">
-    <p>&copy; 2025 SoilSense. All rights reserved.</p>
-    <div class="text-sm mt-2">
-        <a href="/privacy" class="hover:underline mx-2">Privacy Policy</a> |
-        <a href="/terms" class="hover:underline mx-2">Terms of Use</a>
-    </div>
-</footer>
-
-<!-- ✅ SLIDER SCRIPT -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const images = [
-            "{% static 'images/slide1.jpg' %}",
-            "{% static 'images/slide2.jpg' %}",
-            "{% static 'images/slide3.jpg' %}"
-        ];
-        let idx = 0;
-        const img = document.getElementById('bg-slider-img');
-
-        setInterval(() => {
-            idx = (idx + 1) % images.length;
-            img.style.opacity = 0;
-            setTimeout(() => {
-                img.src = images[idx];
-                img.style.opacity = 1;
-            }, 500);
-        }, 5000);
-    });
-</script>
-
-</body>
-</html>

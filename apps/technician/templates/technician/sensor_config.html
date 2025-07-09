@@ -1,0 +1,97 @@
+{% extends 'technician/base.html' %}
+
+{% block page_title %}Sensor Configuration{% endblock %}
+
+{% block breadcrumb %}Sensor Configuration{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Sensor Management</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sensor ID</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Battery</th>
+                            <th>Last Update</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>S001</td>
+                            <td>Soil Moisture</td>
+                            <td>Farm A - Section 1</td>
+                            <td>85%</td>
+                            <td>5 mins ago</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Configure</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>S002</td>
+                            <td>pH Sensor</td>
+                            <td>Farm A - Section 2</td>
+                            <td>45%</td>
+                            <td>10 mins ago</td>
+                            <td><span class="badge bg-warning">Low Battery</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Configure</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Sensor Thresholds</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Min</th>
+                            <th>Max</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Soil Moisture</td>
+                            <td>30%</td>
+                            <td>70%</td>
+                            <td><span class="badge bg-success">Normal</span></td>
+                        </tr>
+                        <tr>
+                            <td>pH Level</td>
+                            <td>6.0</td>
+                            <td>7.5</td>
+                            <td><span class="badge bg-success">Normal</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Calibration Status</h5>
+            <div class="chart-container">
+                <p class="text-muted">Calibration metrics will be displayed here</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

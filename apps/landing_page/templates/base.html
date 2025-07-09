@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}SoilSense - Smart Soil Monitoring{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #bg-slider-img {
+            transition: opacity 1s ease-in-out;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-800 relative">
+
+<!-- ✅ NAVIGATION BAR -->
+<nav class="bg-gray-800 text-white px-6 py-4 fixed w-full top-0 z-50 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+        <div class="text-2xl font-bold"><a href="/">SoilSense</a></div>
+        <ul class="flex space-x-6 text-sm">
+            <li><a href="#features" class="hover:text-green-400">Features</a></li>
+            <li><a href="#how" class="hover:text-green-400">How It Works</a></li>
+            <li><a href="/about" class="hover:text-green-400">About</a></li>
+            <li><a href="/contact" class="hover:text-green-400">Contact</a></li>
+        </ul>
+        <div class="flex space-x-3">
+            <a href="{% url 'authentication:login' %}" class="hover:text-green-400">Login</a>
+            <a href="{% url 'authentication:signup' %}" class="bg-green-500 px-4 py-1 rounded hover:bg-green-600">Sign Up</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ✅ MAIN CONTENT -->
+<main class="pt-20">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- ✅ FOOTER -->
+<footer class="bg-gray-800 text-white py-6 mt-10 text-center">
+    <p>&copy; 2025 SoilSense. All rights reserved.</p>
+    <div class="text-sm mt-2">
+        <a href="/privacy" class="hover:underline mx-2">Privacy Policy</a> |
+        <a href="/terms" class="hover:underline mx-2">Terms of Use</a>
+    </div>
+</footer>
+
+<!-- ✅ GLOBAL SCRIPTS -->
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const images = [
+            "{% static 'images/slide1.jpg' %}",
+            "{% static 'images/slide2.jpg' %}",
+            "{% static 'images/slide3.jpg' %}"
+        ];
+        let idx = 0;
+        const img = document.getElementById('bg-slider-img');
+        if (img) {
+            setInterval(() => {
+                idx = (idx + 1) % images.length;
+                img.style.opacity = 0;
+                setTimeout(() => {
+                    img.src = images[idx];
+                    img.style.opacity = 1;
+                }, 500);
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}
+
+</body>
+</html>
