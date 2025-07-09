@@ -98,7 +98,9 @@ class Predictor:
         Returns:
             list: List of available model types
         """
-        pass
+        if not MODELS_DIR.exists():
+            return []
+       
 
     def validate_input(self, model_type, input_data):
         """Validate input data for a specific model
