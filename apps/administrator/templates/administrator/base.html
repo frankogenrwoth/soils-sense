@@ -4,44 +4,97 @@
     <meta charset="UTF-8">
     <title>{% block title %}Administrator Panel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10B981',
+                        secondary: '#059669',
+                        accent: '#34D399',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="bg-white shadow mb-6">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
+<body class="bg-gray-100 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-50 text-gray-900 flex flex-col min-h-screen shadow-lg border-r border-gray-200">
+        <div class="flex items-center px-6 py-6 space-x-3">
+            <div class="bg-white rounded-full p-2 shadow">
                 <i class="fas fa-leaf text-green-600 text-2xl"></i>
-                <span class="font-bold text-xl text-gray-800">SoilSense Admin</span>
             </div>
-            <div class="flex items-center space-x-6">
-                <a href="{% url 'administrator:users' %}" class="text-gray-700 hover:text-green-600 flex items-center">
-                    <i class="fas fa-users mr-1"></i> Users
-                </a>
-                <a href="{% url 'authentication:logout' %}" class="text-gray-700 hover:text-red-600 flex items-center">
-                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
-                </a>
-            </div>
+            <span class="font-extrabold text-xl text-green-700 tracking-wide">SoilSense Admin</span>
         </div>
-    </nav>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="#" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+            </a>
+            <a href="{% url 'administrator:users' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-users mr-3"></i> Users
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-robot mr-3"></i> ML Models
+            </a>
+            <a href="" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-database mr-3"></i> Data
+            </a>
+            <a href="" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-file-alt mr-3"></i> Reports
+            </a>
+            <a href="" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-bell mr-3"></i> Notifications
+            </a>
+            <a href="" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+                <i class="fas fa-microchip mr-3"></i> Sensors
+            </a>
+        </nav>
+        <div class="px-4 mb-4">
+            <a href="{% url 'authentication:logout' %}" class="flex items-center text-gray-900 hover:text-red-500 px-4 py-2 rounded-lg hover:bg-green-100 transition">
+                <i class="fas fa-sign-out-alt mr-3"></i> Logout
+            </a>
+        </div>
+    </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 container mx-auto px-4">
-        {% block content %}
-        <!-- Page content goes here -->
-        {% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white shadow mt-8">
-        <div class="container mx-auto px-4 py-4 text-center text-gray-500 text-sm">
-            &copy; {{ year|default:2024 }} SoilSense. All rights reserved.
-        </div>
-    </footer>
-    {% block extra_scripts %}{% endblock %}
+    <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Optional: Top Navbar -->
+        <header class="bg-white shadow px-6 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-green-700">{% block header_title %}{% endblock %}</h1>
+            {% block header_tools %}{% endblock %}
+        </header>
+        <main class="flex-1 p-8">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="" class="inline-flex items-center text-gray-600 hover:text-green-700">
+                            <i class="fas fa-home mr-1"></i>
+                            Home
+                        </a>
+                    </li>
+                    {% block breadcrumb %}
+                    <!-- Example: 
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mx-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M7.05 4.05a.75.75 0 011.06 0l5.25 5.25a.75.75 0 010 1.06l-5.25 5.25a.75.75 0 11-1.06-1.06L11.19 10 7.05 5.86a.75.75 0 010-1.06z"/>
+                            </svg>
+                            <a href="#" class="text-gray-600 hover:text-green-700">Subpage</a>
+                        </div>
+                    </li>
+                    -->
+                    {% endblock %}
+                </ol>
+            </nav>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 </body>
 </html>
