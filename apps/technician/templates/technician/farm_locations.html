@@ -50,69 +50,87 @@
     </div>
     
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th>Farm ID</th>
                     <th>Farm Name</th>
                     <th>Location</th>
-                    <th>Owner</th>
-                    <th>Sensors</th>
-                    <th>Status</th>
+                    <th>Area Size</th>
+                    <th>Soil Type</th>
+                    <th>Date Added</th>
+                    <th>Description</th>
+                    <th>Farmer</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>F123</td>
-                    <td>Green Valley Farm</td>
-                    <td>Kampala, Uganda</td>
-                    <td>John Doe</td>
-                    <td>
-                        <span class="badge bg-success">4 Active</span>
-                        <span class="badge bg-danger">1 Inactive</span>
-                    </td>
-                    <td><span class="badge bg-success">Active</span></td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>F124</td>
-                    <td>Sunrise Acres</td>
-                    <td>Entebbe, Uganda</td>
-                    <td>Jane Smith</td>
-                    <td>
-                        <span class="badge bg-success">3 Active</span>
-                    </td>
-                    <td><span class="badge bg-success">Active</span></td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                {% if farms %}
+                    {% for farm in farms %}
+                        <tr>
+                            <td>{{ farm.farm_name }}</td>
+                            <td>{{ farm.location }}</td>
+                            <td>{{ farm.area_size }}</td>
+                            <td>{{ farm.soil_type }}</td>
+                            <td>{{ farm.date_added|date:"Y-m-d" }}</td>
+                            <td>
+                                {% if farm.description %}
+                                    {{ farm.description|truncatechars:40 }}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if farm.user %}
+                                    {{ farm.user.get_full_name|default:farm.user.username }}
+                                {% else %}
+                                    <span class="text-muted">Unknown</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'technician:farm_detail' farm.id %}" class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'technician:edit_farm' farm.id %}" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                   <button class="btn btn-outline-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteFarmModal{{ farm.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button> 
+                                </div>
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteFarmModal{{ farm.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Farm</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete <strong>{{ farm.farm_name }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                    <form method="post" action="{% url 'technician:delete_farm' farm.id %}"> 
+                                                    {% csrf_token %}
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">No farms found.</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
+
 
     <!-- Pagination -->
     <nav class="mt-4">
@@ -139,32 +157,22 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form method="post" action="{% url 'farmer:add_farm' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label">Farm Name</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Location</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Owner</label>
-                        <select class="form-select">
-                            <option>Select Owner</option>
-                            <option>John Doe</option>
-                            <option>Jane Smith</option>
+                        <label class="form-label">Select Farmer's Farm</label>
+                        <select class="form-select" name="farm_id" required>
+                            <option value="">Select Farm</option>
+                            {% for farm in farmer_farms %}
+                                <option value="{{ farm.id }}">{{ farm.name }} ({{ farm.location }})</option>
+                            {% endfor %}
                         </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Number of Sensors</label>
-                        <input type="number" class="form-control" min="1" value="1">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Add Farm</button>
+                <button type="submit" class="btn btn-primary" form="addFarmForm">Add Farm</button>
             </div>
         </div>
     </div>
