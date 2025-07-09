@@ -138,7 +138,19 @@ class ModelTrainer:
         df = pd.DataFrame(data)
         X = df[self.features]
         y = df[self.target]
+        # If new_data is provided, concatenate it with the original data
+        if new_data is not None:
+            if not isinstance(new_data, pd.DataFrame):
+                new_data = pd.DataFrame(new_data)
+            # Ensure new_data has the required columns
+            if not set(self.features + [self.target]).issubset(new_data.columns):
+                raise ValueError(f"New data must contain columns: {self.features + [self.target]}")
+            X_new = new_data[self.features]
+            y_new = new_data[self.target]
+            X = pd.concat([X, X_new], ignore_index=True)
+            y = pd.concat([y, y_new], ignore_index=True)
 
+        
             
 
 
