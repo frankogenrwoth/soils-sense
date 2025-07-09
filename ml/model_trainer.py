@@ -56,6 +56,12 @@ class ModelTrainer:
         """
         if model_type == "random_forest":
             model = RandomForestRegressor(**config)
+        elif model_type == "svr":
+            model = SVR(**config)
+        elif model_type == "mlp":
+            model = MLPRegressor(**config)
+        return model
+        
 
     def _save_model(self, model_type, model):
         """Save trained model to file
