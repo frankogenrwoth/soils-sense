@@ -37,6 +37,12 @@ class Predictor:
         except Exception as e:
             return {"success": False, "message": f"Input preprocessing failed: {str(e)}"}
 
+        # Make prediction
+        try:
+            prediction = model.predict(X)
+        except Exception as e:
+            return {"success": False, "message": f"Prediction failed: {str(e)}"}
+
         
 
     def _load_model(self, model_type):
