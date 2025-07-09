@@ -55,6 +55,7 @@ class ModelTrainer:
             sklearn.base.BaseEstimator: Regression model instance
         """
         if model_type == "random_forest":
+            model = RandomForestRegressor(**config)
 
     def _save_model(self, model_type, model):
         """Save trained model to file
