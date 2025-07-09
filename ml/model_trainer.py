@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .config import MODELS_DIR, MODEL_CONFIGS
 from .data_processor import DataProcessor
+from scipy.stats import t
 
 
 class ModelTrainer:
@@ -253,4 +254,9 @@ class ModelTrainer:
         Returns:
             tuple: (lower_bound, upper_bound) prediction intervals
         """
-        pass
+       
+
+        # Get predictions
+        y_pred = model.predict(X_test)
+
+        
