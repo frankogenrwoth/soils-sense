@@ -87,7 +87,10 @@ class Predictor:
             dict: Dictionary of predictions from all available models
         """
         results = {}
-        
+        model_types = self.get_available_models()
+        for model_type in model_types:
+            results[model_type] = self.predict(model_type, input_data)
+        return results
 
     def get_available_models(self):
         """Get list of available trained models
