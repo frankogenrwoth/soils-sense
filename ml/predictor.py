@@ -116,7 +116,10 @@ class Predictor:
         """
         from .config import MODEL_CONFIGS
         if model_type not in MODEL_CONFIGS:
-            
+            return {"valid": False, "message": f"Unknown model type: {model_type}"}
+        required_features = MODEL_CONFIGS[model_type].get("features", [])
+        missing = [f for f in required_features if f not in input_data]
+       
 
     def calculate_confidence_interval(self, model, X, confidence_level=0.95):
         """Calculate confidence interval for prediction
