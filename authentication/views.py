@@ -20,6 +20,9 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 
 from .models import Role, User
+import random
+from datetime import timedelta
+from django.utils import timezone
 
 
 # Create your views here.
@@ -77,14 +80,14 @@ class PasswordResetRequestView(FormView):
         User = get_user_model()
         try:
             user = User.objects.get(email=email)
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_url = self.request.build_absolute_uri(
-                f"/authentication/reset/{uid}/{token}/"
-            )
-            subject = 'Password Reset Request'
+            # Generate a 6-digit code
+            code = f"{random.randint(100000, 999999)}"
+            user.reset_code = code
+            user.reset_code_expiry = timezone.now() + timedelta(minutes=15)
+            user.save()
+            subject = 'Your Password Reset Code'
             message = render_to_string('authentication/password_reset_email.txt', {
-                'reset_url': reset_url,
+                'code': code,
                 'user': user,
             })
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
