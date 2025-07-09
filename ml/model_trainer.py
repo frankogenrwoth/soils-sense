@@ -83,7 +83,7 @@ class ModelTrainer:
         Returns:
             sklearn.base.BaseEstimator: Loaded model instance
         """
-        pass
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
 
     def get_model_info(self, model_type):
         """Get information about a trained model
