@@ -66,6 +66,9 @@ class Predictor:
         """
         if model_type in self.models:
             return self.models[model_type]
+        model_path = MODELS_DIR / f"{model_type}.joblib"
+        if not model_path.exists():
+            return None
         
 
     def predict_multiple(self, input_data):
