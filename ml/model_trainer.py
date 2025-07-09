@@ -115,6 +115,7 @@ class ModelTrainer:
         """
         model_files = list(Path(MODELS_DIR).glob("*.joblib"))
         models = []
+        for file in model_files:
 
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model with new data
