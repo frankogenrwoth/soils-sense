@@ -1,12 +1,12 @@
 {% extends "administrator/base.html" %}
 
 {% block header_title %}
-User Management
+Data Management
 {% endblock %}
 
 {% block header_tools %}
 <a href="" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-    <i class="fas fa-plus mr-2"></i> Add User
+    <i class="fas fa-plus mr-2"></i> Add Data
 </a>
 {% endblock %}
 
@@ -16,12 +16,11 @@ User Management
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M7.05 4.05a.75.75 0 011.06 0l5.25 5.25a.75.75 0 010 1.06l-5.25 5.25a.75.75 0 11-1.06-1.06L11.19 10 7.05 5.86a.75.75 0 010-1.06z"/>
         </svg>
-        <a href="{% url 'administrator:users' %}" class="text-gray-600 hover:text-green-700">Users</a>
+        <a href="{% url 'administrator:data' %}" class="text-gray-600 hover:text-green-700">Data</a>
     </div>
 </li>
 {% endblock %}
 
 {% block content %}
-User management page
-
+Data management page
 {% endblock %}

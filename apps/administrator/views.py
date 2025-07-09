@@ -11,3 +11,11 @@ class UserManagementView(View):
     def get(self, request):
         context = {}
         return render(request, self.template_name, context=context)
+
+
+class DataManagementView(View):
+    template_name = "administrator/data_management.html"
+
+    def get(self, request):
+        context = {}
+        return render(request, self.template_name, context=context)
