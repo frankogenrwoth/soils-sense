@@ -91,6 +91,7 @@ class PasswordResetRequestView(FormView):
                 'user': user,
             })
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+            self.request.session['reset_email'] = email
         except User.DoesNotExist:
             pass  # Do not reveal if email exists
         return super().form_valid(form)
