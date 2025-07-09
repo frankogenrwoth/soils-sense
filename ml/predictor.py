@@ -69,7 +69,13 @@ class Predictor:
         model_path = MODELS_DIR / f"{model_type}.joblib"
         if not model_path.exists():
             return None
-        
+        try:
+            model = joblib.load(model_path)
+            self.models[model_type] = model
+            return model
+        except Exception as e:
+            print(f"Failed to load model '{model_type}': {e}")
+            return None
 
     def predict_multiple(self, input_data):
         """Make predictions using all available models
