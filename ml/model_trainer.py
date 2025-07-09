@@ -106,13 +106,14 @@ class ModelTrainer:
             "training_time": self.training_results[model_type]["training_time"],
         }
 
+
     def list_trained_models(self):
         """List all trained models with their information
 
         Returns:
             list: List of dictionaries containing model information
         """
-        pass
+        model_files = list(Path(MODELS_DIR).glob("*.joblib"))
 
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model with new data
