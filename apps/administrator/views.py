@@ -35,3 +35,19 @@ class MLModelManagementView(View):
     def get(self, request):
         context = {}
         return render(request, self.template_name, context=context)
+
+
+class NotificationView(View):
+    template_name = "administrator/notification.html"
+
+    def get(self, request):
+        context = {}
+        return render(request, self.template_name, context=context)
+
+
+class SensorView(View):
+    template_name = "administrator/sensor_management.html"
+
+    def get(self, request):
+        context = {}
+        return render(request, self.template_name, context=context)

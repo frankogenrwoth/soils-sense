@@ -4,6 +4,8 @@ from apps.administrator.views import (
     DataManagementView,
     ReportManagementView,
     MLModelManagementView,
+    NotificationView,
+    SensorView,
 )
 
 app_name = "administrator"
@@ -13,4 +15,6 @@ urlpatterns = [
     path("data/", DataManagementView.as_view(), name="data"),
     path("reports/", ReportManagementView.as_view(), name="reports"),
     path("ml-models/", MLModelManagementView.as_view(), name="ml"),
+    path("notifications/", NotificationView.as_view(), name="notifications"),
+    path("sensors/", SensorView.as_view(), name="sensors"),
 ]
