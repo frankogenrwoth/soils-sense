@@ -114,7 +114,9 @@ class Predictor:
         Returns:
             dict: Validation result with 'valid' boolean and 'message' string
         """
-        pass
+        from .config import MODEL_CONFIGS
+        if model_type not in MODEL_CONFIGS:
+            
 
     def calculate_confidence_interval(self, model, X, confidence_level=0.95):
         """Calculate confidence interval for prediction
