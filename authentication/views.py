@@ -100,24 +100,27 @@ class PasswordResetConfirmView(FormView):
     form_class = PasswordResetConfirmForm
     success_url = '/authentication/login/'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.uidb64 = kwargs.get('uidb64')
-        self.token = kwargs.get('token')
-        return super().dispatch(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        try:
-            uid = force_str(urlsafe_base64_decode(self.uidb64))
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            email = request.session.get('reset_email')
+            code = form.cleaned_data['code']
+            password = form.cleaned_data['password']
             User = get_user_model()
-            user = User.objects.get(pk=uid)
-            if default_token_generator.check_token(user, self.token):
-                password = form.cleaned_data['password']
+            try:
+                user = User.objects.get(email=email, reset_code=code)
+                if user.reset_code_expiry and user.reset_code_expiry < timezone.now():
+                    form.add_error('code', 'Reset code has expired.')
+                    return self.form_invalid(form)
                 user.set_password(password)
+                user.reset_code = None
+                user.reset_code_expiry = None
                 user.save()
                 return super().form_valid(form)
-            else:
-                form.add_error(None, 'Invalid or expired token.')
+            except User.DoesNotExist:
+                form.add_error('code', 'Invalid reset code or email.')
                 return self.form_invalid(form)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            form.add_error(None, 'Invalid reset link.')
-            return self.form_invalid(form)
+        return self.form_invalid(form)
