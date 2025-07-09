@@ -150,7 +150,12 @@ class ModelTrainer:
             X = pd.concat([X, X_new], ignore_index=True)
             y = pd.concat([y, y_new], ignore_index=True)
 
-        
+        # Refit the model
+        model = self._initialize_model(model_type)
+        start_time = time.time()
+        model.fit(X, y)
+        training_time = time.time() - start_time
+
             
 
 
