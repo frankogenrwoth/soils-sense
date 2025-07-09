@@ -274,4 +274,18 @@ class ModelTrainer:
                 residual_std = np.std(y_pred, ddof=1)
                 dof = max(0, len(y_pred) - 1)
 
-          
+            # t-score for the confidence interval
+            alpha = 1 - confidence_level
+            t_score = t.ppf(1 - alpha / 2, dof) if dof > 0 else 1.96  # fallback to normal
+
+            # Standard error for each prediction (assume homoscedasticity)
+            se = residual_std * np.sqrt(1 + np.zeros_like(y_pred))
+
+            margin = t_score * se
+            lower_bound = y_pred - margin
+            upper_bound = y_pred + margin
+        else:
+            lower_bound = None
+            upper_bound = None
+
+        return lower_bound, upper_bound
