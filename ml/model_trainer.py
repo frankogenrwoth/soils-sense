@@ -61,7 +61,7 @@ class ModelTrainer:
         elif model_type == "mlp":
             model = MLPRegressor(**config)
         return model
-        
+
 
     def _save_model(self, model_type, model):
         """Save trained model to file
@@ -70,7 +70,7 @@ class ModelTrainer:
             model_type (str): Type of model
             model: Trained model instance
         """
-        pass
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
 
     def load_model(self, model_type):
         """Load a trained model from file
