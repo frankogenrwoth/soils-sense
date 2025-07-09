@@ -31,6 +31,12 @@ class Predictor:
         if model is None:
             return {"success": False, "message": f"Model '{model_type}' not found."}
 
+        # Preprocess the input data
+        try:
+            X = self.data_processor.preprocess_input(input_data, model_type)
+        except Exception as e:
+            return {"success": False, "message": f"Input preprocessing failed: {str(e)}"}
+
         
 
     def _load_model(self, model_type):
