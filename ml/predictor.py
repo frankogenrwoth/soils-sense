@@ -57,13 +57,16 @@ class Predictor:
         }
         return result
 
+
     def _load_model(self, model_type):
         """Load a trained model from file
 
         Args:
             model_type (str): Type of model to load
         """
-        pass
+        if model_type in self.models:
+            return self.models[model_type]
+        
 
     def predict_multiple(self, input_data):
         """Make predictions using all available models
