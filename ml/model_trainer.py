@@ -160,6 +160,14 @@ class ModelTrainer:
         model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
         joblib.dump(model, model_path)
 
+        # Update training results
+        self.training_results[model_type] = {
+            "training_time": training_time,
+            "n_samples": len(X),
+            "model_name": model.__class__.__name__,
+        }
+
+        
             
 
 
