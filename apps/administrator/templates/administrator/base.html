@@ -89,6 +89,11 @@
                     {% endblock %}
                 </ol>
             </nav>
+
+            <div class="flex justify-between items-center">
+                {% block header_content %}{% endblock %}
+                {% block header_tools %}{% endblock %}
+            </div>
             {% block content %}{% endblock %}
         </main>
     </div>
