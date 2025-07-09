@@ -49,7 +49,13 @@ class Predictor:
         except Exception:
             lower, upper = None, None
 
-        
+        result = {
+            "success": True,
+            "predicted_value": float(prediction[0]) if hasattr(prediction, '__getitem__') else float(prediction),
+            "confidence_interval": (float(lower), float(upper)) if lower is not None and upper is not None else None,
+            "uncertainty": float(upper - lower) if lower is not None and upper is not None else None
+        }
+        return result
 
     def _load_model(self, model_type):
         """Load a trained model from file
