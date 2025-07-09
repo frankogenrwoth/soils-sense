@@ -5,6 +5,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class DashboardView(View):
+    template_name = "administrator/dashboard.html"
+
+    def get(self, request):
+        context = {}
+        return render(request, self.template_name, context=context)
+
 class UserManagementView(View):
     template_name = "administrator/user_management.html"
 

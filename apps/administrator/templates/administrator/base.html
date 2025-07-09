@@ -33,7 +33,7 @@
             <span class="font-extrabold text-xl text-green-700 tracking-wide">SoilSense Admin</span>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
-            <a href="#" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
+            <a href="{% url 'administrator:dashboard' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
                 <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
             </a>
             <a href="{% url 'administrator:users' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
@@ -65,10 +65,6 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-h-screen">
         <!-- Optional: Top Navbar -->
-        <header class="bg-gray-50 text-gray-900 px-6 py-4 flex items-center justify-between shadow-sm">
-            <h1 class="text-2xl font-bold text-green-700">{% block header_title %}{% endblock %}</h1>
-            {% block header_tools %}{% endblock %}
-        </header>
         <main class="flex-1 p-8">
             <!-- Breadcrumb Navigation -->
             <nav class="flex mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
