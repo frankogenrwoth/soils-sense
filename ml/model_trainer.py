@@ -197,8 +197,15 @@ class ModelTrainer:
         else:
             test_df = pd.DataFrame(test_data)
 
-       
+        # Ensure all required features are present
+        required_features = self.features
+        missing = set(required_features) - set(test_df.columns)
+        if missing:
+            raise ValueError(f"Test data is missing required features: {missing}")
 
+        X_test = test_df[required_features]
+
+        #
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
 
