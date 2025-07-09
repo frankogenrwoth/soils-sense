@@ -191,6 +191,13 @@ class ModelTrainer:
             raise FileNotFoundError(f"Trained model for '{model_type}' not found at {model_path}")
         model = joblib.load(model_path)
 
+        # Prepare test data
+        if isinstance(test_data, dict):
+            test_df = pd.DataFrame([test_data])
+        else:
+            test_df = pd.DataFrame(test_data)
+
+       
 
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model
