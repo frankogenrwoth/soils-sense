@@ -154,7 +154,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.FileHandler",
             "filename": os.path.join(
-                BASE_DIR, "soilsense.log"
+                BASE_DIR, "logs/soilsense.log"
             ),  # <--- Log file location
         },
     },
