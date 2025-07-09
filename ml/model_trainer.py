@@ -43,7 +43,7 @@ class ModelTrainer:
         self._save_model(model_type, model)
         self.training_results[model_type] = self._get_model_info(model_type)
         return self.training_results[model_type]
-        
+
 
     def _create_model(self, config):
         """Create regression model based on configuration
@@ -54,7 +54,7 @@ class ModelTrainer:
         Returns:
             sklearn.base.BaseEstimator: Regression model instance
         """
-        pass
+        if model_type == "random_forest":
 
     def _save_model(self, model_type, model):
         """Save trained model to file
