@@ -56,7 +56,7 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model("moisture_forecast", custom_data=custom_data)
 
     def train_all_models(self, custom_data=None):
         """Train all available prediction models
