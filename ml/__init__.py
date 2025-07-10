@@ -259,9 +259,7 @@ def predict_soil_moisture(location, status, temperature_celsius, humidity_percen
     return engine.predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage)
 
 
-def recommend_irrigation(
-    moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
-):
+def recommend_irrigation(moisture_level, temperature, humidity, rainfall, crop_type, growth_stage):
     """Quick function to recommend irrigation amount
 
     Args:
@@ -275,7 +273,8 @@ def recommend_irrigation(
     Returns:
         dict: Irrigation recommendation result
     """
-    pass
+    engine = MLEngine()
+    return engine.recommend_irrigation(moisture_level, temperature, humidity, rainfall, crop_type, growth_stage)
 
 
 def forecast_moisture(
