@@ -315,4 +315,5 @@ def get_available_models():
     Returns:
         list: List of available model types
     """
-    pass
+    engine = MLEngine()
+    return engine.get_available_models()
