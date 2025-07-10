@@ -178,8 +178,12 @@ class SoilMoisturePredictor:
         Returns:
             dict: Soil moisture prediction result with value and confidence interval
         """
-        input_data = {}
-
+        input_data = {
+            "location": location,
+            "status": status,
+            
+        }
+        
 
 
 class IrrigationRecommender:
