@@ -212,10 +212,14 @@ class IrrigationRecommender:
             dict: Irrigation recommendation with amount and confidence interval
         """
         input_data = {
-            
+            "moisture_level": moisture_level,
+            "temperature": temperature,
+            "humidity": humidity,
+            "rainfall": rainfall,
+            "crop_type": crop_type,
+            "growth_stage": growth_stage,
         }
         
-
 
 class MoistureForecaster:
     """Specialized predictor for moisture level forecasting"""
