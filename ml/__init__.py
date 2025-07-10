@@ -177,7 +177,7 @@ class MLEngine:
         Returns:
             dict: Model information
         """
-        pass
+        return self.trainer.get_model_info(model_type)
 
     def list_all_models(self):
         """List all trained models with their information
