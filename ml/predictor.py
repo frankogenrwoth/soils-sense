@@ -211,7 +211,10 @@ class IrrigationRecommender:
         Returns:
             dict: Irrigation recommendation with amount and confidence interval
         """
-        pass
+        input_data = {
+            
+        }
+        
 
 
 class MoistureForecaster:
