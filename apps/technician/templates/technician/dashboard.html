@@ -180,6 +180,88 @@
         </div>
     </div>
 
+    <div class="container py-5">
+    <h2 class="text-2xl font-semibold mb-4">Soil Moisture Dashboard</h2>
+
+    <!-- Farm Filter Dropdown -->
+    <form method="get" class="mb-6">
+        <label for="farm" class="block mb-2 text-sm font-medium text-gray-700">Select Farm</label>
+        <select name="farm" id="farm" class="block w-64 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+            <option value="">All Farms</option>
+            {% for farm in farms %}
+                <option value="{{ farm.id }}" {% if farm.id|stringformat:"s" == selected_farm_id %}selected{% endif %}>
+                    {{ farm.farm_name }} - {{ farm.location }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="ml-4 inline-block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Apply</button>
+    </form>
+
+    <!-- Risk Alerts -->
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+        <h4 class="font-semibold text-red-700">Risk Warnings</h4>
+        <ul class="mt-2 text-red-600 text-sm list-disc pl-5">
+            {% for reading in recent_critical_readings %}
+                <li>{{ reading.farm.farm_name }} - {{ reading.status }} ({{ reading.timestamp|date:"M d, H:i" }})</li>
+            {% empty %}
+                <li>No critical alerts.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="bg-white p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-medium mb-3">Daily Average Soil Moisture</h3>
+        <canvas id="moistureChart" height="100"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('moistureChart').getContext('2d');
+    const moistureChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ days|safe }},
+            datasets: [{
+                label: 'Avg Moisture (%)',
+                data: {{ moisture_per_day|safe }},
+                backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                borderColor: 'rgba(34, 197, 94, 1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'Moisture Trends'
+                }
+            }
+        }
+    });
+</script>
+
     <!-- Recent Reports -->
     <div class="col-lg-6">
         <div class="dashboard-card">
