@@ -219,7 +219,8 @@ class IrrigationRecommender:
             "crop_type": crop_type,
             "growth_stage": growth_stage,
         }
-        
+        return self.predictor.predict("irrigation_recommendation", input_data)
+
 
 class MoistureForecaster:
     """Specialized predictor for moisture level forecasting"""
