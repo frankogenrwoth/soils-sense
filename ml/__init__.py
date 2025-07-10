@@ -8,11 +8,8 @@ from .predictor import (
     Predictor,
     SoilMoisturePredictor,
     IrrigationRecommender,
-    MoistureForecaster,
 )
 from .data_processor import DataProcessor
-import pandas as pd
-import json
 
 
 class MLEngine:
@@ -34,7 +31,9 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        return self.trainer.train_model("soil_moisture_predictor", custom_data=custom_data)
+        return self.trainer.train_model(
+            "soil_moisture_predictor", custom_data=custom_data
+        )
 
     def train_irrigation_recommender(self, custom_data=None):
         """Train irrigation recommendation model
@@ -45,18 +44,9 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        return self.trainer.train_model("irrigation_recommendation", custom_data=custom_data)
-
-    def train_moisture_forecaster(self, custom_data=None):
-        """Train moisture forecasting model
-
-        Args:
-            custom_data (pandas.DataFrame, optional): Custom training data
-
-        Returns:
-            dict: Training results
-        """
-        return self.trainer.train_model("moisture_forecast", custom_data=custom_data)
+        return self.trainer.train_model(
+            "irrigation_recommendation", custom_data=custom_data
+        )
 
     def train_all_models(self, custom_data=None):
         """Train all available prediction models
@@ -70,82 +60,79 @@ class MLEngine:
         results = {
             "soil_moisture_predictor": self.train_soil_moisture_predictor(custom_data),
             "irrigation_recommendation": self.train_irrigation_recommender(custom_data),
-            "moisture_forecast": self.train_moisture_forecaster(custom_data),
         }
         return results
 
     # Prediction functions
     def predict_soil_moisture(
-        self, location, status, temperature_celsius, humidity_percent, battery_voltage
+        self,
+        sensor_id,
+        location,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage,
+        status,
+        irrigation_action,
+        timestamp,
     ):
         """Predict soil moisture level
 
         Args:
+            sensor_id (str): Sensor identifier
             location (str): Location identifier
-            status (str): Sensor status
             temperature_celsius (float): Temperature in Celsius
             humidity_percent (float): Air humidity percentage
             battery_voltage (float): Sensor battery voltage
+            status (str): Sensor status
+            irrigation_action (str): Irrigation action
+            timestamp (str): Timestamp
 
         Returns:
             dict: Soil moisture prediction result
         """
         predictor = SoilMoisturePredictor()
+
         return predictor.predict_moisture(
-            location, status, temperature_celsius, humidity_percent, battery_voltage
+            sensor_id,
+            location,
+            temperature_celsius,
+            humidity_percent,
+            battery_voltage,
+            status,
+            irrigation_action,
+            timestamp,
         )
 
     def recommend_irrigation(
-        self, moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
+        self,
+        soil_moisture_percent,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage=3.8,
+        status="Normal",
+        timestamp=None,
     ):
-        """Recommend irrigation amount
+        """Recommend irrigation action
 
         Args:
-            moisture_level (float): Current soil moisture percentage
-            temperature (float): Temperature in Celsius
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            crop_type (str): Type of crop
-            growth_stage (str): Growth stage of the crop
+            soil_moisture_percent (float): Current soil moisture percentage
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
+            status (str): Sensor status
+            timestamp (str, optional): Timestamp (if None, uses current time)
 
         Returns:
             dict: Irrigation recommendation result
         """
         recommender = IrrigationRecommender()
         return recommender.recommend_irrigation(
-            moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
-        )
-
-    def forecast_moisture(
-        self,
-        current_moisture,
-        temperature,
-        humidity,
-        rainfall_forecast,
-        evaporation_rate,
-        days_ahead=7,
-    ):
-        """Forecast future moisture levels
-
-        Args:
-            current_moisture (float): Current soil moisture percentage
-            temperature (float): Temperature in Celsius
-            humidity (float): Air humidity percentage
-            rainfall_forecast (float): Forecasted rainfall amount
-            evaporation_rate (float): Evaporation rate in mm/day
-            days_ahead (int, optional): Number of days to forecast. Defaults to 7.
-
-        Returns:
-            dict: Moisture forecast result
-        """
-        forecaster = MoistureForecaster()
-        return forecaster.forecast_moisture(
-            current_moisture,
-            temperature,
-            humidity,
-            rainfall_forecast,
-            evaporation_rate,
-            days_ahead,
+            soil_moisture_percent,
+            temperature_celsius,
+            humidity_percent,
+            battery_voltage,
+            status,
+            timestamp,
         )
 
     def predict_all(self, input_data):
@@ -197,7 +184,7 @@ class MLEngine:
         Returns:
             dict: Updated training results
         """
-        return self.trainer.retrain_model(model_type, new_data=new_data)
+        return self.trainer.train_model(model_type, custom_data=new_data)
 
     def save_training_data(self, data, model_type):
         """Save training data to file
@@ -235,77 +222,79 @@ def train_model(model_type, custom_data=None):
     train_methods = {
         "soil_moisture_predictor": engine.train_soil_moisture_predictor,
         "irrigation_recommendation": engine.train_irrigation_recommender,
-        "moisture_forecast": engine.train_moisture_forecaster,
     }
     if model_type not in train_methods:
         raise ValueError(f"Unknown model type: {model_type}")
     return train_methods[model_type](custom_data=custom_data)
 
 
-def predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage):
+def predict_soil_moisture(
+    sensor_id,
+    location,
+    temperature_celsius,
+    humidity_percent,
+    battery_voltage,
+    status,
+    irrigation_action,
+    timestamp,
+):
     """Quick function to predict soil moisture level
 
     Args:
+        sensor_id (str): Sensor identifier
         location (str): Location identifier
-        status (str): Sensor status
         temperature_celsius (float): Temperature in Celsius
         humidity_percent (float): Air humidity percentage
         battery_voltage (float): Sensor battery voltage
+        status (str): Sensor status
+        irrigation_action (str): Irrigation action
+        timestamp (str): Timestamp
 
     Returns:
         dict: Soil moisture prediction result
     """
     engine = MLEngine()
-    return engine.predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage)
+    return engine.predict_soil_moisture(
+        sensor_id,
+        location,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage,
+        status,
+        irrigation_action,
+        timestamp,
+    )
 
 
-def recommend_irrigation(moisture_level, temperature, humidity, rainfall, crop_type, growth_stage):
-    """Quick function to recommend irrigation amount
+def recommend_irrigation(
+    soil_moisture_percent,
+    temperature_celsius,
+    humidity_percent,
+    battery_voltage=3.8,
+    status="Normal",
+    timestamp=None,
+):
+    """Quick function to recommend irrigation action
 
     Args:
-        moisture_level (float): Current soil moisture percentage
-        temperature (float): Temperature in Celsius
-        humidity (float): Air humidity percentage
-        rainfall (float): Rainfall amount in mm
-        crop_type (str): Type of crop
-        growth_stage (str): Growth stage of the crop
+        soil_moisture_percent (float): Current soil moisture percentage
+        temperature_celsius (float): Temperature in Celsius
+        humidity_percent (float): Air humidity percentage
+        battery_voltage (float): Sensor battery voltage
+        status (str): Sensor status
+        timestamp (str, optional): Timestamp (if None, uses current time)
 
     Returns:
         dict: Irrigation recommendation result
     """
     engine = MLEngine()
-    return engine.recommend_irrigation(moisture_level, temperature, humidity, rainfall, crop_type, growth_stage)
-
-
-def forecast_moisture(
-    current_moisture,
-    temperature,
-    humidity,
-    rainfall_forecast,
-    evaporation_rate,
-    days_ahead=7,
-):
-    """Quick function to forecast moisture levels
-
-    Args:
-        current_moisture (float): Current soil moisture percentage
-        temperature (float): Temperature in Celsius
-        humidity (float): Air humidity percentage
-        rainfall_forecast (float): Forecasted rainfall amount
-        evaporation_rate (float): Evaporation rate in mm/day
-        days_ahead (int, optional): Number of days to forecast. Defaults to 7.
-
-    Returns:
-        dict: Moisture forecast result
-    """
-    engine = MLEngine()
-    return engine.forecast_moisture(
-        current_moisture,
-        temperature,
-        humidity,
-        rainfall_forecast,
-        evaporation_rate,
-        days_ahead,
+    return engine.recommend_irrigation(
+        soil_moisture_percent,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage,
+        status,
+        timestamp,
     )
 
 

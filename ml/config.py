@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Model and data storage paths
-MODELS_DIR = BASE_DIR / "ml"
+MODELS_DIR = BASE_DIR / "ml" / "models"
 DATA_DIR = BASE_DIR / "ml" / "data"
 
 # Model configurations - define structure for different prediction models
@@ -13,36 +13,103 @@ DATA_DIR = BASE_DIR / "ml" / "data"
 MODEL_CONFIGS = {
     "soil_moisture_predictor": {
         "features": [
-            "location",
-            "status",
+            # Core numeric features (most important)
             "temperature_celsius",
             "humidity_percent",
             "battery_voltage",
+            # Essential time-based features
+            "hour_of_day",
+            "month",
+            "is_growing_season",
+            # Key interaction feature
+            "temp_humidity_interaction",
+            # Battery health indicator
+            "low_battery",
+            # Simplified categorical features (will be encoded more efficiently)
+            "status",
+            "irrigation_action",
         ],
         "target": "soil_moisture_percent",
     },
     "irrigation_recommendation": {
         "features": [
-            "moisture_level",
-            "temperature",
-            "humidity",
-            "rainfall",
-            "crop_type",
-            "growth_stage",
+            # Use soil moisture as the main input for irrigation recommendation
+            "soil_moisture_percent",
+            "temperature_celsius",
+            "humidity_percent",
+            "battery_voltage",
+            "hour_of_day",
+            "month",
+            "is_growing_season",
+            "temp_humidity_interaction",
+            "low_battery",
+            "status",
         ],
-        "target": "irrigation_amount",
+        "target": "irrigation_action",  # Categorical target for classification
+        "task_type": "classification",  # Specify this is a classification task
     },
-    "moisture_forecast": {
-        "features": [
-            "current_moisture",
-            "temperature",
-            "humidity",
-            "rainfall_forecast",
-            "evaporation_rate",
-            "days_ahead",
-        ],
-        "target": "forecasted_moisture",
+}
+
+# Model algorithm configurations
+MODEL_ALGORITHMS = {
+    "random_forest": {
+        "n_estimators": 100,
+        "max_depth": 10,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "random_state": 42,
+        "n_jobs": -1,
     },
+    "gradient_boosting": {
+        "n_estimators": 100,
+        "learning_rate": 0.1,
+        "max_depth": 6,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "random_state": 42,
+    },
+    "svr": {"kernel": "rbf", "C": 1.0, "gamma": "scale", "epsilon": 0.1},
+    "mlp": {
+        "hidden_layer_sizes": (100, 50),
+        "activation": "relu",
+        "solver": "adam",
+        "alpha": 0.0001,
+        "learning_rate": "adaptive",
+        "max_iter": 500,
+        "random_state": 42,
+    },
+    "linear_regression": {"fit_intercept": True, "normalize": False},
+}
+
+# Classification algorithm configurations
+CLASSIFICATION_ALGORITHMS = {
+    "random_forest": {
+        "n_estimators": 100,
+        "max_depth": 10,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "random_state": 42,
+        "n_jobs": -1,
+    },
+    "gradient_boosting": {
+        "n_estimators": 100,
+        "learning_rate": 0.1,
+        "max_depth": 6,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "random_state": 42,
+    },
+    "logistic_regression": {
+        "C": 1.0,
+        "max_iter": 1000,
+        "random_state": 42,
+    },
+}
+
+# Default algorithm for each prediction task (using only one algorithm per model)
+DEFAULT_ALGORITHMS = {
+    "soil_moisture_predictor": "gradient_boosting",  # Better for this type of prediction
+    "irrigation_recommendation": "gradient_boosting",
 }
 
 # Training parameters
