@@ -159,21 +159,27 @@ class SoilMoisturePredictor:
         self.predictor = Predictor()
 
     def predict_moisture(
-        self, temperature, ph_level, humidity, rainfall, previous_moisture
+        self, location, status, temperature_celsius, humidity_percent, battery_voltage
     ):
+    #  temperature (float): Temperature in Celsius
+    #         ph_level (float): Soil pH level
+    #         humidity (float): Air humidity percentage
+    #         rainfall (float): Rainfall amount in mm
+    #         previous_moisture (float): Previous moisture level percentage
         """Predict soil moisture level based on environmental factors
 
         Args:
-            temperature (float): Temperature in Celsius
-            ph_level (float): Soil pH level
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            previous_moisture (float): Previous moisture level percentage
+            location (str): Location identifier
+            status (str): Sensor status
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
 
         Returns:
             dict: Soil moisture prediction result with value and confidence interval
         """
-        pass
+        input_data = {}
+
 
 
 class IrrigationRecommender:
