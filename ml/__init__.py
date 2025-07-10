@@ -185,7 +185,7 @@ class MLEngine:
         Returns:
             list: List of model information dictionaries
         """
-        pass
+        return self.trainer.list_trained_models()
 
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model
