@@ -32,4 +32,5 @@ MODEL_CONFIGS = {
         ],
         "target": "irrigation_amount",
     },
+   
 }
