@@ -251,4 +251,7 @@ class MoistureForecaster:
         Returns:
             dict: Moisture forecast with predicted values and confidence intervals
         """
-        pass
+        input_data = {
+            
+        }
+        
