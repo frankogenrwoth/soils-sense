@@ -217,7 +217,7 @@ class MLEngine:
         Returns:
             pandas.DataFrame: Training data
         """
-        pass
+        return self.data_processor.load_training_data(model_type)
 
 
 # Convenience functions for quick access
