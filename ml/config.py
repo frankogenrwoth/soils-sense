@@ -1,21 +1,15 @@
+# Configuration for ML model directories and model feature/target definitions
 from pathlib import Path
 
-_all_ = [
-    "BASE_DIR",
-    "MODELS_DIR",
-    "DATA_DIR",
-    "MODEL_CONFIGS",
-    "TRAINING_CONFIG",
-    "PREDICTION_CONFIG",
-]
-# Base directory
+# Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Model storage paths
+# Model and data storage paths
 MODELS_DIR = BASE_DIR / "ml"
 DATA_DIR = BASE_DIR / "ml" / "data"
 
 # Model configurations - define structure for different prediction models
+# Each model should specify its input features and target variable
 MODEL_CONFIGS = {
     "soil_moisture_predictor": {
         "features": [
@@ -27,22 +21,5 @@ MODEL_CONFIGS = {
         ],
         "target": "soil_moisture_percent",
     },
-    "irrigation_recommendation": {
-        "features": [],
-        "target": "",
-    },
-    "moisture_forecast": {
-        "features": [],
-        "target": "",
-    },
-}
-
-# Training parameters
-TRAINING_CONFIG = {
-    "test_size": 0.2,
-}
-
-# Prediction settings
-PREDICTION_CONFIG = {
-    "confidence_threshold": 0.7,
+   
 }
