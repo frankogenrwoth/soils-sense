@@ -166,7 +166,7 @@ class MLEngine:
         Returns:
             list: List of available model types
         """
-        pass
+        return self.predictor.get_available_models()
 
     def get_model_info(self, model_type):
         """Get information about a trained model
