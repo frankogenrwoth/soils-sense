@@ -197,7 +197,7 @@ class MLEngine:
         Returns:
             dict: Updated training results
         """
-        pass
+        return self.trainer.retrain_model(model_type, new_data=new_data)
 
     def save_training_data(self, data, model_type):
         """Save training data to file
