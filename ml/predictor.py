@@ -252,6 +252,11 @@ class MoistureForecaster:
             dict: Moisture forecast with predicted values and confidence intervals
         """
         input_data = {
-            
+            "current_moisture": current_moisture,
+            "temperature": temperature,
+            "humidity": humidity,
+            "rainfall_forecast": rainfall_forecast,
+            "evaporation_rate": evaporation_rate,
+            "days_ahead": days_ahead,
         }
         
