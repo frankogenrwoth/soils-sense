@@ -76,21 +76,24 @@ class MLEngine:
 
     # Prediction functions
     def predict_soil_moisture(
-        self, temperature, ph_level, humidity, rainfall, previous_moisture
+        self, location, status, temperature_celsius, humidity_percent, battery_voltage
     ):
         """Predict soil moisture level
 
         Args:
-            temperature (float): Temperature in Celsius
-            ph_level (float): Soil pH level
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            previous_moisture (float): Previous moisture level percentage
+            location (str): Location identifier
+            status (str): Sensor status
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
 
         Returns:
             dict: Soil moisture prediction result
         """
-        pass
+        predictor = SoilMoisturePredictor()
+        return predictor.predict_moisture(
+            location, status, temperature_celsius, humidity_percent, battery_voltage
+        )
 
     def recommend_irrigation(
         self, moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
