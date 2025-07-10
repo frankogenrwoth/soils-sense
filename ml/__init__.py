@@ -298,7 +298,15 @@ def forecast_moisture(
     Returns:
         dict: Moisture forecast result
     """
-    pass
+    engine = MLEngine()
+    return engine.forecast_moisture(
+        current_moisture,
+        temperature,
+        humidity,
+        rainfall_forecast,
+        evaporation_rate,
+        days_ahead,
+    )
 
 
 def get_available_models():
