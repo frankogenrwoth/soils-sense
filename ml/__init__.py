@@ -242,20 +242,21 @@ def train_model(model_type, custom_data=None):
     return train_methods[model_type](custom_data=custom_data)
 
 
-def predict_soil_moisture(temperature, ph_level, humidity, rainfall, previous_moisture):
+def predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage):
     """Quick function to predict soil moisture level
 
     Args:
-        temperature (float): Temperature in Celsius
-        ph_level (float): Soil pH level
-        humidity (float): Air humidity percentage
-        rainfall (float): Rainfall amount in mm
-        previous_moisture (float): Previous moisture level percentage
+        location (str): Location identifier
+        status (str): Sensor status
+        temperature_celsius (float): Temperature in Celsius
+        humidity_percent (float): Air humidity percentage
+        battery_voltage (float): Sensor battery voltage
 
     Returns:
         dict: Soil moisture prediction result
     """
-    pass
+    engine = MLEngine()
+    return engine.predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage)
 
 
 def recommend_irrigation(
