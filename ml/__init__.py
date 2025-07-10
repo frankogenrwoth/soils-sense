@@ -34,7 +34,7 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model("soil_moisture_predictor", custom_data=custom_data)
 
     def train_irrigation_recommender(self, custom_data=None):
         """Train irrigation recommendation model
