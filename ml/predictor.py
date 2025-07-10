@@ -259,4 +259,4 @@ class MoistureForecaster:
             "evaporation_rate": evaporation_rate,
             "days_ahead": days_ahead,
         }
-        
+        return self.predictor.predict("moisture_forecast", input_data)
