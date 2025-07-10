@@ -32,5 +32,26 @@ MODEL_CONFIGS = {
         ],
         "target": "irrigation_amount",
     },
-   
+    "moisture_forecast": {
+        "features": [
+            "current_moisture",
+            "temperature",
+            "humidity",
+            "rainfall_forecast",
+            "evaporation_rate",
+            "days_ahead",
+        ],
+        "target": "forecasted_moisture",
+    },
 }
+
+# Training parameters
+TRAINING_CONFIG = {
+    "test_size": 0.2,
+    "random_state": 42,
+    "n_splits": 5,  # for cross-validation
+    "scoring": "neg_mean_squared_error",
+    "shuffle": True,
+    "early_stopping": True,
+}
+
