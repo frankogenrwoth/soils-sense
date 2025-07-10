@@ -231,7 +231,15 @@ def train_model(model_type, custom_data=None):
     Returns:
         dict: Training results
     """
-    pass
+    engine = MLEngine()
+    train_methods = {
+        "soil_moisture_predictor": engine.train_soil_moisture_predictor,
+        "irrigation_recommendation": engine.train_irrigation_recommender,
+        "moisture_forecast": engine.train_moisture_forecaster,
+    }
+    if model_type not in train_methods:
+        raise ValueError(f"Unknown model type: {model_type}")
+    return train_methods[model_type](custom_data=custom_data)
 
 
 def predict_soil_moisture(temperature, ph_level, humidity, rainfall, previous_moisture):
