@@ -1,0 +1,285 @@
+{% extends 'farmer/base.html' %}
+
+{% block base_title %}Soil Data Management{% endblock %}
+
+{% block page_title %}Soil Data Management{% endblock %}
+{% block page_subtitle %}Add and manage your soil moisture data{% endblock %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Manual Data Entry Form -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Add Soil Moisture Reading</h3>
+        <form id="manual-reading-form" method="POST" action="{% url 'farmer:add_soil_reading' %}">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="farm" class="block text-sm font-medium text-gray-700">Select Farm</label>
+                        <select id="farm" name="farm" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                            <option value="">Select a farm...</option>
+                            {% if farms %}
+                                {% for farm in farms %}
+                                    <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
+                                {% empty %}
+                                    <option value="" disabled>No farms available</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="" disabled>No farms available</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="sensor_id" class="block text-sm font-medium text-gray-700">Sensor ID</label>
+                        <input type="text" id="sensor_id" name="sensor_id" required placeholder="e.g., SENSOR_1"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="soil_moisture_percent" class="block text-sm font-medium text-gray-700">Soil Moisture (%)</label>
+                        <input type="number" step="0.01" min="0" max="100" id="soil_moisture_percent" name="soil_moisture_percent" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                    </div>
+
+                    <div>
+                        <label for="temperature_celsius" class="block text-sm font-medium text-gray-700">Temperature (°C)</label>
+                        <input type="number" step="0.1" min="-50" max="100" id="temperature_celsius" name="temperature_celsius" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="humidity_percent" class="block text-sm font-medium text-gray-700">Humidity (%)</label>
+                        <input type="number" step="0.1" min="0" max="100" id="humidity_percent" name="humidity_percent" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                    </div>
+
+                    <div>
+                        <label for="battery_voltage" class="block text-sm font-medium text-gray-700">Battery Voltage (V)</label>
+                        <input type="number" step="0.01" min="0" max="5" id="battery_voltage" name="battery_voltage" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <select id="status" name="status" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                            <option value="Normal">Normal</option>
+                            <option value="Dry">Dry</option>
+                            <option value="Wet">Wet</option>
+                            <option value="Critical Low">Critical Low</option>
+                            <option value="Critical High">Critical High</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="irrigation_action" class="block text-sm font-medium text-gray-700">Irrigation Action</label>
+                        <select id="irrigation_action" name="irrigation_action" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                            <option value="None">None</option>
+                            <option value="Irrigate">Irrigate</option>
+                            <option value="Reduce Irrigation">Reduce Irrigation</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                    Add Reading
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- CSV Upload Section -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Soil Data CSV</h3>
+        
+        <!-- Download Template Button -->
+        <div class="mb-6">
+            <p class="text-sm text-gray-600 mb-2">First time uploading? Download our template to ensure your data is formatted correctly:</p>
+            <a href="{% url 'farmer:download_csv_template' %}" class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary bg-white hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                <svg class="mr-2 -ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Download CSV Template
+            </a>
+        </div>
+
+        <form id="csv-upload-form" method="POST" action="{% url 'farmer:upload_soil_data' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label for="farm_csv" class="block text-sm font-medium text-gray-700">Select Farm</label>
+                    <select id="farm_csv" name="farm" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                        {% for farm in farms %}
+                            <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload CSV File</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="file-upload" class="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:border-primary">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-500" id="file-name">
+                                    <span>Click to upload</span> or drag and drop
+                                </p>
+                                <p class="text-xs text-gray-500">.CSV file only</p>
+                            </div>
+                            <input id="file-upload" name="file" type="file" accept=".csv" class="hidden" required />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">Important Instructions</h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p>Please follow these steps:</p>
+                                <ol class="list-decimal list-inside mt-1 space-y-1">
+                                    <li>Download the CSV template using the button above</li>
+                                    <li>Fill in your data following the template format</li>
+                                    <li>Save the file and upload it here</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark mt-4">
+                    Upload Data
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Data Viewing and Filtering Section -->
+<div class="bg-white rounded-xl shadow-md p-6 mt-8">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-gray-900">Soil Moisture Readings</h3>
+        
+        <!-- Filters -->
+        <div class="flex space-x-4">
+            <div>
+                <label for="filter-farm" class="block text-sm font-medium text-gray-700">Farm</label>
+                <select id="filter-farm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                    <option value="">All Farms</option>
+                    {% for farm in farms %}
+                        <option value="{{ farm.id }}" {% if farm.id == selected_farm_id %}selected{% endif %}>
+                            {{ farm.farm_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="filter-date-from" class="block text-sm font-medium text-gray-700">From Date</label>
+                <input type="date" id="filter-date-from" value="{{ date_from|default:'' }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+            </div>
+
+            <div>
+                <label for="filter-date-to" class="block text-sm font-medium text-gray-700">To Date</label>
+                <input type="date" id="filter-date-to" value="{{ date_to|default:'' }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+            </div>
+
+            <div class="flex items-end">
+                <button id="apply-filters" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moisture (%)</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature (°C)</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Humidity (%)</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="readings-table-body">
+                {% for reading in readings %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reading.farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reading.timestamp }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reading.soil_moisture_percent }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reading.temperature_celsius }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reading.humidity_percent }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ reading.reading_source }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ reading.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No readings found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // File upload preview
+    const fileUpload = document.getElementById('file-upload');
+    const fileName = document.getElementById('file-name');
+    
+    if (fileUpload && fileName) {
+        fileUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = file.name;
+            } else {
+                fileName.innerHTML = '<span>Click to upload</span> or drag and drop';
+            }
+        });
+    }
+
+    // Filter functionality
+    const applyFilters = document.getElementById('apply-filters');
+    if (applyFilters) {
+        applyFilters.addEventListener('click', function() {
+            const farm = document.getElementById('filter-farm').value;
+            const dateFrom = document.getElementById('filter-date-from').value;
+            const dateTo = document.getElementById('filter-date-to').value;
+
+            // Build query string
+            const params = new URLSearchParams();
+            if (farm) params.append('farm', farm);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+
+            // Reload page with filters
+            window.location.href = `?${params.toString()}`;
+        });
+    }
+});
+</script>
+{% endblock %} 
