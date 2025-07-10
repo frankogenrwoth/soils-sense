@@ -20,4 +20,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('farm/<int:pk>/delete/', views.delete_farm, name='delete_farm'),
-] 
+    path('soil-readings/', views.technician_soil_readings, name='soil_readings'),
+]

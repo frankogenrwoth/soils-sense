@@ -1,0 +1,104 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Soil Moisture Records{% endblock %}
+{% block page_title %}Soil Moisture Readings{% endblock %}
+{% block page_subtitle %}Monitor soil conditions across all farms{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow p-6 mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-gray-900">Soil Readings Overview</h3>
+
+        <!-- Filters -->
+        <div class="flex space-x-4">
+            <div>
+                <label for="filter-farm" class="block text-sm font-medium text-gray-700">Farm</label>
+                <select id="filter-farm" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                    <option value="">All Farms</option>
+                    {% for farm in farms %}
+                        <option value="{{ farm.id }}" {% if farm.id == selected_farm_id %}selected{% endif %}>
+                            {{ farm.farm_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="filter-date-from" class="block text-sm font-medium text-gray-700">From</label>
+                <input type="date" id="filter-date-from" value="{{ date_from|default:'' }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+            </div>
+
+            <div>
+                <label for="filter-date-to" class="block text-sm font-medium text-gray-700">To</label>
+                <input type="date" id="filter-date-to" value="{{ date_to|default:'' }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+            </div>
+
+            <div class="flex items-end">
+                <button id="apply-filters" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Farm</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Date & Time</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Moisture (%)</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Temperature (°C)</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Humidity (%)</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Source</th>
+                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase">Status</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+                {% for reading in readings %}
+                <tr>
+                    <td class="px-4 py-3 text-gray-900">{{ reading.farm.farm_name }}</td>
+                    <td class="px-4 py-3">{{ reading.timestamp }}</td>
+                    <td class="px-4 py-3">{{ reading.soil_moisture_percent }}%</td>
+                    <td class="px-4 py-3">{{ reading.temperature_celsius }}°C</td>
+                    <td class="px-4 py-3">{{ reading.humidity_percent }}%</td>
+                    <td class="px-4 py-3">{{ reading.reading_source }}</td>
+                    <td class="px-4 py-3">
+                        <span class="text-sm text-gray-700">{{ reading.status }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-4 py-4 text-center text-gray-500">No readings available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const applyFilters = document.getElementById('apply-filters');
+    if (applyFilters) {
+        applyFilters.addEventListener('click', function () {
+            const farm = document.getElementById('filter-farm').value;
+            const dateFrom = document.getElementById('filter-date-from').value;
+            const dateTo = document.getElementById('filter-date-to').value;
+
+            const params = new URLSearchParams();
+            if (farm) params.append('farm', farm);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+
+            window.location.href = `?${params.toString()}`;
+        });
+    }
+});
+</script>
+{% endblock %}
