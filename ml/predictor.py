@@ -181,9 +181,11 @@ class SoilMoisturePredictor:
         input_data = {
             "location": location,
             "status": status,
-            
+            "temperature_celsius": temperature_celsius,
+            "humidity_percent": humidity_percent,
+            "battery_voltage": battery_voltage,
         }
-        
+       
 
 
 class IrrigationRecommender:
