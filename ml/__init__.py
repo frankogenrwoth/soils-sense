@@ -206,7 +206,7 @@ class MLEngine:
             data (pandas.DataFrame): Data to save
             model_type (str): Type of model
         """
-        pass
+        return self.data_processor.save_training_data(data, model_type)
 
     def load_training_data(self, model_type):
         """Load training data from file
