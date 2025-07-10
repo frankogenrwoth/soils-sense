@@ -111,7 +111,10 @@ class MLEngine:
         Returns:
             dict: Irrigation recommendation result
         """
-        pass
+        recommender = IrrigationRecommender()
+        return recommender.recommend_irrigation(
+            moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
+        )
 
     def forecast_moisture(
         self,
