@@ -55,3 +55,11 @@ TRAINING_CONFIG = {
     "early_stopping": True,
 }
 
+# Prediction settings
+PREDICTION_CONFIG = {
+    "confidence_threshold": 0.7,
+    "default_confidence_level": 0.95,
+    "output_format": "dict",
+    "max_batch_size": 128,
+    "round_predictions": 2,
+}
