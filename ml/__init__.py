@@ -138,7 +138,15 @@ class MLEngine:
         Returns:
             dict: Moisture forecast result
         """
-        pass
+        forecaster = MoistureForecaster()
+        return forecaster.forecast_moisture(
+            current_moisture,
+            temperature,
+            humidity,
+            rainfall_forecast,
+            evaporation_rate,
+            days_ahead,
+        )
 
     def predict_all(self, input_data):
         """Make predictions using all available models
