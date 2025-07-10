@@ -185,7 +185,7 @@ class SoilMoisturePredictor:
             "humidity_percent": humidity_percent,
             "battery_voltage": battery_voltage,
         }
-       
+        return self.predictor.predict("soil_moisture_predictor", input_data)
 
 
 class IrrigationRecommender:
