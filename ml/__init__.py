@@ -157,7 +157,7 @@ class MLEngine:
         Returns:
             dict: Dictionary of predictions from all models
         """
-        pass
+        return self.predictor.predict_multiple(input_data)
 
     # Utility functions
     def get_available_models(self):
