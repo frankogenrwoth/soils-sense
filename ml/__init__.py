@@ -67,7 +67,12 @@ class MLEngine:
         Returns:
             dict: Dictionary of training results for all models
         """
-        pass
+        results = {
+            "soil_moisture_predictor": self.train_soil_moisture_predictor(custom_data),
+            "irrigation_recommendation": self.train_irrigation_recommender(custom_data),
+            "moisture_forecast": self.train_moisture_forecaster(custom_data),
+        }
+        return results
 
     # Prediction functions
     def predict_soil_moisture(
