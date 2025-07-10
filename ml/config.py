@@ -1,21 +1,15 @@
+# Configuration for ML model directories and model feature/target definitions
 from pathlib import Path
 
-_all_ = [
-    "BASE_DIR",
-    "MODELS_DIR",
-    "DATA_DIR",
-    "MODEL_CONFIGS",
-    "TRAINING_CONFIG",
-    "PREDICTION_CONFIG",
-]
-# Base directory
+# Base directory for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Model storage paths
+# Model and data storage paths
 MODELS_DIR = BASE_DIR / "ml"
 DATA_DIR = BASE_DIR / "ml" / "data"
 
 # Model configurations - define structure for different prediction models
+# Each model should specify its input features and target variable
 MODEL_CONFIGS = {
     "soil_moisture_predictor": {
         "features": [
@@ -28,21 +22,44 @@ MODEL_CONFIGS = {
         "target": "soil_moisture_percent",
     },
     "irrigation_recommendation": {
-        "features": [],
-        "target": "",
+        "features": [
+            "moisture_level",
+            "temperature",
+            "humidity",
+            "rainfall",
+            "crop_type",
+            "growth_stage",
+        ],
+        "target": "irrigation_amount",
     },
     "moisture_forecast": {
-        "features": [],
-        "target": "",
+        "features": [
+            "current_moisture",
+            "temperature",
+            "humidity",
+            "rainfall_forecast",
+            "evaporation_rate",
+            "days_ahead",
+        ],
+        "target": "forecasted_moisture",
     },
 }
 
 # Training parameters
 TRAINING_CONFIG = {
     "test_size": 0.2,
+    "random_state": 42,
+    "n_splits": 5,  # for cross-validation
+    "scoring": "neg_mean_squared_error",
+    "shuffle": True,
+    "early_stopping": True,
 }
 
 # Prediction settings
 PREDICTION_CONFIG = {
     "confidence_threshold": 0.7,
+    "default_confidence_level": 0.95,
+    "output_format": "dict",
+    "max_batch_size": 128,
+    "round_predictions": 2,
 }

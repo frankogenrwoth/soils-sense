@@ -159,21 +159,33 @@ class SoilMoisturePredictor:
         self.predictor = Predictor()
 
     def predict_moisture(
-        self, temperature, ph_level, humidity, rainfall, previous_moisture
+        self, location, status, temperature_celsius, humidity_percent, battery_voltage
     ):
+    #  temperature (float): Temperature in Celsius
+    #         ph_level (float): Soil pH level
+    #         humidity (float): Air humidity percentage
+    #         rainfall (float): Rainfall amount in mm
+    #         previous_moisture (float): Previous moisture level percentage
         """Predict soil moisture level based on environmental factors
 
         Args:
-            temperature (float): Temperature in Celsius
-            ph_level (float): Soil pH level
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            previous_moisture (float): Previous moisture level percentage
+            location (str): Location identifier
+            status (str): Sensor status
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
 
         Returns:
             dict: Soil moisture prediction result with value and confidence interval
         """
-        pass
+        input_data = {
+            "location": location,
+            "status": status,
+            "temperature_celsius": temperature_celsius,
+            "humidity_percent": humidity_percent,
+            "battery_voltage": battery_voltage,
+        }
+        return self.predictor.predict("soil_moisture_predictor", input_data)
 
 
 class IrrigationRecommender:
@@ -199,7 +211,15 @@ class IrrigationRecommender:
         Returns:
             dict: Irrigation recommendation with amount and confidence interval
         """
-        pass
+        input_data = {
+            "moisture_level": moisture_level,
+            "temperature": temperature,
+            "humidity": humidity,
+            "rainfall": rainfall,
+            "crop_type": crop_type,
+            "growth_stage": growth_stage,
+        }
+        return self.predictor.predict("irrigation_recommendation", input_data)
 
 
 class MoistureForecaster:
@@ -231,4 +251,12 @@ class MoistureForecaster:
         Returns:
             dict: Moisture forecast with predicted values and confidence intervals
         """
-        pass
+        input_data = {
+            "current_moisture": current_moisture,
+            "temperature": temperature,
+            "humidity": humidity,
+            "rainfall_forecast": rainfall_forecast,
+            "evaporation_rate": evaporation_rate,
+            "days_ahead": days_ahead,
+        }
+        return self.predictor.predict("moisture_forecast", input_data)

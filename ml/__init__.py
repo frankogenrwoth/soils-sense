@@ -34,7 +34,7 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model("soil_moisture_predictor", custom_data=custom_data)
 
     def train_irrigation_recommender(self, custom_data=None):
         """Train irrigation recommendation model
@@ -45,7 +45,7 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model("irrigation_recommendation", custom_data=custom_data)
 
     def train_moisture_forecaster(self, custom_data=None):
         """Train moisture forecasting model
@@ -56,7 +56,7 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model("moisture_forecast", custom_data=custom_data)
 
     def train_all_models(self, custom_data=None):
         """Train all available prediction models
@@ -67,25 +67,33 @@ class MLEngine:
         Returns:
             dict: Dictionary of training results for all models
         """
-        pass
+        results = {
+            "soil_moisture_predictor": self.train_soil_moisture_predictor(custom_data),
+            "irrigation_recommendation": self.train_irrigation_recommender(custom_data),
+            "moisture_forecast": self.train_moisture_forecaster(custom_data),
+        }
+        return results
 
     # Prediction functions
     def predict_soil_moisture(
-        self, temperature, ph_level, humidity, rainfall, previous_moisture
+        self, location, status, temperature_celsius, humidity_percent, battery_voltage
     ):
         """Predict soil moisture level
 
         Args:
-            temperature (float): Temperature in Celsius
-            ph_level (float): Soil pH level
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            previous_moisture (float): Previous moisture level percentage
+            location (str): Location identifier
+            status (str): Sensor status
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
 
         Returns:
             dict: Soil moisture prediction result
         """
-        pass
+        predictor = SoilMoisturePredictor()
+        return predictor.predict_moisture(
+            location, status, temperature_celsius, humidity_percent, battery_voltage
+        )
 
     def recommend_irrigation(
         self, moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
@@ -103,7 +111,10 @@ class MLEngine:
         Returns:
             dict: Irrigation recommendation result
         """
-        pass
+        recommender = IrrigationRecommender()
+        return recommender.recommend_irrigation(
+            moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
+        )
 
     def forecast_moisture(
         self,
@@ -127,7 +138,15 @@ class MLEngine:
         Returns:
             dict: Moisture forecast result
         """
-        pass
+        forecaster = MoistureForecaster()
+        return forecaster.forecast_moisture(
+            current_moisture,
+            temperature,
+            humidity,
+            rainfall_forecast,
+            evaporation_rate,
+            days_ahead,
+        )
 
     def predict_all(self, input_data):
         """Make predictions using all available models
@@ -138,7 +157,7 @@ class MLEngine:
         Returns:
             dict: Dictionary of predictions from all models
         """
-        pass
+        return self.predictor.predict_multiple(input_data)
 
     # Utility functions
     def get_available_models(self):
@@ -147,7 +166,7 @@ class MLEngine:
         Returns:
             list: List of available model types
         """
-        pass
+        return self.predictor.get_available_models()
 
     def get_model_info(self, model_type):
         """Get information about a trained model
@@ -158,7 +177,7 @@ class MLEngine:
         Returns:
             dict: Model information
         """
-        pass
+        return self.trainer.get_model_info(model_type)
 
     def list_all_models(self):
         """List all trained models with their information
@@ -166,7 +185,7 @@ class MLEngine:
         Returns:
             list: List of model information dictionaries
         """
-        pass
+        return self.trainer.list_trained_models()
 
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model
@@ -178,7 +197,7 @@ class MLEngine:
         Returns:
             dict: Updated training results
         """
-        pass
+        return self.trainer.retrain_model(model_type, new_data=new_data)
 
     def save_training_data(self, data, model_type):
         """Save training data to file
@@ -187,7 +206,7 @@ class MLEngine:
             data (pandas.DataFrame): Data to save
             model_type (str): Type of model
         """
-        pass
+        return self.data_processor.save_training_data(data, model_type)
 
     def load_training_data(self, model_type):
         """Load training data from file
@@ -198,7 +217,7 @@ class MLEngine:
         Returns:
             pandas.DataFrame: Training data
         """
-        pass
+        return self.data_processor.load_training_data(model_type)
 
 
 # Convenience functions for quick access
@@ -212,28 +231,35 @@ def train_model(model_type, custom_data=None):
     Returns:
         dict: Training results
     """
-    pass
+    engine = MLEngine()
+    train_methods = {
+        "soil_moisture_predictor": engine.train_soil_moisture_predictor,
+        "irrigation_recommendation": engine.train_irrigation_recommender,
+        "moisture_forecast": engine.train_moisture_forecaster,
+    }
+    if model_type not in train_methods:
+        raise ValueError(f"Unknown model type: {model_type}")
+    return train_methods[model_type](custom_data=custom_data)
 
 
-def predict_soil_moisture(temperature, ph_level, humidity, rainfall, previous_moisture):
+def predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage):
     """Quick function to predict soil moisture level
 
     Args:
-        temperature (float): Temperature in Celsius
-        ph_level (float): Soil pH level
-        humidity (float): Air humidity percentage
-        rainfall (float): Rainfall amount in mm
-        previous_moisture (float): Previous moisture level percentage
+        location (str): Location identifier
+        status (str): Sensor status
+        temperature_celsius (float): Temperature in Celsius
+        humidity_percent (float): Air humidity percentage
+        battery_voltage (float): Sensor battery voltage
 
     Returns:
         dict: Soil moisture prediction result
     """
-    pass
+    engine = MLEngine()
+    return engine.predict_soil_moisture(location, status, temperature_celsius, humidity_percent, battery_voltage)
 
 
-def recommend_irrigation(
-    moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
-):
+def recommend_irrigation(moisture_level, temperature, humidity, rainfall, crop_type, growth_stage):
     """Quick function to recommend irrigation amount
 
     Args:
@@ -247,7 +273,8 @@ def recommend_irrigation(
     Returns:
         dict: Irrigation recommendation result
     """
-    pass
+    engine = MLEngine()
+    return engine.recommend_irrigation(moisture_level, temperature, humidity, rainfall, crop_type, growth_stage)
 
 
 def forecast_moisture(
@@ -271,7 +298,15 @@ def forecast_moisture(
     Returns:
         dict: Moisture forecast result
     """
-    pass
+    engine = MLEngine()
+    return engine.forecast_moisture(
+        current_moisture,
+        temperature,
+        humidity,
+        rainfall_forecast,
+        evaporation_rate,
+        days_ahead,
+    )
 
 
 def get_available_models():
@@ -280,4 +315,5 @@ def get_available_models():
     Returns:
         list: List of available model types
     """
-    pass
+    engine = MLEngine()
+    return engine.get_available_models()

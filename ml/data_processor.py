@@ -41,7 +41,42 @@ class DataProcessor:
         Returns:
             pandas.DataFrame: Sample training data
         """
-        pass
+        # Generate sample data for each supported model type
+        if model_type == "soil_moisture_predictor":
+            n_samples = 100
+            data = pd.DataFrame({
+                "location": np.random.choice(["A", "B", "C"], n_samples),
+                "status": np.random.choice(["active", "inactive"], n_samples),
+                "temperature_celsius": np.random.normal(25, 5, n_samples),
+                "humidity_percent": np.random.uniform(30, 90, n_samples),
+                "battery_voltage": np.random.uniform(3.5, 4.2, n_samples),
+                "soil_moisture_percent": np.random.uniform(10, 45, n_samples),
+            })
+        elif model_type == "irrigation_recommendation":
+            n_samples = 100
+            data = pd.DataFrame({
+                "moisture_level": np.random.uniform(10, 45, n_samples),
+                "temperature": np.random.normal(25, 5, n_samples),
+                "humidity": np.random.uniform(30, 90, n_samples),
+                "rainfall": np.random.uniform(0, 20, n_samples),
+                "crop_type": np.random.choice(["wheat", "corn", "rice"], n_samples),
+                "growth_stage": np.random.choice(["seedling", "vegetative", "flowering", "maturity"], n_samples),
+                "irrigation_amount": np.random.uniform(0, 15, n_samples),
+            })
+        elif model_type == "moisture_forecast":
+            n_samples = 100
+            data = pd.DataFrame({
+                "current_moisture": np.random.uniform(10, 45, n_samples),
+                "temperature": np.random.normal(25, 5, n_samples),
+                "humidity": np.random.uniform(30, 90, n_samples),
+                "rainfall_forecast": np.random.uniform(0, 20, n_samples),
+                "evaporation_rate": np.random.uniform(2, 8, n_samples),
+                "days_ahead": np.random.randint(1, 15, n_samples),
+                "forecasted_moisture": np.random.uniform(10, 45, n_samples),
+            })
+        else:
+            raise ValueError(f"Unknown model_type '{model_type}' for sample data generation.")
+        return data
 
     def prepare_data(self, data, model_type, features, target):
         """Prepare data for training regression models
