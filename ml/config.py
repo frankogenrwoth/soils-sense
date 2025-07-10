@@ -21,5 +21,15 @@ MODEL_CONFIGS = {
         ],
         "target": "soil_moisture_percent",
     },
-   
+    "irrigation_recommendation": {
+        "features": [
+            "moisture_level",
+            "temperature",
+            "humidity",
+            "rainfall",
+            "crop_type",
+            "growth_stage",
+        ],
+        "target": "irrigation_amount",
+    },
 }
