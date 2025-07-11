@@ -1,0 +1,166 @@
+{% extends 'farmer/base.html' %}
+
+{% block base_title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Welcome back! Here's what's happening with your soil today.{% endblock %}
+
+{% block content %}
+<!-- Quick Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-primary hover:shadow-lg transition-shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-tint text-primary text-xl"></i>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Current Moisture</p>
+                <p class="text-2xl font-bold text-gray-900">{{ current_moisture }}%</p>
+                <p class="text-xs text-green-600">+2.5% from yesterday</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-thermometer-half text-green-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Temperature</p>
+                <p class="text-2xl font-bold text-gray-900">{{ temperature }}°C</p>
+                <p class="text-xs text-blue-600">Optimal range</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-cloud text-blue-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Humidity</p>
+                <p class="text-2xl font-bold text-gray-900">{{ humidity }}%</p>
+                <p class="text-xs text-gray-600">Moderate</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500 hover:shadow-lg transition-shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-leaf text-yellow-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Crop Health</p>
+                <p class="text-2xl font-bold text-gray-900">{{ crop_health }}</p>
+                <p class="text-xs text-green-600">Excellent</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Moisture Chart -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Moisture Trends (Last 7 Days)</h3>
+        <canvas id="moistureChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+        <div class="space-y-4">
+            <div class="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-white text-xs"></i>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-green-900">Irrigation completed</p>
+                    <p class="text-xs text-green-700">2 hours ago</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-database text-white text-xs"></i>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-blue-900">Data recorded</p>
+                    <p class="text-xs text-blue-700">4 hours ago</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation text-white text-xs"></i>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-yellow-900">Alert triggered</p>
+                    <p class="text-xs text-yellow-700">6 hours ago</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('moistureChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Soil Moisture (%)',
+                data: [65, 68, 72, 70, 68, 66, 69],
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

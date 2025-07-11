@@ -1,19 +1,24 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
-from django.contrib.auth import views as auth_views
-from authentication.views import LoginView, SignupView
+from django.conf import settings
+from django.conf.urls.static import static
 
 def redirect_to_farmer(request):
     """Redirect root URL to farmer dashboard"""
-    return redirect('farmer:dashboard')
+    return redirect("farmer:dashboard")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("farmer/", redirect_to_farmer, name='home'),
     path("authentication/", include("authentication.urls")),
-    path("signup/", SignupView.as_view(), name="signup"),
-    path("login/", LoginView.as_view(), name="login"),
     path("farmer/", include("apps.farmer.urls")),
-	path("", include("apps.landing_page.urls")),
+    path("", include("apps.landing_page.urls")),
+    path("technician/", include("apps.technician.urls")),
+    path("landing_page/", include("apps.landing_page.urls")),
+    path("administrator/", include("apps.administrator.urls")),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,36 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us | Soils Sense</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Contact Us | SoilSense{% endblock %}
+{% block content %}
 
-    <!-- Navbar Start -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <a href="/" class="text-2xl font-extrabold text-blue-700 tracking-tight">Soils Sense</a>
-                
-                <!-- Navigation Links -->
-                <div class="flex items-center space-x-6">
-                    <a href="/" class="text-gray-700 hover:text-blue-600 font-medium transition">Home</a>
-                    <a href="/about" class="text-gray-700 hover:text-blue-600 font-medium transition">About</a>
-                    <a href="/contact" class="text-blue-600 font-semibold underline">Contact</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- Navbar End -->
 
     <!-- Contact Form Start -->
     <main class="flex-grow flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-8">
+                    {% if messages %}
+           <div>
+           {% for message in messages %}
+                <div   class="p-4 mb-4 text-sm text-green-800 bg-green-100 rounded-lg" role="alert">
+                    {{ message }}
+                 </div>
+           {% endfor %}
+           </div>
+        {% endif %}
+
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Get in Touch</h2>
             <form action="#" method="POST" class="space-y-6">
+                    {% csrf_token %}
                 <div>
                     <label for="name" class="block text-gray-700 font-medium mb-2">Name</label>
                     <input type="text" id="name" name="name" required placeholder="Your name"
@@ -58,12 +47,7 @@
     </main>
     <!-- Contact Form End -->
 
-    <!-- Footer -->
-    <footer class="bg-white shadow-sm mt-12">
-        <div class="max-w-7xl mx-auto px-4 py-4 text-center text-gray-500 text-sm">
-            &copy; 2025 Soils Sense. All rights reserved.
-        </div>
-    </footer>
+{% endblock %}
 
-</body>
-</html>
+
+    

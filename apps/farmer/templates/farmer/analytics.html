@@ -1,0 +1,197 @@
+{% extends 'farmer/base.html' %}
+
+{% block base_title %}Analytics{% endblock %}
+
+{% block page_title %}Analytics Dashboard{% endblock %}
+{% block page_subtitle %}Detailed insights and trends for your farm{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Weekly Moisture Analysis -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Moisture Analysis</h3>
+        <canvas id="weeklyChart" width="400" height="300"></canvas>
+    </div>
+
+    <!-- Monthly Trends -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h3>
+        <canvas id="monthlyChart" width="400" height="300"></canvas>
+    </div>
+</div>
+
+<!-- Detailed Statistics -->
+<div class="bg-white rounded-xl shadow-md p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Detailed Statistics</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+            <p class="text-3xl font-bold text-primary">85%</p>
+            <p class="text-sm text-gray-600">Average Moisture</p>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+            <p class="text-3xl font-bold text-green-500">12</p>
+            <p class="text-sm text-gray-600">Irrigation Events</p>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+            <p class="text-3xl font-bold text-blue-500">2.3L</p>
+            <p class="text-sm text-gray-600">Water Saved (per day)</p>
+        </div>
+    </div>
+</div>
+
+<!-- Trend Analysis -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+    <!-- Soil Health Indicators -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Health Indicators</h3>
+        <div class="space-y-4">
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm font-medium text-gray-700">pH Level</span>
+                    <span class="text-sm text-gray-600">6.5/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 65%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm font-medium text-gray-700">Nitrogen Content</span>
+                    <span class="text-sm text-gray-600">7.8/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm font-medium text-gray-700">Organic Matter</span>
+                    <span class="text-sm text-gray-600">8.2/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 82%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weather Impact -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Weather Impact Analysis</h3>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-cloud-rain text-blue-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm font-medium text-blue-900">Rainfall Effect</p>
+                        <p class="text-xs text-blue-700">Positive impact on moisture levels</p>
+                    </div>
+                </div>
+                <span class="text-sm font-medium text-blue-900">+15%</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-sun text-yellow-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm font-medium text-yellow-900">Temperature Effect</p>
+                        <p class="text-xs text-yellow-700">Moderate evaporation rate</p>
+                    </div>
+                </div>
+                <span class="text-sm font-medium text-yellow-900">-8%</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-wind text-green-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm font-medium text-green-900">Wind Effect</p>
+                        <p class="text-xs text-green-700">Minimal impact on moisture</p>
+                    </div>
+                </div>
+                <span class="text-sm font-medium text-green-900">-2%</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Weekly Chart
+    const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+    new Chart(weeklyCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Average Moisture',
+                data: [70, 68, 72, 75, 73, 69, 71],
+                backgroundColor: ['#10B981', '#059669', '#34D399', '#6EE7B7', '#A7F3D0', '#D1FAE5', '#ECFDF5'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Monthly Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Moisture Trend',
+                data: [68, 71, 69, 73],
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

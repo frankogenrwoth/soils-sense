@@ -1,0 +1,96 @@
+{% extends 'technician/base.html' %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block breadcrumb %}Reports{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Generated Reports</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Report Name</th>
+                            <th>Type</th>
+                            <th>Generated On</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Monthly Soil Analysis</td>
+                            <td>Soil Health</td>
+                            <td>2024-03-01</td>
+                            <td><span class="badge bg-success">Complete</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Download</button>
+                                <button class="btn btn-sm btn-secondary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Sensor Performance Report</td>
+                            <td>System Health</td>
+                            <td>2024-02-28</td>
+                            <td><span class="badge bg-success">Complete</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Download</button>
+                                <button class="btn btn-sm btn-secondary">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Report Templates</h5>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Soil Health Analysis</h6>
+                        <small class="text-muted">Monthly</small>
+                    </div>
+                    <p class="mb-1">Comprehensive soil health analysis report</p>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">System Performance</h6>
+                        <small class="text-muted">Weekly</small>
+                    </div>
+                    <p class="mb-1">Sensor and system performance metrics</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-3">Schedule Reports</h5>
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Monthly Soil Report</h6>
+                        <span class="badge bg-primary">Scheduled</span>
+                    </div>
+                    <p class="mb-1">Next generation: April 1, 2024</p>
+                </div>
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Weekly Performance Report</h6>
+                        <span class="badge bg-primary">Scheduled</span>
+                    </div>
+                    <p class="mb-1">Next generation: March 10, 2024</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -33,7 +33,17 @@ class ModelTrainer:
         Returns:
             dict: Training results including R² score, RMSE, and model info
         """
-        pass
+        if custom_data is None:
+            data = self.data_processor.load_training_data(model_type)
+        else:
+            data = custom_data
+        X, y = self.data_processor.prepare_data(data, model_type, self.features, self.target)
+        model = self._create_model(MODEL_CONFIGS[model_type])
+        model.fit(X, y)
+        self._save_model(model_type, model)
+        self.training_results[model_type] = self._get_model_info(model_type)
+        return self.training_results[model_type]
+
 
     def _create_model(self, config):
         """Create regression model based on configuration
@@ -44,7 +54,14 @@ class ModelTrainer:
         Returns:
             sklearn.base.BaseEstimator: Regression model instance
         """
-        pass
+        if model_type == "random_forest":
+            model = RandomForestRegressor(**config)
+        elif model_type == "svr":
+            model = SVR(**config)
+        elif model_type == "mlp":
+            model = MLPRegressor(**config)
+        return model
+
 
     def _save_model(self, model_type, model):
         """Save trained model to file
@@ -53,7 +70,9 @@ class ModelTrainer:
             model_type (str): Type of model
             model: Trained model instance
         """
-        pass
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        joblib.dump(model, model_path)
+        print(f"Model saved to {model_path}")
 
     def load_model(self, model_type):
         """Load a trained model from file
@@ -64,7 +83,10 @@ class ModelTrainer:
         Returns:
             sklearn.base.BaseEstimator: Loaded model instance
         """
-        pass
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model file not found: {model_path}")
+        return joblib.load(model_path)
 
     def get_model_info(self, model_type):
         """Get information about a trained model
@@ -75,7 +97,15 @@ class ModelTrainer:
         Returns:
             dict: Model information including R² score, RMSE, training time, etc.
         """
-        pass
+        model = self.load_model(model_type)
+        return {
+            "model_type": model_type,
+            "model_name": model.__class__.__name__,
+            "features": self.features,
+            "target": self.target,
+            "training_time": self.training_results[model_type]["training_time"],
+        }
+
 
     def list_trained_models(self):
         """List all trained models with their information
@@ -83,7 +113,14 @@ class ModelTrainer:
         Returns:
             list: List of dictionaries containing model information
         """
-        pass
+        model_files = list(Path(MODELS_DIR).glob("*.joblib"))
+        models = []
+        for file in model_files:
+            model_type = file.stem
+            model_info = self.get_model_info(model_type)
+            models.append(model_info)
+        return models
+
 
     def retrain_model(self, model_type, new_data=None):
         """Retrain an existing model with new data
@@ -95,7 +132,45 @@ class ModelTrainer:
         Returns:
             dict: Updated training results
         """
-        pass
+        if new_data is None:
+        # If no new_data is provided, reload the original training data
+        data = self.data_processor.load_training_data(model_type)
+        df = pd.DataFrame(data)
+        X = df[self.features]
+        y = df[self.target]
+        # If new_data is provided, concatenate it with the original data
+        if new_data is not None:
+            if not isinstance(new_data, pd.DataFrame):
+                new_data = pd.DataFrame(new_data)
+            # Ensure new_data has the required columns
+            if not set(self.features + [self.target]).issubset(new_data.columns):
+                raise ValueError(f"New data must contain columns: {self.features + [self.target]}")
+            X_new = new_data[self.features]
+            y_new = new_data[self.target]
+            X = pd.concat([X, X_new], ignore_index=True)
+            y = pd.concat([y, y_new], ignore_index=True)
+
+        # Refit the model
+        model = self._initialize_model(model_type)
+        start_time = time.time()
+        model.fit(X, y)
+        training_time = time.time() - start_time
+
+        # Save the retrained model
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        joblib.dump(model, model_path)
+
+        # Update training results
+        self.training_results[model_type] = {
+            "training_time": training_time,
+            "n_samples": len(X),
+            "model_name": model.__class__.__name__,
+        }
+
+        return self.training_results[model_type]
+        
+            
+
 
     def evaluate_model(self, model_type, test_data):
         """Evaluate a model on new test data
@@ -107,7 +182,22 @@ class ModelTrainer:
         Returns:
             dict: Evaluation results including predictions and confidence intervals
         """
-        pass
+        # Evaluate a model on new test data
+        # test_data is expected to be a dict or DataFrame with all required features
+
+        # Load the trained model
+        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        if not model_path.exists():
+            raise FileNotFoundError(f"Trained model for '{model_type}' not found at {model_path}")
+        model = joblib.load(model_path)
+
+        # Prepare test data
+        if isinstance(test_data, dict):
+            test_df = pd.DataFrame([test_data])
+        else:
+            test_df = pd.DataFrame(test_data)
+
+       
 
     def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
         """Calculate prediction intervals for regression model

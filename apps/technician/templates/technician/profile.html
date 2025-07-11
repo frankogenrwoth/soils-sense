@@ -1,0 +1,84 @@
+{% extends 'technician/base.html' %}
+
+{% block page_title %}Profile{% endblock %}
+
+{% block breadcrumb %}Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="dashboard-card">
+            <div class="text-center mb-4">
+                {% if user.image %}
+                    <img src="{{ user.image.url }}" alt="Profile Picture" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" alt="Profile Picture" class="rounded-circle mb-3">
+                {% endif %}
+                <h5 class="mb-0">{{ user.get_full_name|default:user.username }}</h5>
+                <p class="text-muted">{{ user.role|title }}</p>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item">
+                    <small class="text-muted d-block">Email</small>
+                    <div>{{ user.email }}</div>
+                </div>
+                <div class="list-group-item">
+                    <small class="text-muted d-block">Phone</small>
+                    <div>{{ user.phone_number|default:"Not provided" }}</div>
+                </div>
+                <div class="list-group-item">
+                    <small class="text-muted d-block">Username</small>
+                    <div>{{ user.username }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Edit Profile</h5>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Profile Image</label>
+                    <input type="file" class="form-control" name="profile_image" accept="image/*">
+                    <small class="text-muted">Leave empty to keep current image</small>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ user.email }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" name="phone_number" value="{{ user.phone_number|default:'' }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+
+        <div class="dashboard-card mt-4">
+            <h5 class="card-title mb-4">Change Password</h5>
+            <p class="text-muted mb-3">To change your password, click the button below. You'll receive instructions via email.</p>
+            <a href="{% url 'authentication:password_reset_request' %}" class="btn btn-secondary">Reset Password</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
