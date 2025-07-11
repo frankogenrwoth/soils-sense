@@ -23,6 +23,7 @@ MODEL_CONFIGS = {
             "irrigation_action",
         ],
         "target": "soil_moisture_percent",
+        "task_type": "regression",
     },
     "irrigation_recommendation": {
         "features": [

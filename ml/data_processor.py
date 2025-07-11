@@ -24,6 +24,7 @@ class DataProcessor:
         self.feature_columns = {}
         self.preprocessing_pipelines = {}
         self.feature_names = {}
+        self.training_logs = {}
 
     def load_training_data(self, model_type):
         """Load training data from CSV or JSON files
@@ -44,6 +45,10 @@ class DataProcessor:
                 f"Training data for {model_type} not found at {data_path}"
             )
 
+    def _inspect_data(self, data, model_type):
+        pass
+
+    
     def _engineer_features(self, data, model_type):
         """Engineer features for soil moisture prediction and irrigation recommendation
 

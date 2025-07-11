@@ -38,7 +38,11 @@ class ModelTrainer:
         self.training_results = {}
 
     def train_model(
-        self, model_type, algorithm=None, custom_data=None, hyperparameter_tuning=False
+        self,
+        model_type,
+        algorithm=None,
+        custom_data=None,
+        hyperparameter_tuning=False,
     ):
         """Train a regression model for the specified type
 
