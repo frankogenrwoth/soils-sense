@@ -536,3 +536,30 @@ Watching for file changes with StatReloader
 C:\Users\user\Desktop\soils-sense\apps\landing_page\models.py changed, reloading.
 Watching for file changes with StatReloader
 C:\Users\user\Desktop\soils-sense\soilsense\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\administrator\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 2781
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/farm-locations/ HTTP/1.1" 200 15142
+"GET /technician/analytics/ HTTP/1.1" 200 16581
+"GET /technician/farm-locations/ HTTP/1.1" 200 15142
+"GET /technician/sensor-config/ HTTP/1.1" 200 16623
+"GET /technician/analytics/ HTTP/1.1" 200 16581
+"GET /technician/reports/ HTTP/1.1" 200 13306
+"GET /technician/profile/ HTTP/1.1" 200 19121
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/sensor-config/ HTTP/1.1" 200 16623
+C:\Users\user\Desktop\soils-sense\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\soilsense\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 7339
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
