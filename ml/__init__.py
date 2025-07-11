@@ -23,7 +23,9 @@ class MLEngine:
         self.predictor = Predictor()
         self.data_processor = DataProcessor()
 
-    def train_soil_moisture_predictor(self, custom_data: pd.DataFrame | None = None) -> dict:
+    def train_soil_moisture_predictor(
+        self, custom_data: pd.DataFrame | None = None
+    ) -> dict:
         """Train soil moisture prediction model
 
         Args:
@@ -36,7 +38,9 @@ class MLEngine:
             "soil_moisture_predictor", custom_data=custom_data
         )
 
-    def train_irrigation_recommender(self, custom_data: pd.DataFrame | None = None) -> dict:
+    def train_irrigation_recommender(
+        self, custom_data: pd.DataFrame | None = None
+    ) -> dict:
         """Train irrigation recommendation model
 
         Args:
@@ -162,7 +166,9 @@ class MLEngine:
         """
         return self.trainer.list_trained_models()
 
-    def retrain_model(self, model_type: str, new_data: pd.DataFrame | None = None) -> dict:
+    def retrain_model(
+        self, model_type: str, new_data: pd.DataFrame | None = None
+    ) -> dict:
         """Retrain an existing model
 
         Args:
@@ -193,6 +199,45 @@ class MLEngine:
             pandas.DataFrame: Training data
         """
         return self.data_processor.load_training_data(model_type)
+
+    def train_model_on_all_algorithms(
+        self, model_type: str, custom_data: pd.DataFrame | None = None
+    ) -> dict:
+        """Train a model on all available algorithms
+
+        Args:
+            model_type (str): Type of model to train
+            custom_data (pandas.DataFrame, optional): Custom training data
+
+        Returns:
+            dict: Dictionary of training results for all algorithms
+        """
+        results = {}
+
+        for algorithm in self.trainer.get_available_algorithms(model_type):
+            results[algorithm] = self.trainer.train_model(
+                model_type, algorithm, custom_data
+            )
+
+        return results
+
+    def predict_model_on_all_algorithms(self, model_type: str, data: dict) -> dict:
+        """Predict a model on all available algorithms
+
+        Args:
+            model_type (str): Type of model to predict
+            data (dict): Data to predict
+
+        Returns:
+            dict: Dictionary of predictions for all algorithms
+        """
+        results = {}
+        for algorithm in self.trainer.get_available_algorithms(model_type):
+            prediction = self.predictor.predict(model_type, data, algorithm)
+            del prediction["model_info"]
+            results[algorithm] = prediction
+
+        return results
 
 
 def get_available_models() -> list[str]:

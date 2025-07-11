@@ -13,6 +13,7 @@ try:
         MODELS_DIR,
         DATA_DIR,
     )
+    from ml.data_processor import DataProcessor
 except ImportError:
     from config import (
         MODEL_CONFIGS,
@@ -24,6 +25,7 @@ except ImportError:
         MODELS_DIR,
         DATA_DIR,
     )
+    from data_processor import DataProcessor
 
 
 class TestModelConfig(TestCase):
@@ -194,7 +196,6 @@ class TestModelConfig(TestCase):
         # test for linear_regression parameters
         linear_regression_params = [
             "fit_intercept",
-            "normalize",
         ]
         self.assertTrue(
             len(REGRESSION_ALGORITHMS["linear_regression"].keys())
@@ -328,6 +329,45 @@ class TestModelConfig(TestCase):
         self.assertTrue(len(PREDICTION_CONFIG.keys()) == len(prediction_config_params))
         for param in prediction_config_params:
             self.assertTrue(param in PREDICTION_CONFIG)
+
+
+class TestDataProcessor(TestCase):
+    def setUp(self):
+        self.data_processor = DataProcessor()
+
+    def test_processor_attributes(self):
+        """
+        Test the processor attributes
+        - data_processor is an instance of DataProcessor
+        """
+        self.assertTrue(isinstance(self.data_processor, DataProcessor))
+        self.assertTrue(hasattr(self.data_processor, "scalers"))
+        self.assertTrue(hasattr(self.data_processor, "label_encoders"))
+        self.assertTrue(hasattr(self.data_processor, "onehot_encoders"))
+        self.assertTrue(hasattr(self.data_processor, "feature_columns"))
+        self.assertTrue(hasattr(self.data_processor, "preprocessing_pipelines"))
+        self.assertTrue(hasattr(self.data_processor, "feature_names"))
+        self.assertTrue(hasattr(self.data_processor, "training_logs"))
+
+    # def test_load_training_data(self):
+    #     """
+    #     Test the load_training_data method
+    #     - data is a pandas dataframe
+    #     - findings is a dictionary
+    #     - data_info is a dictionary
+    #     - data_summary is a dictionary
+    #     - data_inspection is a dictionary
+    #     - data_preprocessing is a dictionary
+    #     - data_transformation is a dictionary
+    #     """
+    #     data, findings = self.data_processor.load_training_data("soil_moisture_predictor")
+    #     self.assertTrue(isinstance(data, pd.DataFrame))
+    #     self.assertTrue(isinstance(findings, dict))
+    #     self.assertTrue("data_info" in findings)
+    #     self.assertTrue("data_summary" in findings)
+    #     self.assertTrue("data_inspection" in findings)
+    #     self.assertTrue("data_preprocessing" in findings)
+    #     self.assertTrue("data_transformation" in findings)
 
 
 if __name__ == "__main__":

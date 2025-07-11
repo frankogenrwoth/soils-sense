@@ -70,7 +70,7 @@ REGRESSION_ALGORITHMS = {
         "max_iter": 500,
         "random_state": 42,
     },
-    "linear_regression": {"fit_intercept": True, "normalize": False},
+    "linear_regression": {"fit_intercept": True,},
 }
 
 CLASSIFICATION_ALGORITHMS = {
