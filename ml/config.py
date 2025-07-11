@@ -8,24 +8,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MODELS_DIR = BASE_DIR / "ml" / "models"
 DATA_DIR = BASE_DIR / "ml" / "data"
 
-# Model configurations - define structure for different prediction models
-# Each model should specify its input features and target variable
 MODEL_CONFIGS = {
     "soil_moisture_predictor": {
         "features": [
-            # Core numeric features (most important)
             "temperature_celsius",
             "humidity_percent",
             "battery_voltage",
-            # Essential time-based features
             "hour_of_day",
             "month",
             "is_growing_season",
-            # Key interaction feature
             "temp_humidity_interaction",
-            # Battery health indicator
             "low_battery",
-            # Simplified categorical features (will be encoded more efficiently)
             "status",
             "irrigation_action",
         ],
@@ -33,7 +26,6 @@ MODEL_CONFIGS = {
     },
     "irrigation_recommendation": {
         "features": [
-            # Use soil moisture as the main input for irrigation recommendation
             "soil_moisture_percent",
             "temperature_celsius",
             "humidity_percent",
@@ -45,12 +37,11 @@ MODEL_CONFIGS = {
             "low_battery",
             "status",
         ],
-        "target": "irrigation_action",  # Categorical target for classification
-        "task_type": "classification",  # Specify this is a classification task
+        "target": "irrigation_action",
+        "task_type": "classification",
     },
 }
 
-# Model algorithm configurations
 MODEL_ALGORITHMS = {
     "random_forest": {
         "n_estimators": 100,
@@ -81,7 +72,6 @@ MODEL_ALGORITHMS = {
     "linear_regression": {"fit_intercept": True, "normalize": False},
 }
 
-# Classification algorithm configurations
 CLASSIFICATION_ALGORITHMS = {
     "random_forest": {
         "n_estimators": 100,
@@ -106,9 +96,8 @@ CLASSIFICATION_ALGORITHMS = {
     },
 }
 
-# Default algorithm for each prediction task (using only one algorithm per model)
 DEFAULT_ALGORITHMS = {
-    "soil_moisture_predictor": "gradient_boosting",  # Better for this type of prediction
+    "soil_moisture_predictor": "gradient_boosting",
     "irrigation_recommendation": "gradient_boosting",
 }
 
