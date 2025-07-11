@@ -37,6 +37,8 @@
             padding-top: 2rem;
             position: fixed;
             width: 250px;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar .nav-link {
@@ -60,6 +62,15 @@
             margin-right: 12px;
             width: 20px;
             text-align: center;
+        }
+
+        .sidebar .nav-link.text-danger {
+            color: #e74c3c !important;
+        }
+
+        .sidebar .nav-link.text-danger:hover {
+            background-color: rgba(231, 76, 60, 0.1) !important;
+            color: #c0392b !important;
         }
 
         .logo-section {
@@ -221,7 +232,7 @@
                 <h5 class="text-white mt-3 mb-1">SoilSense</h5>
                 <p class="text-white-50 small mb-0">Technician Portal</p>
             </div>
-            <nav class="nav flex-column">
+            <nav class="nav flex-column flex-grow-1">
                 <a class="nav-link {% if request.path == '/technician/dashboard/' %}active{% endif %}" href="{% url 'technician:dashboard' %}">
                     <i class="fas fa-home"></i>Dashboard
                 </a>
@@ -247,6 +258,13 @@
                     <i class="fas fa-cog"></i>Settings
                 </a>
             </nav>
+            
+            <!-- Logout Section -->
+            <div class="mt-auto pt-4 border-top border-white-50">
+                <a href="{% url 'authentication:logout' %}" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt"></i>Logout
+                </a>
+            </div>
         </div>
 
         <!-- Main Content -->
