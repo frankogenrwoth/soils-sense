@@ -1,6 +1,16 @@
 from ml import MLEngine
 
 
+def set_up_ml_engine():
+    ml_engine = MLEngine()
+
+    training_soil = ml_engine.train_model_on_all_algorithms("soil_moisture_predictor")
+    training_ir = ml_engine.train_model_on_all_algorithms("irrigation_recommendation")
+
+    print(training_soil, "\n", "*" * 50, "\n")
+    print(training_ir, "\n", "*" * 50, "\n")
+
+
 def test_ml_engine():
     ml_engine = MLEngine()
 
