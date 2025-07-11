@@ -308,7 +308,7 @@ class TestModelConfig(TestCase):
 
         # test for training config values
         self.assertLess(TRAINING_CONFIG["test_size"], 0.5)
-
+        
     def test_prediction_config(self):
         """
         Test the prediction config
