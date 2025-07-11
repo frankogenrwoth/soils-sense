@@ -7,8 +7,12 @@
 
 {% block header_actions %}
 <div class="d-flex gap-2">
-    <button class="btn btn-light"><i class="fas fa-sync-alt me-2"></i>Refresh</button>
-    <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>New Report</button>
+    <button class="btn btn-light" onclick="location.reload()">
+        <i class="fas fa-sync-alt me-2"></i>Refresh
+    </button>
+    <a href="{% url 'technician:reports' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>New Report
+    </a>
 </div>
 {% endblock %}
 
@@ -20,39 +24,38 @@
             <i class="fas fa-farm icon"></i>
             <div class="title">Active Farms</div>
             <h3>{{ farm_count }}</h3>
-
             <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-success" style="width: 85%"></div>
+                <div class="progress-bar bg-success" style="width: 100%"></div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="dashboard-card stat-card bg-white">
-            <i class="fas fa-microchip icon"></i>
-            <div class="title">Active Sensors</div>
-            <h3>156</h3>
+            <i class="fas fa-chart-line icon"></i>
+            <div class="title">Total Readings</div>
+            <h3>{{ total_readings }}</h3>
             <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-info" style="width: 75%"></div>
+                <div class="progress-bar bg-info" style="width: 85%"></div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="dashboard-card stat-card bg-white">
             <i class="fas fa-exclamation-triangle icon"></i>
-            <div class="title">Active Alerts</div>
-            <h3>7</h3>
+            <div class="title">Critical Alerts</div>
+            <h3>{{ critical_readings }}</h3>
             <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-warning" style="width: 45%"></div>
+                <div class="progress-bar bg-danger" style="width: 45%"></div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="dashboard-card stat-card bg-white">
-            <i class="fas fa-file-alt icon"></i>
-            <div class="title">Pending Reports</div>
-            <h3>3</h3>
+            <i class="fas fa-cog icon"></i>
+            <div class="title">Sensor Thresholds</div>
+            <h3>{{ threshold_count }}</h3>
             <div class="progress" style="height: 4px;">
-                <div class="progress-bar bg-danger" style="width: 25%"></div>
+                <div class="progress-bar bg-warning" style="width: 75%"></div>
             </div>
         </div>
     </div>
@@ -60,11 +63,11 @@
 
 <!-- Main Content Area -->
 <div class="row g-3">
-    <!-- Farm Monitoring Section -->
+    <!-- Moisture Trend Chart -->
     <div class="col-lg-8">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0">Farm Locations Overview</h5>
+                <h5 class="mb-0">Moisture Trend (Last 7 Days)</h5>
                 <div class="btn-group">
                     <button class="btn btn-outline-secondary btn-sm">Day</button>
                     <button class="btn btn-outline-secondary btn-sm active">Week</button>
@@ -72,226 +75,325 @@
                 </div>
             </div>
             <div class="chart-container">
-                <div class="text-center text-muted">
-                    <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
-                    <p>Interactive Map View</p>
-                    <small>To be implemented by backend team</small>
-                </div>
+                <canvas id="moistureTrendChart" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Alerts Section -->
+    <!-- Recent Alerts -->
     <div class="col-lg-4">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="mb-0">Recent Alerts</h5>
-                <a href="#" class="text-decoration-none">View All</a>
+                <a href="{% url 'technician:soil_readings' %}" class="text-decoration-none">View All</a>
             </div>
             <div class="alert-list">
+                {% for reading in recent_critical_readings %}
                 <div class="alert-item">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="status-indicator status-alert"></span>
-                            <strong>Moisture Level Critical</strong>
-                            <div class="text-muted small mt-1">Farm ID: F123</div>
+                            <strong>{{ reading.status }}</strong>
+                            <div class="text-muted small mt-1">{{ reading.farm.farm_name }} - {{ reading.soil_moisture_percent }}%</div>
                         </div>
-                        <span class="time">2m ago</span>
+                        <span class="time">{{ reading.timestamp|timesince }} ago</span>
                     </div>
                 </div>
-                <div class="alert-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="status-indicator status-warning"></span>
-                            <strong>pH Level Warning</strong>
-                            <div class="text-muted small mt-1">Farm ID: F145</div>
-                        </div>
-                        <span class="time">15m ago</span>
-                    </div>
+                {% empty %}
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <p class="mb-0">No critical alerts</p>
                 </div>
-                <div class="alert-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="status-indicator status-normal"></span>
-                            <strong>Sensor Maintenance Due</strong>
-                            <div class="text-muted small mt-1">Farm ID: F156</div>
-                        </div>
-                        <span class="time">1h ago</span>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Sensor Thresholds -->
+    <!-- Farm Performance -->
     <div class="col-lg-6">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0">Sensor Thresholds</h5>
-                <button class="btn btn-light btn-sm"><i class="fas fa-sliders-h me-2"></i>Configure</button>
+                <h5 class="mb-0">Farm Performance</h5>
+                <a href="{% url 'technician:farm_locations' %}" class="text-decoration-none">View All</a>
             </div>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Parameter</th>
-                            <th>Min</th>
-                            <th>Max</th>
+                            <th>Farm</th>
+                            <th>Avg Moisture</th>
+                            <th>Readings</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for farm_data in farm_averages %}
                         <tr>
+                            <td>{{ farm_data.farm.farm_name }}</td>
+                            <td>{{ farm_data.avg_moisture }}%</td>
+                            <td>{{ farm_data.reading_count }}</td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-tint me-2 text-primary"></i>
-                                    Soil Moisture
-                                </div>
+                                {% if farm_data.avg_moisture < 30 %}
+                                    <span class="badge bg-warning">Low</span>
+                                {% elif farm_data.avg_moisture > 70 %}
+                                    <span class="badge bg-info">High</span>
+                                {% else %}
+                                    <span class="badge bg-success">Normal</span>
+                                {% endif %}
                             </td>
-                            <td>30%</td>
-                            <td>70%</td>
-                            <td><span class="badge bg-success">Normal</span></td>
                         </tr>
+                        {% empty %}
                         <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-flask me-2 text-warning"></i>
-                                    pH Level
-                                </div>
-                            </td>
-                            <td>6.0</td>
-                            <td>7.5</td>
-                            <td><span class="badge bg-warning">Warning</span></td>
+                            <td colspan="4" class="text-center text-muted">No farm data available</td>
                         </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-thermometer-half me-2 text-danger"></i>
-                                    Temperature
-                                </div>
-                            </td>
-                            <td>15°C</td>
-                            <td>35°C</td>
-                            <td><span class="badge bg-success">Normal</span></td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div class="container py-5">
-    <h2 class="text-2xl font-semibold mb-4">Soil Moisture Dashboard</h2>
-
-    <!-- Farm Filter Dropdown -->
-    <form method="get" class="mb-6">
-        <label for="farm" class="block mb-2 text-sm font-medium text-gray-700">Select Farm</label>
-        <select name="farm" id="farm" class="block w-64 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-            <option value="">All Farms</option>
-            {% for farm in farms %}
-                <option value="{{ farm.id }}" {% if farm.id|stringformat:"s" == selected_farm_id %}selected{% endif %}>
-                    {{ farm.farm_name }} - {{ farm.location }}
-                </option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="ml-4 inline-block px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Apply</button>
-    </form>
-
-    <!-- Risk Alerts -->
-    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-        <h4 class="font-semibold text-red-700">Risk Warnings</h4>
-        <ul class="mt-2 text-red-600 text-sm list-disc pl-5">
-            {% for reading in recent_critical_readings %}
-                <li>{{ reading.farm.farm_name }} - {{ reading.status }} ({{ reading.timestamp|date:"M d, H:i" }})</li>
-            {% empty %}
-                <li>No critical alerts.</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- Chart Container -->
-    <div class="bg-white p-4 rounded-md shadow-md">
-        <h3 class="text-lg font-medium mb-3">Daily Average Soil Moisture</h3>
-        <canvas id="moistureChart" height="100"></canvas>
-    </div>
-</div>
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('moistureChart').getContext('2d');
-    const moistureChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {{ days|safe }},
-            datasets: [{
-                label: 'Avg Moisture (%)',
-                data: {{ moisture_per_day|safe }},
-                backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                borderColor: 'rgba(34, 197, 94, 1)',
-                fill: true,
-                tension: 0.3,
-                pointRadius: 3,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                },
-                title: {
-                    display: true,
-                    text: 'Moisture Trends'
-                }
-            }
-        }
-    });
-</script>
-
-    <!-- Recent Reports -->
+    <!-- Moisture Distribution -->
     <div class="col-lg-6">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0">Recent Reports</h5>
-                <button class="btn btn-light btn-sm"><i class="fas fa-download me-2"></i>Export</button>
+                <h5 class="mb-0">Moisture Distribution</h5>
+                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#distributionModal">
+                    <i class="fas fa-chart-pie me-2"></i>Details
+                </button>
             </div>
-            <div class="list-group">
-                <div class="list-group-item border-0 mb-2 bg-light rounded">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Monthly Soil Analysis Report</h6>
-                            <p class="mb-1 text-muted small">Farm ID: F123 - Comprehensive soil health analysis</p>
-                            <small class="text-muted"><i class="fas fa-robot me-1"></i>Generated by System</small>
-                        </div>
-                        <small class="text-muted">3d ago</small>
-                    </div>
+            <div class="chart-container">
+                <canvas id="moistureDistributionChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Reports -->
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Recent Reports</h5>
+                <a href="{% url 'technician:reports' %}" class="text-decoration-none">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Farm</th>
+                            <th>Type</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in recent_reports %}
+                        <tr>
+                            <td>{{ report.title }}</td>
+                            <td>{{ report.farm.farm_name }}</td>
+                            <td>
+                                {% if report.report_type == 'soil_analysis' %}
+                                    <span class="badge bg-info">Soil Analysis</span>
+                                {% elif report.report_type == 'sensor_maintenance' %}
+                                    <span class="badge bg-warning">Sensor Maintenance</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Custom</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ report.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if report.file %}
+                                    <a href="{{ report.file.url }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No reports available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Quick Actions</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'technician:sensor_config' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-cog me-2"></i>Configure Sensors
+                </a>
+                <a href="{% url 'technician:analytics' %}" class="btn btn-outline-info">
+                    <i class="fas fa-chart-bar me-2"></i>View Analytics
+                </a>
+                <a href="{% url 'technician:soil_readings' %}" class="btn btn-outline-success">
+                    <i class="fas fa-tint me-2"></i>Soil Readings
+                </a>
+                <a href="{% url 'technician:farm_locations' %}" class="btn btn-outline-warning">
+                    <i class="fas fa-map-marker-alt me-2"></i>Farm Locations
+                </a>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="dashboard-card mt-3">
+            <h5 class="mb-4">System Status</h5>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Active Sensors</span>
+                    <span class="badge bg-success">12/12</span>
                 </div>
-                <div class="list-group-item border-0 mb-2 bg-light rounded">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Sensor Maintenance Log</h6>
-                            <p class="mb-1 text-muted small">Routine check and calibration report</p>
-                            <small class="text-muted"><i class="fas fa-users me-1"></i>Generated by Tech Team</small>
-                        </div>
-                        <small class="text-muted">1w ago</small>
-                    </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Warning Thresholds</span>
+                    <span class="badge bg-warning">{{ warning_thresholds }}</span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Recent Readings</span>
+                    <span class="badge bg-info">{{ recent_readings }}</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Distribution Modal -->
+<div class="modal fade" id="distributionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Moisture Distribution Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for status, count in moisture_distribution.items %}
+                            <tr>
+                                <td>
+                                    {% if status == 'Normal' %}
+                                        <span class="badge bg-success">{{ status }}</span>
+                                    {% elif status == 'Dry' %}
+                                        <span class="badge bg-warning">{{ status }}</span>
+                                    {% elif status == 'Wet' %}
+                                        <span class="badge bg-info">{{ status }}</span>
+                                    {% elif status == 'Critical Low' %}
+                                        <span class="badge bg-danger">{{ status }}</span>
+                                    {% elif status == 'Critical High' %}
+                                        <span class="badge bg-danger">{{ status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ count }}</td>
+                                <td>
+                                    {% if total_readings > 0 %}
+                                        {{ count|floatformat:1 }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Moisture Trend Chart
+const trendCtx = document.getElementById('moistureTrendChart').getContext('2d');
+const trendChart = new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for day in days %}'{{ day }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Average Moisture %',
+            data: [{% for moisture in moisture_per_day %}{{ moisture }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+// Moisture Distribution Chart
+const distributionCtx = document.getElementById('moistureDistributionChart').getContext('2d');
+const distributionChart = new Chart(distributionCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Normal', 'Dry', 'Wet', 'Critical Low', 'Critical High'],
+        datasets: [{
+            data: [
+                {{ moisture_distribution.Normal }},
+                {{ moisture_distribution.Dry }},
+                {{ moisture_distribution.Wet }},
+                {{ moisture_distribution.Critical_Low }},
+                {{ moisture_distribution.Critical_High }}
+            ],
+            backgroundColor: [
+                '#28a745',
+                '#ffc107',
+                '#17a2b8',
+                '#dc3545',
+                '#dc3545'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20
+                }
+            }
+        }
+    }
+});
+</script>
 {% endblock %} 

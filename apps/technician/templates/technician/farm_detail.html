@@ -1,0 +1,201 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Farm Detail - {{ farm.farm_name }} - SoilSense Technician Portal{% endblock %}
+
+{% block page_title %}Farm Details{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'technician:farm_locations' %}">Farm Locations</a> / {{ farm.farm_name }}
+{% endblock %}
+
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <a href="{% url 'technician:edit_farm' farm.pk %}" class="btn btn-primary">
+        <i class="fas fa-edit me-2"></i>Edit Farm
+    </a>
+    <a href="{% url 'technician:soil_readings' %}?farm={{ farm.id }}" class="btn btn-info">
+        <i class="fas fa-chart-line me-2"></i>View Readings
+    </a>
+    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <i class="fas fa-trash me-2"></i>Delete
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Farm Information -->
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Farm Information</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Farm Name</label>
+                        <p class="mb-0 fw-semibold">{{ farm.farm_name }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Location</label>
+                        <p class="mb-0 fw-semibold">{{ farm.location }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Size (Acres)</label>
+                        <p class="mb-0 fw-semibold">{{ farm.area_size|default:"Not specified" }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Soil Type</label>
+                        <p class="mb-0 fw-semibold">{{ farm.soil_type|default:"Not specified" }}</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Description</label>
+                        <p class="mb-0">{{ farm.description|default:"No description available" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Soil Readings -->
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Recent Soil Readings</h5>
+                <a href="{% url 'technician:soil_readings' %}?farm={{ farm.id }}" class="text-decoration-none">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Moisture (%)</th>
+                            <th>pH Level</th>
+                            <th>Temperature (°C)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reading in recent_readings %}
+                        <tr>
+                            <td>{{ reading.timestamp|date:"M d, Y H:i" }}</td>
+                            <td>{{ reading.soil_moisture_percent|floatformat:1 }}%</td>
+                            <td>{{ reading.ph_level|default:"N/A" }}</td>
+                            <td>{{ reading.temperature|default:"N/A" }}</td>
+                            <td>
+                                {% if reading.status == 'Normal' %}
+                                    <span class="badge bg-success">{{ reading.status }}</span>
+                                {% elif reading.status == 'Warning' %}
+                                    <span class="badge bg-warning">{{ reading.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ reading.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No readings available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Sensor Status -->
+        <div class="dashboard-card">
+            <h5 class="mb-4">Sensor Status</h5>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Active Sensors</span>
+                    <span class="badge bg-success">12/12</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Last Maintenance</span>
+                    <span class="text-muted small">2 weeks ago</span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Next Maintenance</span>
+                    <span class="text-muted small">2 weeks</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <h5 class="mb-4">Quick Actions</h5>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-cog me-2"></i>Configure Sensors
+                </button>
+                <button class="btn btn-outline-info">
+                    <i class="fas fa-file-alt me-2"></i>Generate Report
+                </button>
+                <button class="btn btn-outline-warning">
+                    <i class="fas fa-tools me-2"></i>Schedule Maintenance
+                </button>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="dashboard-card">
+            <h5 class="mb-4">Recent Alerts</h5>
+            <div class="alert-list">
+                {% for alert in recent_alerts %}
+                <div class="alert-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="status-indicator status-{{ alert.level }}"></span>
+                            <strong>{{ alert.title }}</strong>
+                            <div class="text-muted small mt-1">{{ alert.description }}</div>
+                        </div>
+                        <span class="time">{{ alert.timestamp|timesince }} ago</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <p class="mb-0">No alerts</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the farm "{{ farm.farm_name }}"?</p>
+                <p class="text-danger small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'technician:delete_farm' farm.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Farm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
