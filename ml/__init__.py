@@ -1,7 +1,9 @@
 """
 Main interface for the ML Engine
-This file provides easy-to-use functions for training and prediction
+ - easy-to-use functions for training and prediction
 """
+
+import pandas as pd
 
 from .model_trainer import ModelTrainer
 from .predictor import (
@@ -21,8 +23,7 @@ class MLEngine:
         self.predictor = Predictor()
         self.data_processor = DataProcessor()
 
-    # Training functions
-    def train_soil_moisture_predictor(self, custom_data=None):
+    def train_soil_moisture_predictor(self, custom_data: pd.DataFrame | None = None) -> dict:
         """Train soil moisture prediction model
 
         Args:
@@ -35,7 +36,7 @@ class MLEngine:
             "soil_moisture_predictor", custom_data=custom_data
         )
 
-    def train_irrigation_recommender(self, custom_data=None):
+    def train_irrigation_recommender(self, custom_data: pd.DataFrame | None = None) -> dict:
         """Train irrigation recommendation model
 
         Args:
@@ -48,7 +49,7 @@ class MLEngine:
             "irrigation_recommendation", custom_data=custom_data
         )
 
-    def train_all_models(self, custom_data=None):
+    def train_all_models(self, custom_data: pd.DataFrame | None = None) -> dict:
         """Train all available prediction models
 
         Args:
@@ -63,7 +64,6 @@ class MLEngine:
         }
         return results
 
-    # Prediction functions
     def predict_soil_moisture(
         self,
         sensor_id,
@@ -74,7 +74,7 @@ class MLEngine:
         status,
         irrigation_action,
         timestamp,
-    ):
+    ) -> dict:
         """Predict soil moisture level
 
         Args:
@@ -135,7 +135,7 @@ class MLEngine:
             timestamp,
         )
 
-    def predict_all(self, input_data):
+    def predict_all(self, input_data: dict) -> dict:
         """Make predictions using all available models
 
         Args:
@@ -146,8 +146,7 @@ class MLEngine:
         """
         return self.predictor.predict_multiple(input_data)
 
-    # Utility functions
-    def get_available_models(self):
+    def get_available_models(self) -> list[str]:
         """Get list of available trained models
 
         Returns:
@@ -155,7 +154,7 @@ class MLEngine:
         """
         return self.predictor.get_available_models()
 
-    def get_model_info(self, model_type):
+    def get_model_info(self, model_type: str) -> dict:
         """Get information about a trained model
 
         Args:
@@ -166,7 +165,7 @@ class MLEngine:
         """
         return self.trainer.get_model_info(model_type)
 
-    def list_all_models(self):
+    def list_all_models(self) -> list[dict]:
         """List all trained models with their information
 
         Returns:
@@ -174,7 +173,7 @@ class MLEngine:
         """
         return self.trainer.list_trained_models()
 
-    def retrain_model(self, model_type, new_data=None):
+    def retrain_model(self, model_type: str, new_data: pd.DataFrame | None = None) -> dict:
         """Retrain an existing model
 
         Args:
@@ -186,7 +185,7 @@ class MLEngine:
         """
         return self.trainer.train_model(model_type, custom_data=new_data)
 
-    def save_training_data(self, data, model_type):
+    def save_training_data(self, data: pd.DataFrame, model_type: str):
         """Save training data to file
 
         Args:
@@ -195,7 +194,7 @@ class MLEngine:
         """
         return self.data_processor.save_training_data(data, model_type)
 
-    def load_training_data(self, model_type):
+    def load_training_data(self, model_type: str) -> pd.DataFrame:
         """Load training data from file
 
         Args:
@@ -207,98 +206,7 @@ class MLEngine:
         return self.data_processor.load_training_data(model_type)
 
 
-# Convenience functions for quick access
-def train_model(model_type, custom_data=None):
-    """Quick function to train a model
-
-    Args:
-        model_type (str): Type of model to train
-        custom_data (pandas.DataFrame, optional): Custom training data
-
-    Returns:
-        dict: Training results
-    """
-    engine = MLEngine()
-    train_methods = {
-        "soil_moisture_predictor": engine.train_soil_moisture_predictor,
-        "irrigation_recommendation": engine.train_irrigation_recommender,
-    }
-    if model_type not in train_methods:
-        raise ValueError(f"Unknown model type: {model_type}")
-    return train_methods[model_type](custom_data=custom_data)
-
-
-def predict_soil_moisture(
-    sensor_id,
-    location,
-    temperature_celsius,
-    humidity_percent,
-    battery_voltage,
-    status,
-    irrigation_action,
-    timestamp,
-):
-    """Quick function to predict soil moisture level
-
-    Args:
-        sensor_id (str): Sensor identifier
-        location (str): Location identifier
-        temperature_celsius (float): Temperature in Celsius
-        humidity_percent (float): Air humidity percentage
-        battery_voltage (float): Sensor battery voltage
-        status (str): Sensor status
-        irrigation_action (str): Irrigation action
-        timestamp (str): Timestamp
-
-    Returns:
-        dict: Soil moisture prediction result
-    """
-    engine = MLEngine()
-    return engine.predict_soil_moisture(
-        sensor_id,
-        location,
-        temperature_celsius,
-        humidity_percent,
-        battery_voltage,
-        status,
-        irrigation_action,
-        timestamp,
-    )
-
-
-def recommend_irrigation(
-    soil_moisture_percent,
-    temperature_celsius,
-    humidity_percent,
-    battery_voltage=3.8,
-    status="Normal",
-    timestamp=None,
-):
-    """Quick function to recommend irrigation action
-
-    Args:
-        soil_moisture_percent (float): Current soil moisture percentage
-        temperature_celsius (float): Temperature in Celsius
-        humidity_percent (float): Air humidity percentage
-        battery_voltage (float): Sensor battery voltage
-        status (str): Sensor status
-        timestamp (str, optional): Timestamp (if None, uses current time)
-
-    Returns:
-        dict: Irrigation recommendation result
-    """
-    engine = MLEngine()
-    return engine.recommend_irrigation(
-        soil_moisture_percent,
-        temperature_celsius,
-        humidity_percent,
-        battery_voltage,
-        status,
-        timestamp,
-    )
-
-
-def get_available_models():
+def get_available_models() -> list[str]:
     """Quick function to get available models
 
     Returns:
