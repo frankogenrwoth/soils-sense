@@ -53,37 +53,59 @@ class DataProcessor:
             model_type (str): Type of model
 
         Returns:
-            pandas.DataFrame: Data with engineered features
+            tuple: (pandas.DataFrame, dict) - Data with engineered features and cleaning report
         """
         df = data.copy()
+        cleaning_report = {}
 
         # Remove duplicate rows
+        num_duplicates = df.duplicated().sum()
         df = df.drop_duplicates()
+        cleaning_report['duplicates_removed'] = int(num_duplicates)
 
         # Handle outliers for numeric columns (cap to 1.5*IQR)
+        outlier_caps = {}
         for col in df.select_dtypes(include='number').columns:
             Q1 = df[col].quantile(0.25)
             Q3 = df[col].quantile(0.75)
             IQR = Q3 - Q1
             lower = Q1 - 1.5 * IQR
             upper = Q3 + 1.5 * IQR
+            before = df[col].copy()
             df[col] = df[col].clip(lower, upper)
+            capped = (before != df[col]).sum()
+            outlier_caps[col] = int(capped)
+        cleaning_report['outliers_capped'] = outlier_caps
 
         # Correct invalid values (domain-specific)
+        invalid_corrections = {}
         if 'temperature_celsius' in df.columns:
             # Remove negative temperatures (set to NaN for imputation later)
-            df.loc[df['temperature_celsius'] < -30, 'temperature_celsius'] = None  # unlikely to be valid
+            mask = df['temperature_celsius'] < -30
+            invalid_corrections['temperature_celsius_invalid'] = int(mask.sum())
+            df.loc[mask, 'temperature_celsius'] = None  # unlikely to be valid
         if 'humidity_percent' in df.columns:
             # Humidity should be between 0 and 100
-            df.loc[df['humidity_percent'] < 0, 'humidity_percent'] = 0
-            df.loc[df['humidity_percent'] > 100, 'humidity_percent'] = 100
+            mask_low = df['humidity_percent'] < 0
+            mask_high = df['humidity_percent'] > 100
+            invalid_corrections['humidity_percent_below_0'] = int(mask_low.sum())
+            invalid_corrections['humidity_percent_above_100'] = int(mask_high.sum())
+            df.loc[mask_low, 'humidity_percent'] = 0
+            df.loc[mask_high, 'humidity_percent'] = 100
         if 'battery_voltage' in df.columns:
             # Battery voltage should be positive
-            df.loc[df['battery_voltage'] < 0, 'battery_voltage'] = None
+            mask = df['battery_voltage'] < 0
+            invalid_corrections['battery_voltage_negative'] = int(mask.sum())
+            df.loc[mask, 'battery_voltage'] = None
         if 'soil_moisture_percent' in df.columns:
             # Soil moisture should be between 0 and 100
-            df.loc[df['soil_moisture_percent'] < 0, 'soil_moisture_percent'] = 0
-            df.loc[df['soil_moisture_percent'] > 100, 'soil_moisture_percent'] = 100
+            mask_low = df['soil_moisture_percent'] < 0
+            mask_high = df['soil_moisture_percent'] > 100
+            invalid_corrections['soil_moisture_percent_below_0'] = int(mask_low.sum())
+            invalid_corrections['soil_moisture_percent_above_100'] = int(mask_high.sum())
+            df.loc[mask_low, 'soil_moisture_percent'] = 0
+            df.loc[mask_high, 'soil_moisture_percent'] = 100
+        cleaning_report['invalid_value_corrections'] = invalid_corrections
 
         if model_type == "soil_moisture_predictor":
             if "timestamp" in df.columns:
@@ -147,7 +169,7 @@ class DataProcessor:
                 if feature in df.columns:
                     df = df.drop(feature, axis=1)
 
-        return df
+        return df, cleaning_report
 
     def _create_preprocessing_pipeline(self, data, model_type):
         """Create a preprocessing pipeline for the given model type
@@ -295,7 +317,7 @@ class DataProcessor:
             target = MODEL_CONFIGS[model_type]["target"]
 
         # Engineer features based on model type
-        df_engineered = self._engineer_features(df, model_type)
+        df_engineered, cleaning_report = self._engineer_features(df, model_type)
 
         # Create preprocessing pipeline
         preprocessor, numeric_features, categorical_features = (
