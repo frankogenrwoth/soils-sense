@@ -12,9 +12,17 @@ urlpatterns = [
     path('', redirect_to_dashboard, name='index'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('farm-locations/', views.farm_locations, name='farm_locations'),
+    path('farm/<int:pk>/', views.farm_detail, name='farm_detail'),
+    path('farm/<int:pk>/edit/', views.edit_farm, name='edit_farm'),
+    path('farm/<int:pk>/delete/', views.delete_farm, name='delete_farm'),
     path('sensor-config/', views.sensor_config, name='sensor_config'),
+    path('threshold/<int:pk>/edit/', views.edit_threshold, name='edit_threshold'),
+    path('threshold/<int:pk>/delete/', views.delete_threshold, name='delete_threshold'),
     path('analytics/', views.analytics, name='analytics'),
     path('reports/', views.reports, name='reports'),
+    path('report/<int:pk>/edit/', views.edit_report, name='edit_report'),
+    path('report/<int:pk>/delete/', views.delete_report, name='delete_report'),
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
-] 
+    path('soil-readings/', views.technician_soil_readings, name='soil_readings'),
+]

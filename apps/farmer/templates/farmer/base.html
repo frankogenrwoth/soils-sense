@@ -58,21 +58,15 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{% url 'farmer:soil_data_management' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'soil_data_management' %}bg-primary text-white{% endif %}">
+                        <i class="fas fa-water w-5 h-5 mr-3"></i>
+                        <span>Soil Data</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'farmer:profile' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'profile' %}bg-primary text-white{% endif %}">
                         <i class="fas fa-user w-5 h-5 mr-3"></i>
                         <span>Profile</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:manage_files' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'manage_files' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-file-upload w-5 h-5 mr-3"></i>
-                        <span>Manage Files</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:view_history' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'view_history' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-history w-5 h-5 mr-3"></i>
-                        <span>View History</span>
                     </a>
                 </li>
                 <li>
@@ -89,8 +83,8 @@
                 </li>
                 <li>
                     <a href="{% url 'farmer:farm_management' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'farm_management' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-farm w-5 h-5 mr-3"></i>
-                        <span>Farm Management</span>
+                        <i class="fas fa-history w-5 h-5 mr-3"></i>
+                        <span>Farm Info</span>
                     </a>
                 </li>
             </ul>
@@ -120,6 +114,15 @@
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto p-6">
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 mb-2 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-700 border border-green-400{% elif message.tags == 'error' %}bg-red-100 text-red-700 border border-red-400{% else %}bg-blue-100 text-blue-700 border border-blue-400{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% block content %}
             {% endblock %}
         </main>

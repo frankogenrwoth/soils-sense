@@ -1,18 +1,17 @@
 """
 Main interface for the ML Engine
-This file provides easy-to-use functions for training and prediction
+ - easy-to-use functions for training and prediction
 """
+
+import pandas as pd
 
 from .model_trainer import ModelTrainer
 from .predictor import (
     Predictor,
     SoilMoisturePredictor,
     IrrigationRecommender,
-    MoistureForecaster,
 )
 from .data_processor import DataProcessor
-import pandas as pd
-import json
 
 
 class MLEngine:
@@ -24,8 +23,7 @@ class MLEngine:
         self.predictor = Predictor()
         self.data_processor = DataProcessor()
 
-    # Training functions
-    def train_soil_moisture_predictor(self, custom_data=None):
+    def train_soil_moisture_predictor(self, custom_data: pd.DataFrame | None = None) -> dict:
         """Train soil moisture prediction model
 
         Args:
@@ -34,9 +32,11 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model(
+            "soil_moisture_predictor", custom_data=custom_data
+        )
 
-    def train_irrigation_recommender(self, custom_data=None):
+    def train_irrigation_recommender(self, custom_data: pd.DataFrame | None = None) -> dict:
         """Train irrigation recommendation model
 
         Args:
@@ -45,20 +45,11 @@ class MLEngine:
         Returns:
             dict: Training results
         """
-        pass
+        return self.trainer.train_model(
+            "irrigation_recommendation", custom_data=custom_data
+        )
 
-    def train_moisture_forecaster(self, custom_data=None):
-        """Train moisture forecasting model
-
-        Args:
-            custom_data (pandas.DataFrame, optional): Custom training data
-
-        Returns:
-            dict: Training results
-        """
-        pass
-
-    def train_all_models(self, custom_data=None):
+    def train_all_models(self, custom_data: pd.DataFrame | None = None) -> dict:
         """Train all available prediction models
 
         Args:
@@ -67,89 +58,92 @@ class MLEngine:
         Returns:
             dict: Dictionary of training results for all models
         """
-        pass
+        results = {
+            "soil_moisture_predictor": self.train_soil_moisture_predictor(custom_data),
+            "irrigation_recommendation": self.train_irrigation_recommender(custom_data),
+        }
+        return results
 
-    # Prediction functions
     def predict_soil_moisture(
-        self, temperature, ph_level, humidity, rainfall, previous_moisture
-    ):
+        self,
+        sensor_id,
+        location,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage,
+        status,
+        irrigation_action,
+        timestamp,
+    ) -> dict:
         """Predict soil moisture level
 
         Args:
-            temperature (float): Temperature in Celsius
-            ph_level (float): Soil pH level
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            previous_moisture (float): Previous moisture level percentage
+            sensor_id (str): Sensor identifier
+            location (str): Location identifier
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
+            status (str): Sensor status
+            irrigation_action (str): Irrigation action
+            timestamp (str): Timestamp
 
         Returns:
             dict: Soil moisture prediction result
         """
-        pass
+        predictor = SoilMoisturePredictor()
+
+        return predictor.predict_moisture(
+            sensor_id,
+            location,
+            temperature_celsius,
+            humidity_percent,
+            battery_voltage,
+            status,
+            irrigation_action,
+            timestamp,
+        )
 
     def recommend_irrigation(
-        self, moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
+        self,
+        soil_moisture_percent,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage=3.8,
+        status="Normal",
+        timestamp=None,
     ):
-        """Recommend irrigation amount
+        """Recommend irrigation action
 
         Args:
-            moisture_level (float): Current soil moisture percentage
-            temperature (float): Temperature in Celsius
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            crop_type (str): Type of crop
-            growth_stage (str): Growth stage of the crop
+            soil_moisture_percent (float): Current soil moisture percentage
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
+            status (str): Sensor status
+            timestamp (str, optional): Timestamp (if None, uses current time)
 
         Returns:
             dict: Irrigation recommendation result
         """
-        pass
+        recommender = IrrigationRecommender()
+        return recommender.recommend_irrigation(
+            soil_moisture_percent,
+            temperature_celsius,
+            humidity_percent,
+            battery_voltage,
+            status,
+            timestamp,
+        )
 
-    def forecast_moisture(
-        self,
-        current_moisture,
-        temperature,
-        humidity,
-        rainfall_forecast,
-        evaporation_rate,
-        days_ahead=7,
-    ):
-        """Forecast future moisture levels
-
-        Args:
-            current_moisture (float): Current soil moisture percentage
-            temperature (float): Temperature in Celsius
-            humidity (float): Air humidity percentage
-            rainfall_forecast (float): Forecasted rainfall amount
-            evaporation_rate (float): Evaporation rate in mm/day
-            days_ahead (int, optional): Number of days to forecast. Defaults to 7.
-
-        Returns:
-            dict: Moisture forecast result
-        """
-        pass
-
-    def predict_all(self, input_data):
-        """Make predictions using all available models
-
-        Args:
-            input_data (dict): Input data dictionary
-
-        Returns:
-            dict: Dictionary of predictions from all models
-        """
-        pass
-
-    # Utility functions
-    def get_available_models(self):
+    def get_available_models(self) -> list[str]:
         """Get list of available trained models
 
         Returns:
             list: List of available model types
         """
-        pass
+        return self.predictor.get_available_models()
 
-    def get_model_info(self, model_type):
+    def get_model_info(self, model_type: str) -> dict:
         """Get information about a trained model
 
         Args:
@@ -158,17 +152,17 @@ class MLEngine:
         Returns:
             dict: Model information
         """
-        pass
+        return self.trainer.get_model_info(model_type)
 
-    def list_all_models(self):
+    def list_all_models(self) -> list[dict]:
         """List all trained models with their information
 
         Returns:
             list: List of model information dictionaries
         """
-        pass
+        return self.trainer.list_trained_models()
 
-    def retrain_model(self, model_type, new_data=None):
+    def retrain_model(self, model_type: str, new_data: pd.DataFrame | None = None) -> dict:
         """Retrain an existing model
 
         Args:
@@ -178,18 +172,18 @@ class MLEngine:
         Returns:
             dict: Updated training results
         """
-        pass
+        return self.trainer.train_model(model_type, custom_data=new_data)
 
-    def save_training_data(self, data, model_type):
+    def save_training_data(self, data: pd.DataFrame, model_type: str):
         """Save training data to file
 
         Args:
             data (pandas.DataFrame): Data to save
             model_type (str): Type of model
         """
-        pass
+        return self.data_processor.save_training_data(data, model_type)
 
-    def load_training_data(self, model_type):
+    def load_training_data(self, model_type: str) -> pd.DataFrame:
         """Load training data from file
 
         Args:
@@ -198,86 +192,14 @@ class MLEngine:
         Returns:
             pandas.DataFrame: Training data
         """
-        pass
+        return self.data_processor.load_training_data(model_type)
 
 
-# Convenience functions for quick access
-def train_model(model_type, custom_data=None):
-    """Quick function to train a model
-
-    Args:
-        model_type (str): Type of model to train
-        custom_data (pandas.DataFrame, optional): Custom training data
-
-    Returns:
-        dict: Training results
-    """
-    pass
-
-
-def predict_soil_moisture(temperature, ph_level, humidity, rainfall, previous_moisture):
-    """Quick function to predict soil moisture level
-
-    Args:
-        temperature (float): Temperature in Celsius
-        ph_level (float): Soil pH level
-        humidity (float): Air humidity percentage
-        rainfall (float): Rainfall amount in mm
-        previous_moisture (float): Previous moisture level percentage
-
-    Returns:
-        dict: Soil moisture prediction result
-    """
-    pass
-
-
-def recommend_irrigation(
-    moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
-):
-    """Quick function to recommend irrigation amount
-
-    Args:
-        moisture_level (float): Current soil moisture percentage
-        temperature (float): Temperature in Celsius
-        humidity (float): Air humidity percentage
-        rainfall (float): Rainfall amount in mm
-        crop_type (str): Type of crop
-        growth_stage (str): Growth stage of the crop
-
-    Returns:
-        dict: Irrigation recommendation result
-    """
-    pass
-
-
-def forecast_moisture(
-    current_moisture,
-    temperature,
-    humidity,
-    rainfall_forecast,
-    evaporation_rate,
-    days_ahead=7,
-):
-    """Quick function to forecast moisture levels
-
-    Args:
-        current_moisture (float): Current soil moisture percentage
-        temperature (float): Temperature in Celsius
-        humidity (float): Air humidity percentage
-        rainfall_forecast (float): Forecasted rainfall amount
-        evaporation_rate (float): Evaporation rate in mm/day
-        days_ahead (int, optional): Number of days to forecast. Defaults to 7.
-
-    Returns:
-        dict: Moisture forecast result
-    """
-    pass
-
-
-def get_available_models():
+def get_available_models() -> list[str]:
     """Quick function to get available models
 
     Returns:
         list: List of available model types
     """
-    pass
+    engine = MLEngine()
+    return engine.get_available_models()

@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 from .forms import PasswordResetForm, PasswordResetConfirmForm
 from django.template.loader import render_to_string
 from django.contrib import messages
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from .models import Role, User
 import random
@@ -58,7 +59,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        return redirect('authentication:login')
+        return redirect('home')
 
 class SignupView(FormView):
     template_name = 'authentication/signup.html'

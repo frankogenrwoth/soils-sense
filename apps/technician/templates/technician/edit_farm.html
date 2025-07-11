@@ -1,0 +1,146 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Edit Farm - {{ farm.farm_name }} - SoilSense Technician Portal{% endblock %}
+
+{% block page_title %}Edit Farm{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'technician:farm_locations' %}">Farm Locations</a> / 
+<a href="{% url 'technician:farm_detail' farm.pk %}">{{ farm.farm_name }}</a> / Edit
+{% endblock %}
+
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <a href="{% url 'technician:farm_detail' farm.pk %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Farm
+    </a>
+    <button type="submit" form="editFarmForm" class="btn btn-primary">
+        <i class="fas fa-save me-2"></i>Save Changes
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Edit Farm Information</h5>
+            
+            <form method="post" id="editFarmForm">
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="farm_name" class="form-label">Farm Name *</label>
+                        <input type="text" class="form-control" id="farm_name" name="farm_name" 
+                               value="{{ farm.farm_name }}" required>
+                        {% if form.farm_name.errors %}
+                            <div class="text-danger small">{{ form.farm_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="location" class="form-label">Location *</label>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               value="{{ farm.location }}" required>
+                        {% if form.location.errors %}
+                            <div class="text-danger small">{{ form.location.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="size_acres" class="form-label">Size (Acres)</label>
+                        <input type="number" class="form-control" id="size_acres" name="size_acres" 
+                               value="{{ farm.area_size|default:'' }}" step="0.01" min="0">
+                        {% if form.size_acres.errors %}
+                            <div class="text-danger small">{{ form.size_acres.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="soil_type" class="form-label">Soil Type</label>
+                        <select class="form-select" id="soil_type" name="soil_type">
+                            <option value="">Select Soil Type</option>
+                            <option value="Clay" {% if farm.soil_type == 'Clay' %}selected{% endif %}>Clay</option>
+                            <option value="Silt" {% if farm.soil_type == 'Silt' %}selected{% endif %}>Silt</option>
+                            <option value="Loam" {% if farm.soil_type == 'Loam' %}selected{% endif %}>Loam</option>
+                            <option value="Sandy" {% if farm.soil_type == 'Sandy' %}selected{% endif %}>Sandy</option>
+                            <option value="Peaty" {% if farm.soil_type == 'Peaty' %}selected{% endif %}>Peaty</option>
+                            <option value="Chalky" {% if farm.soil_type == 'Chalky' %}selected{% endif %}>Chalky</option>
+                        </select>
+                        {% if form.soil_type.errors %}
+                            <div class="text-danger small">{{ form.soil_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="4" placeholder="Enter farm description...">{{ farm.description|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="soil_type" class="form-label">Soil Type</label>
+                        <select class="form-select" id="soil_type" name="soil_type">
+                            <option value="">Select Soil Type</option>
+                            <option value="Clay" {% if farm.soil_type == 'Clay' %}selected{% endif %}>Clay</option>
+                            <option value="Silt" {% if farm.soil_type == 'Silt' %}selected{% endif %}>Silt</option>
+                            <option value="Loam" {% if farm.soil_type == 'Loam' %}selected{% endif %}>Loam</option>
+                            <option value="Sandy" {% if farm.soil_type == 'Sandy' %}selected{% endif %}>Sandy</option>
+                            <option value="Peaty" {% if farm.soil_type == 'Peaty' %}selected{% endif %}>Peaty</option>
+                            <option value="Chalky" {% if farm.soil_type == 'Chalky' %}selected{% endif %}>Chalky</option>
+                        </select>
+                        {% if form.soil_type.errors %}
+                            <div class="text-danger small">{{ form.soil_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+
+                </div>
+                
+                <hr class="my-4">
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'technician:farm_detail' farm.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash me-2"></i>Delete Farm
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the farm "{{ farm.farm_name }}"?</p>
+                <p class="text-danger small">This action cannot be undone and will remove all associated data.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'technician:delete_farm' farm.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Farm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

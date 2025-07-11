@@ -1,0 +1,76 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Delete Farm - {{ farm.farm_name }} - SoilSense Technician Portal{% endblock %}
+
+{% block page_title %}Delete Farm{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'technician:farm_locations' %}">Farm Locations</a> / 
+<a href="{% url 'technician:farm_detail' farm.pk %}">{{ farm.farm_name }}</a> / Delete
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="dashboard-card">
+            <div class="text-center mb-4">
+                <i class="fas fa-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-danger">Confirm Deletion</h4>
+            </div>
+            
+            <div class="alert alert-warning">
+                <h6 class="alert-heading">Warning!</h6>
+                <p class="mb-0">You are about to delete the farm <strong>"{{ farm.farm_name }}"</strong>. This action cannot be undone.</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">Farm Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Farm Name</label>
+                            <p class="mb-0 fw-semibold">{{ farm.farm_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Location</label>
+                            <p class="mb-0 fw-semibold">{{ farm.location }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Size</label>
+                            <p class="mb-0 fw-semibold">{{ farm.area_size|default:"Not specified" }} acres</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Soil Type</label>
+                            <p class="mb-0 fw-semibold">{{ farm.soil_type|default:"Not specified" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-danger">
+                <h6 class="alert-heading">What will be deleted:</h6>
+                <ul class="mb-0">
+                    <li>All soil moisture readings for this farm</li>
+                    <li>All sensor configurations and thresholds</li>
+                    <li>All reports associated with this farm</li>
+                    <li>All maintenance records</li>
+                    <li>All alerts and notifications</li>
+                </ul>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'technician:farm_detail' farm.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Farm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,59 +1,175 @@
 import joblib
 import numpy as np
-import time
 import json
 from pathlib import Path
 
-from .config import MODELS_DIR, PREDICTION_CONFIG
-from .data_processor import DataProcessor
+from ml.config import MODELS_DIR, DEFAULT_ALGORITHMS
+from ml.data_processor import DataProcessor
 
 
 class Predictor:
-    """Handles regression model predictions"""
-
     def __init__(self):
-        """Initialize Predictor with data processor and empty models container"""
         self.data_processor = DataProcessor()
         self.models = {}
+        self.preprocessors = {}
 
-    def predict(self, model_type, input_data):
-        """Make prediction using trained regression model
+    def predict(self, model_type, input_data, algorithm=None):
+        """Make prediction using trained model
 
         Args:
             model_type (str): Type of model to use for prediction
             input_data (dict): Input data dictionary
+            algorithm (str, optional): Specific algorithm to use
 
         Returns:
             dict: Prediction results including predicted value, confidence interval, and uncertainty
         """
-        pass
+        if algorithm is None:
+            algorithm = DEFAULT_ALGORITHMS.get(model_type, "random_forest")
 
-    def _load_model(self, model_type):
-        """Load a trained model from file
+        model_key = f"{model_type}_{algorithm}"
+
+        model, preprocessor, model_info = self._load_model_and_preprocessor(model_key)
+        if model is None:
+            return {"success": False, "message": f"Model '{model_key}' not found."}
+
+        try:
+            self.data_processor.load_encoders(model_type)
+            X = self.data_processor.preprocess_input(input_data, model_type)
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Input preprocessing failed: {str(e)}",
+            }
+
+        try:
+            prediction = model.predict(X)
+
+            task_type = (
+                model_info.get("task_type", "regression")
+                if model_info
+                else "regression"
+            )
+
+            if task_type == "classification":
+                # get the predicted class label
+                prediction_value = (
+                    prediction[0] if hasattr(prediction, "__getitem__") else prediction
+                )
+                # get prediction probabilities if available
+                try:
+                    prediction_proba = model.predict_proba(X)
+                    class_probabilities = (
+                        prediction_proba[0]
+                        if hasattr(prediction_proba, "__getitem__")
+                        else prediction_proba
+                    )
+                except:
+                    class_probabilities = None
+            else:
+                prediction_value = (
+                    float(prediction[0])
+                    if hasattr(prediction, "__getitem__")
+                    else float(prediction)
+                )
+                class_probabilities = None
+
+        except Exception as e:
+            return {"success": False, "message": f"Prediction failed: {str(e)}"}
+
+        try:
+            lower, upper = self.calculate_confidence_interval(model, X)
+            confidence_interval = (
+                (float(lower), float(upper))
+                if lower is not None and upper is not None
+                else None
+            )
+            uncertainty = (
+                float(upper - lower)
+                if lower is not None and upper is not None
+                else None
+            )
+        except Exception:
+            confidence_interval = None
+            uncertainty = None
+
+        result = {
+            "success": True,
+            "model_type": model_type,
+            "algorithm": algorithm,
+            "predicted_value": prediction_value,
+            "confidence_interval": confidence_interval,
+            "uncertainty": uncertainty,
+            "model_info": model_info,
+        }
+
+        # Add classification-specific information
+        if task_type == "classification" and class_probabilities is not None:
+            result["class_probabilities"] = (
+                class_probabilities.tolist()
+                if hasattr(class_probabilities, "tolist")
+                else class_probabilities
+            )
+        return result
+
+    def _load_model_and_preprocessor(self, model_key):
+        """Load a trained model and preprocessor from file
 
         Args:
-            model_type (str): Type of model to load
-        """
-        pass
-
-    def predict_multiple(self, input_data):
-        """Make predictions using all available models
-
-        Args:
-            input_data (dict): Input data dictionary
+            model_key (str): Model identifier
 
         Returns:
-            dict: Dictionary of predictions from all available models
+            tuple: (model, preprocessor, model_info)
         """
-        pass
+        if model_key in self.models:
+            return self.models[model_key], self.preprocessors.get(model_key), None
 
-    def get_available_models(self):
+        model_path = MODELS_DIR / f"{model_key}.joblib"
+        preprocessor_path = MODELS_DIR / f"{model_key}_preprocessor.joblib"
+        results_path = MODELS_DIR / f"{model_key}_results.json"
+
+        if not model_path.exists():
+            return None, None, None
+
+        try:
+            model = joblib.load(model_path)
+            preprocessor = (
+                joblib.load(preprocessor_path) if preprocessor_path.exists() else None
+            )
+
+            model_info = {}
+            if results_path.exists():
+                with open(results_path, "r") as f:
+                    model_info = json.load(f)
+
+            # Cache the model and preprocessor
+            self.models[model_key] = model
+            if preprocessor:
+                self.preprocessors[model_key] = preprocessor
+
+            return model, preprocessor, model_info
+        except Exception as e:
+            print(f"Failed to load model '{model_key}': {e}")
+            return None, None, None
+
+    def get_available_models(self) -> list[str]:
         """Get list of available trained models
 
         Returns:
-            list: List of available model types
+            list: List of available model keys
         """
-        pass
+        if not MODELS_DIR.exists():
+            return []
+
+        model_files = [
+            f
+            for f in MODELS_DIR.iterdir()
+            if f.is_file()
+            and f.suffix == ".joblib"
+            and not f.name.endswith("_preprocessor.joblib")
+        ]
+        model_keys = [f.stem for f in model_files]
+        return model_keys
 
     def validate_input(self, model_type, input_data):
         """Validate input data for a specific model
@@ -65,7 +181,37 @@ class Predictor:
         Returns:
             dict: Validation result with 'valid' boolean and 'message' string
         """
-        pass
+        from .config import MODEL_CONFIGS
+
+        if model_type not in MODEL_CONFIGS:
+            return {"valid": False, "message": f"Unknown model type: {model_type}"}
+
+        # Get the features that would be used after feature engineering
+        # This is a simplified validation - the actual validation happens in preprocess_input
+        required_features = MODEL_CONFIGS[model_type].get("features", [])
+
+        # Check for basic required features (before engineering)
+        basic_features = [
+            "sensor_id",
+            "location",
+            "temperature_celsius",
+            "humidity_percent",
+            "battery_voltage",
+            "status",
+            "irrigation_action",
+            "timestamp",
+        ]
+        missing = [
+            f for f in basic_features if f not in input_data and f in required_features
+        ]
+
+        if missing:
+            return {
+                "valid": False,
+                "message": f"Missing required features: {', '.join(missing)}",
+            }
+
+        return {"valid": True, "message": "All required features are present."}
 
     def calculate_confidence_interval(self, model, X, confidence_level=0.95):
         """Calculate confidence interval for prediction
@@ -78,87 +224,110 @@ class Predictor:
         Returns:
             tuple: (lower_bound, upper_bound) confidence interval
         """
-        pass
+        import scipy.stats
+
+        if hasattr(model, "estimators_"):
+            all_preds = np.array([est.predict(X)[0] for est in model.estimators_])
+            mean_pred = np.mean(all_preds)
+            std_pred = np.std(all_preds)
+            z = scipy.stats.norm.ppf(1 - (1 - confidence_level) / 2)
+            lower = mean_pred - z * std_pred
+            upper = mean_pred + z * std_pred
+            return lower, upper
+
+        return None, None
 
 
 class SoilMoisturePredictor:
-    """Specialized predictor for soil moisture level prediction"""
+    """Regressor for soil moisture level prediction"""
 
     def __init__(self):
-        """Initialize SoilMoisturePredictor with a Predictor instance"""
         self.predictor = Predictor()
 
     def predict_moisture(
-        self, temperature, ph_level, humidity, rainfall, previous_moisture
+        self,
+        sensor_id,
+        location,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage,
+        status,
+        irrigation_action,
+        timestamp,
+        algorithm=None,
     ):
         """Predict soil moisture level based on environmental factors
 
         Args:
-            temperature (float): Temperature in Celsius
-            ph_level (float): Soil pH level
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            previous_moisture (float): Previous moisture level percentage
+            sensor_id (str): Sensor identifier
+            location (str): Location identifier
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
+            status (str): Sensor status
+            irrigation_action (str): Irrigation action
+            timestamp (str): Timestamp
+            algorithm (str, optional): Specific algorithm to use
 
         Returns:
             dict: Soil moisture prediction result with value and confidence interval
         """
-        pass
+        input_data = {
+            "sensor_id": sensor_id,
+            "location": location,
+            "temperature_celsius": temperature_celsius,
+            "humidity_percent": humidity_percent,
+            "battery_voltage": battery_voltage,
+            "status": status,
+            "irrigation_action": irrigation_action,
+            "timestamp": timestamp,
+        }
+        return self.predictor.predict("soil_moisture_predictor", input_data, algorithm)
 
 
 class IrrigationRecommender:
-    """Specialized predictor for irrigation recommendations"""
+    """Classifier for irrigation recommendations"""
 
     def __init__(self):
-        """Initialize IrrigationRecommender with a Predictor instance"""
         self.predictor = Predictor()
 
     def recommend_irrigation(
-        self, moisture_level, temperature, humidity, rainfall, crop_type, growth_stage
-    ):
-        """Recommend irrigation amount based on current conditions
-
-        Args:
-            moisture_level (float): Current soil moisture percentage
-            temperature (float): Temperature in Celsius
-            humidity (float): Air humidity percentage
-            rainfall (float): Rainfall amount in mm
-            crop_type (str): Type of crop (e.g., 'maize', 'beans', 'rice')
-            growth_stage (str): Growth stage (e.g., 'seedling', 'vegetative', 'flowering', 'mature')
-
-        Returns:
-            dict: Irrigation recommendation with amount and confidence interval
-        """
-        pass
-
-
-class MoistureForecaster:
-    """Specialized predictor for moisture level forecasting"""
-
-    def __init__(self):
-        """Initialize MoistureForecaster with a Predictor instance"""
-        self.predictor = Predictor()
-
-    def forecast_moisture(
         self,
-        current_moisture,
-        temperature,
-        humidity,
-        rainfall_forecast,
-        evaporation_rate,
-        days_ahead=7,
+        soil_moisture_percent,
+        temperature_celsius,
+        humidity_percent,
+        battery_voltage=3.8,
+        status="Normal",
+        timestamp=None,
+        algorithm=None,
     ):
-        """Forecast future moisture levels
+        """Recommend irrigation action based on sensor data
 
         Args:
-            current_moisture (float): Current soil moisture percentage
-            temperature (float): Temperature in Celsius
-            humidity (float): Air humidity percentage
-            rainfall_forecast (float): Forecasted rainfall amount
-            evaporation_rate (float): Evaporation rate in mm/day
-            days_ahead (int, optional): Number of days to forecast. Defaults to 7.
+            soil_moisture_percent (float): Current soil moisture percentage
+            temperature_celsius (float): Temperature in Celsius
+            humidity_percent (float): Air humidity percentage
+            battery_voltage (float): Sensor battery voltage
+            status (str): Sensor status
+            timestamp (str, optional): Timestamp (if None, uses current time)
+            algorithm (str, optional): Specific algorithm to use
 
         Returns:
-            dict: Moisture forecast with predicted values and confidence intervals
+            dict: Irrigation recommendation result
         """
-        pass
+        import datetime
+
+        if timestamp is None:
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        input_data = {
+            "soil_moisture_percent": soil_moisture_percent,
+            "temperature_celsius": temperature_celsius,
+            "humidity_percent": humidity_percent,
+            "battery_voltage": battery_voltage,
+            "status": status,
+            "timestamp": timestamp,
+        }
+        return self.predictor.predict(
+            "irrigation_recommendation", input_data, algorithm
+        )

@@ -1,111 +1,273 @@
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import (
+    RandomForestRegressor,
+    GradientBoostingRegressor,
+    RandomForestClassifier,
+    GradientBoostingClassifier,
+)
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, GridSearchCV
 import json
 import time
 from pathlib import Path
+import warnings
 
-from .config import MODELS_DIR, MODEL_CONFIGS
-from .data_processor import DataProcessor
+warnings.filterwarnings("ignore")
+
+from ml.config import (
+    MODELS_DIR,
+    MODEL_CONFIGS,
+    MODEL_ALGORITHMS,
+    DEFAULT_ALGORITHMS,
+    CLASSIFICATION_ALGORITHMS,
+)
+from ml.data_processor import DataProcessor
 
 
 class ModelTrainer:
-    """Handles regression model training and evaluation"""
+    """Train and evaluate models"""
 
     def __init__(self):
-        """Initialize ModelTrainer with data processor and empty containers for models and results"""
         self.data_processor = DataProcessor()
         self.models = {}
         self.training_results = {}
 
-    def train_model(self, model_type, custom_data=None):
+    def train_model(
+        self, model_type, algorithm=None, custom_data=None, hyperparameter_tuning=False
+    ):
         """Train a regression model for the specified type
 
         Args:
-            model_type (str): Type of model to train
+            model_type (str): Type of model to train (e.g., 'soil_moisture_predictor')
+            algorithm (str, optional): Algorithm to use (e.g., 'random_forest', 'gradient_boosting')
             custom_data (pandas.DataFrame, optional): Custom training data
+            hyperparameter_tuning (bool): Whether to perform hyperparameter tuning
 
         Returns:
             dict: Training results including R² score, RMSE, and model info
         """
+        if algorithm is None:
+            algorithm = DEFAULT_ALGORITHMS.get(model_type, "gradient_boosting")
+
         if custom_data is None:
             data = self.data_processor.load_training_data(model_type)
         else:
             data = custom_data
-        X, y = self.data_processor.prepare_data(data, model_type, self.features, self.target)
-        model = self._create_model(MODEL_CONFIGS[model_type])
-        model.fit(X, y)
-        self._save_model(model_type, model)
-        self.training_results[model_type] = self._get_model_info(model_type)
-        return self.training_results[model_type]
 
+        try:
+            X_train, X_test, y_train, y_test, feature_names, preprocessor = (
+                self.data_processor.prepare_data(data=data, model_type=model_type)
+            )
+        except Exception as e:
+            raise
 
-    def _create_model(self, config):
-        """Create regression model based on configuration
+        start_time = time.time()
+
+        task_type = MODEL_CONFIGS[model_type].get("task_type", "regression")
+
+        if task_type == "classification":
+            algorithm_config = CLASSIFICATION_ALGORITHMS.get(algorithm, {})
+        else:
+            algorithm_config = MODEL_ALGORITHMS.get(algorithm, {})
+
+        model = self._create_model(algorithm, algorithm_config, task_type)
+        model.fit(X_train, y_train)
+
+        training_time = time.time() - start_time
+
+        y_pred_train = model.predict(X_train)
+        y_pred_test = model.predict(X_test)
+
+        if task_type == "classification":
+            from sklearn.metrics import accuracy_score, f1_score
+
+            train_accuracy = accuracy_score(y_train, y_pred_train)
+            test_accuracy = accuracy_score(y_test, y_pred_test)
+            train_f1 = f1_score(y_train, y_pred_train, average="weighted")
+            test_f1 = f1_score(y_test, y_pred_test, average="weighted")
+
+            cv_scores = cross_val_score(
+                model, X_train, y_train, cv=5, scoring="accuracy"
+            )
+            cv_mean = cv_scores.mean()
+            cv_std = cv_scores.std()
+
+            train_r2 = test_r2 = train_rmse = test_rmse = train_mae = test_mae = None
+        else:
+            train_r2 = r2_score(y_train, y_pred_train)
+            test_r2 = r2_score(y_test, y_pred_test)
+            train_rmse = np.sqrt(mean_squared_error(y_train, y_pred_train))
+            test_rmse = np.sqrt(mean_squared_error(y_test, y_pred_test))
+            train_mae = mean_absolute_error(y_train, y_pred_train)
+            test_mae = mean_absolute_error(y_test, y_pred_test)
+
+            cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring="r2")
+            cv_mean = cv_scores.mean()
+            cv_std = cv_scores.std()
+
+            train_accuracy = test_accuracy = train_f1 = test_f1 = None
+
+        model_key = f"{model_type}_{algorithm}"
+        self.models[model_key] = model
+        self.training_results[model_key] = {
+            "model_type": model_type,
+            "algorithm": algorithm,
+            "task_type": task_type,
+            "training_time": training_time,
+            "n_samples": len(X_train),
+            "n_features": len(feature_names),
+            "feature_names": feature_names,
+            "feature_columns": self.data_processor.feature_columns.get(model_type, []),
+            "model_name": model.__class__.__name__,
+        }
+
+        if task_type == "classification":
+            self.training_results[model_key].update(
+                {
+                    "train_accuracy": train_accuracy,
+                    "test_accuracy": test_accuracy,
+                    "train_f1": train_f1,
+                    "test_f1": test_f1,
+                    "cv_mean": cv_mean,
+                    "cv_std": cv_std,
+                }
+            )
+        else:
+            self.training_results[model_key].update(
+                {
+                    "train_r2": train_r2,
+                    "test_r2": test_r2,
+                    "train_rmse": train_rmse,
+                    "test_rmse": test_rmse,
+                    "train_mae": train_mae,
+                    "test_mae": test_mae,
+                    "cv_mean": cv_mean,
+                    "cv_std": cv_std,
+                }
+            )
+
+        self._save_model(model_key, model, preprocessor)
+
+        print(f"Training Results for {model_type} ({algorithm}) - {task_type.upper()}:")
+        if task_type == "classification":
+            print(f"Training Accuracy: {train_accuracy:.4f}")
+            print(f"Test Accuracy: {test_accuracy:.4f}")
+            print(f"Training F1: {train_f1:.4f}")
+            print(f"Test F1: {test_f1:.4f}")
+            print(f"Cross-validation Accuracy: {cv_mean:.4f} (±{cv_std:.4f})")
+        else:
+            print(f"Training R²: {train_r2:.4f}")
+            print(f"Test R²: {test_r2:.4f}")
+            print(f"Training RMSE: {train_rmse:.4f}")
+            print(f"Test RMSE: {test_rmse:.4f}")
+            print(f"Cross-validation R²: {cv_mean:.4f} (±{cv_std:.4f})")
+
+        print(f"Training time: {training_time:.2f} seconds")
+
+        return self.training_results[model_key]
+
+    def _create_model(self, algorithm, config, task_type="regression"):
+        """Create model based on algorithm, configuration, and task type
 
         Args:
+            algorithm (str): Algorithm name
             config (dict): Model configuration parameters
+            task_type (str): Type of task ("regression" or "classification")
 
         Returns:
-            sklearn.base.BaseEstimator: Regression model instance
+            sklearn.base.BaseEstimator: Model instance
         """
-        if model_type == "random_forest":
-            model = RandomForestRegressor(**config)
-        elif model_type == "svr":
-            model = SVR(**config)
-        elif model_type == "mlp":
-            model = MLPRegressor(**config)
-        return model
+        if task_type == "classification":
+            if algorithm == "random_forest":
+                return RandomForestClassifier(**config)
+            elif algorithm == "gradient_boosting":
+                return GradientBoostingClassifier(**config)
+            elif algorithm == "logistic_regression":
+                return LogisticRegression(**config)
+            else:
+                raise ValueError(f"Unknown classification algorithm: {algorithm}")
+        else:  # regression
+            if algorithm == "random_forest":
+                return RandomForestRegressor(**config)
+            elif algorithm == "gradient_boosting":
+                return GradientBoostingRegressor(**config)
+            elif algorithm == "svr":
+                return SVR(**config)
+            elif algorithm == "mlp":
+                return MLPRegressor(**config)
+            elif algorithm == "linear_regression":
+                return LinearRegression(**config)
+            else:
+                raise ValueError(f"Unknown regression algorithm: {algorithm}")
 
-
-    def _save_model(self, model_type, model):
-        """Save trained model to file
+    def _save_model(self, model_key, model, preprocessor):
+        """Save trained model and preprocessor to file
 
         Args:
-            model_type (str): Type of model
+            model_key (str): Unique model identifier
             model: Trained model instance
+            preprocessor: Fitted preprocessor
         """
-        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        model_path = MODELS_DIR / f"{model_key}.joblib"
         joblib.dump(model, model_path)
-        print(f"Model saved to {model_path}")
 
-    def load_model(self, model_type):
+        preprocessor_path = MODELS_DIR / f"{model_key}_preprocessor.joblib"
+        joblib.dump(preprocessor, preprocessor_path)
+
+        results_path = MODELS_DIR / f"{model_key}_results.json"
+        with open(results_path, "w") as f:
+            json.dump(self.training_results[model_key], f, indent=2, default=str)
+
+    def load_model(self, model_key):
         """Load a trained model from file
 
         Args:
-            model_type (str): Type of model to load
+            model_key (str): Model identifier
 
         Returns:
-            sklearn.base.BaseEstimator: Loaded model instance
+            tuple: (model, preprocessor, results)
         """
-        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
+        model_path = MODELS_DIR / f"{model_key}.joblib"
+        preprocessor_path = MODELS_DIR / f"{model_key}_preprocessor.joblib"
+        results_path = MODELS_DIR / f"{model_key}_results.json"
+
         if not model_path.exists():
             raise FileNotFoundError(f"Model file not found: {model_path}")
-        return joblib.load(model_path)
 
-    def get_model_info(self, model_type):
+        model = joblib.load(model_path)
+        preprocessor = (
+            joblib.load(preprocessor_path) if preprocessor_path.exists() else None
+        )
+
+        results = {}
+        if results_path.exists():
+            with open(results_path, "r") as f:
+                results = json.load(f)
+
+        return model, preprocessor, results
+
+    def get_model_info(self, model_key):
         """Get information about a trained model
 
         Args:
-            model_type (str): Type of model
+            model_key (str): Model identifier
 
         Returns:
-            dict: Model information including R² score, RMSE, training time, etc.
+            dict: Model information
         """
-        model = self.load_model(model_type)
-        return {
-            "model_type": model_type,
-            "model_name": model.__class__.__name__,
-            "features": self.features,
-            "target": self.target,
-            "training_time": self.training_results[model_type]["training_time"],
-        }
+        if model_key in self.training_results:
+            return self.training_results[model_key]
 
+        try:
+            _, _, results = self.load_model(model_key)
+            return results
+        except FileNotFoundError:
+            return {"error": f"Model {model_key} not found"}
 
     def list_trained_models(self):
         """List all trained models with their information
@@ -113,101 +275,33 @@ class ModelTrainer:
         Returns:
             list: List of dictionaries containing model information
         """
-        model_files = list(Path(MODELS_DIR).glob("*.joblib"))
+        model_files = list(MODELS_DIR.glob("*_results.json"))
         models = []
         for file in model_files:
-            model_type = file.stem
-            model_info = self.get_model_info(model_type)
+            model_key = file.stem.replace("_results", "")
+            model_info = self.get_model_info(model_key)
             models.append(model_info)
         return models
 
-
-    def retrain_model(self, model_type, new_data=None):
-        """Retrain an existing model with new data
+    def get_best_model(self, model_type):
+        """Get the best performing model for a specific type
 
         Args:
-            model_type (str): Type of model to retrain
-            new_data (pandas.DataFrame, optional): New training data
+            model_type (str): Type of model
 
         Returns:
-            dict: Updated training results
+            str: Best model key
         """
-        if new_data is None:
-        # If no new_data is provided, reload the original training data
-        data = self.data_processor.load_training_data(model_type)
-        df = pd.DataFrame(data)
-        X = df[self.features]
-        y = df[self.target]
-        # If new_data is provided, concatenate it with the original data
-        if new_data is not None:
-            if not isinstance(new_data, pd.DataFrame):
-                new_data = pd.DataFrame(new_data)
-            # Ensure new_data has the required columns
-            if not set(self.features + [self.target]).issubset(new_data.columns):
-                raise ValueError(f"New data must contain columns: {self.features + [self.target]}")
-            X_new = new_data[self.features]
-            y_new = new_data[self.target]
-            X = pd.concat([X, X_new], ignore_index=True)
-            y = pd.concat([y, y_new], ignore_index=True)
+        pass
 
-        # Refit the model
-        model = self._initialize_model(model_type)
-        start_time = time.time()
-        model.fit(X, y)
-        training_time = time.time() - start_time
-
-        # Save the retrained model
-        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
-        joblib.dump(model, model_path)
-
-        # Update training results
-        self.training_results[model_type] = {
-            "training_time": training_time,
-            "n_samples": len(X),
-            "model_name": model.__class__.__name__,
-        }
-
-        return self.training_results[model_type]
-        
-            
-
-
-    def evaluate_model(self, model_type, test_data):
+    def evaluate_model(self, model_key, test_data):
         """Evaluate a model on new test data
 
         Args:
-            model_type (str): Type of model to evaluate
-            test_data (dict): Test data dictionary
+            model_key (str): Model identifier
+            test_data (pandas.DataFrame): Test data
 
         Returns:
-            dict: Evaluation results including predictions and confidence intervals
-        """
-        # Evaluate a model on new test data
-        # test_data is expected to be a dict or DataFrame with all required features
-
-        # Load the trained model
-        model_path = Path(MODELS_DIR) / f"{model_type}.joblib"
-        if not model_path.exists():
-            raise FileNotFoundError(f"Trained model for '{model_type}' not found at {model_path}")
-        model = joblib.load(model_path)
-
-        # Prepare test data
-        if isinstance(test_data, dict):
-            test_df = pd.DataFrame([test_data])
-        else:
-            test_df = pd.DataFrame(test_data)
-
-       
-
-    def calculate_prediction_interval(self, model, X_test, confidence_level=0.95):
-        """Calculate prediction intervals for regression model
-
-        Args:
-            model: Trained regression model
-            X_test (numpy.ndarray): Test features
-            confidence_level (float): Confidence level for interval
-
-        Returns:
-            tuple: (lower_bound, upper_bound) prediction intervals
+            dict: Evaluation results
         """
         pass
