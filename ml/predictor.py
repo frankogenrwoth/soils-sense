@@ -3,61 +3,48 @@ import numpy as np
 import json
 from pathlib import Path
 
-# Handle imports for both direct execution and module import
-try:
-    from .config import MODELS_DIR, DEFAULT_ALGORITHMS
-    from .data_processor import DataProcessor
-except ImportError:
-    from config import MODELS_DIR, DEFAULT_ALGORITHMS
-    from data_processor import DataProcessor
+from ml.config import MODELS_DIR, DEFAULT_ALGORITHMS
+from ml.data_processor import DataProcessor
 
 
 class Predictor:
-    """Handles regression model predictions"""
-
     def __init__(self):
-        """Initialize Predictor with data processor and empty models container"""
         self.data_processor = DataProcessor()
         self.models = {}
         self.preprocessors = {}
 
     def predict(self, model_type, input_data, algorithm=None):
-        """Make prediction using trained regression model
+        """Make prediction using trained model
 
         Args:
-            model_type (str): Type of model to use for prediction (e.g., 'soil_moisture_predictor')
+            model_type (str): Type of model to use for prediction
             input_data (dict): Input data dictionary
-            algorithm (str, optional): Specific algorithm to use (e.g., 'random_forest')
+            algorithm (str, optional): Specific algorithm to use
 
         Returns:
             dict: Prediction results including predicted value, confidence interval, and uncertainty
         """
-        # Determine model key
         if algorithm is None:
             algorithm = DEFAULT_ALGORITHMS.get(model_type, "random_forest")
 
         model_key = f"{model_type}_{algorithm}"
 
-        # Load the model and preprocessor
         model, preprocessor, model_info = self._load_model_and_preprocessor(model_key)
         if model is None:
             return {"success": False, "message": f"Model '{model_key}' not found."}
 
-        # Preprocess the input data
-        # try:
-        self.data_processor.load_encoders(model_type)
-        X = self.data_processor.preprocess_input(input_data, model_type)
-        # except Exception as e:
-        #     return {
-        #         "success": False,
-        #         "message": f"Input preprocessing failed: {str(e)}",
-        #     }
+        try:
+            self.data_processor.load_encoders(model_type)
+            X = self.data_processor.preprocess_input(input_data, model_type)
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Input preprocessing failed: {str(e)}",
+            }
 
-        # Make prediction
         try:
             prediction = model.predict(X)
 
-            # Handle different prediction types based on task type
             task_type = (
                 model_info.get("task_type", "regression")
                 if model_info
@@ -65,11 +52,11 @@ class Predictor:
             )
 
             if task_type == "classification":
-                # For classification, return the predicted class label
+                # get the predicted class label
                 prediction_value = (
                     prediction[0] if hasattr(prediction, "__getitem__") else prediction
                 )
-                # Also get prediction probabilities if available
+                # get prediction probabilities if available
                 try:
                     prediction_proba = model.predict_proba(X)
                     class_probabilities = (
@@ -80,7 +67,6 @@ class Predictor:
                 except:
                     class_probabilities = None
             else:
-                # For regression, convert to float
                 prediction_value = (
                     float(prediction[0])
                     if hasattr(prediction, "__getitem__")
@@ -91,7 +77,6 @@ class Predictor:
         except Exception as e:
             return {"success": False, "message": f"Prediction failed: {str(e)}"}
 
-        # Calculate confidence interval (optional)
         try:
             lower, upper = self.calculate_confidence_interval(model, X)
             confidence_interval = (
@@ -131,7 +116,7 @@ class Predictor:
         """Load a trained model and preprocessor from file
 
         Args:
-            model_key (str): Model identifier (e.g., 'soil_moisture_predictor_random_forest')
+            model_key (str): Model identifier
 
         Returns:
             tuple: (model, preprocessor, model_info)
@@ -167,36 +152,7 @@ class Predictor:
             print(f"Failed to load model '{model_key}': {e}")
             return None, None, None
 
-    def predict_multiple(self, input_data, model_type=None):
-        """Make predictions using all available models or specific model type
-
-        Args:
-            input_data (dict): Input data dictionary
-            model_type (str, optional): Specific model type to use
-
-        Returns:
-            dict: Dictionary of predictions from available models
-        """
-        results = {}
-
-        if model_type:
-            # Predict with specific model type using default algorithm
-            algorithm = DEFAULT_ALGORITHMS.get(model_type, "random_forest")
-            model_key = f"{model_type}_{algorithm}"
-            results[model_key] = self.predict(model_type, input_data, algorithm)
-        else:
-            # Predict with all available models
-            available_models = self.get_available_models()
-            for model_key in available_models:
-                # Extract model_type and algorithm from model_key
-                parts = model_key.split("_", 1)
-                if len(parts) == 2:
-                    model_type, algorithm = parts
-                    results[model_key] = self.predict(model_type, input_data, algorithm)
-
-        return results
-
-    def get_available_models(self):
+    def get_available_models(self) -> list[str]:
         """Get list of available trained models
 
         Returns:
@@ -270,7 +226,6 @@ class Predictor:
         """
         import scipy.stats
 
-        # RandomForestRegressor: use predictions from all estimators
         if hasattr(model, "estimators_"):
             all_preds = np.array([est.predict(X)[0] for est in model.estimators_])
             mean_pred = np.mean(all_preds)
@@ -280,25 +235,13 @@ class Predictor:
             upper = mean_pred + z * std_pred
             return lower, upper
 
-        # GradientBoostingRegressor: use predictions from all estimators
-        elif hasattr(model, "estimators_"):
-            all_preds = np.array([est.predict(X)[0] for est in model.estimators_])
-            mean_pred = np.mean(all_preds)
-            std_pred = np.std(all_preds)
-            z = scipy.stats.norm.ppf(1 - (1 - confidence_level) / 2)
-            lower = mean_pred - z * std_pred
-            upper = mean_pred + z * std_pred
-            return lower, upper
-
-        # For other models, return None (not implemented)
         return None, None
 
 
 class SoilMoisturePredictor:
-    """Specialized predictor for soil moisture level prediction"""
+    """Regressor for soil moisture level prediction"""
 
     def __init__(self):
-        """Initialize SoilMoisturePredictor with a Predictor instance"""
         self.predictor = Predictor()
 
     def predict_moisture(
@@ -343,10 +286,9 @@ class SoilMoisturePredictor:
 
 
 class IrrigationRecommender:
-    """Specialized predictor for irrigation recommendations"""
+    """Classifier for irrigation recommendations"""
 
     def __init__(self):
-        """Initialize IrrigationRecommender with a Predictor instance"""
         self.predictor = Predictor()
 
     def recommend_irrigation(

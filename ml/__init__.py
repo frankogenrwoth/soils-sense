@@ -135,17 +135,6 @@ class MLEngine:
             timestamp,
         )
 
-    def predict_all(self, input_data: dict) -> dict:
-        """Make predictions using all available models
-
-        Args:
-            input_data (dict): Input data dictionary
-
-        Returns:
-            dict: Dictionary of predictions from all models
-        """
-        return self.predictor.predict_multiple(input_data)
-
     def get_available_models(self) -> list[str]:
         """Get list of available trained models
 
