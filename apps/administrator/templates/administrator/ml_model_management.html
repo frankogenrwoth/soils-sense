@@ -35,23 +35,99 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">algorithm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">n_samples</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">training_time</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">SoilMoistureV1</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Active</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <button class="text-blue-600 hover:underline mr-2">Retrain</button>
-                        <button class="text-red-600 hover:underline">Delete</button>
-                    </td>
-                </tr>
+                {% for model in available_models %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.n_samples }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.training_time }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button class="text-blue-600 hover:underline mr-2">Retrain</button>
+                            <button class="text-red-600 hover:underline">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
                 <!-- More model rows here -->
             </tbody>
         </table>
     </div>
-    <p class="text-gray-400 mt-4">(Model list placeholder)</p>
+</div>
+
+<div class="bg-white shadow rounded-lg p-6 mt-4">
+    <h3 class="text-lg font-semibold text-green-700 mb-4">Soil Moisture Predictor Playground</h3>
+    <div class="overflow-x-auto">
+        <form method="post">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">sensor_id</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">location</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">temperature_celsius</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">humidity_percent</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">battery_voltage</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">irrigation_action</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">timestamp</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.sensor_id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.location }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.temperature_celsius }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.humidity_percent }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.battery_voltage }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.status }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.irrigation_action }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.timestamp }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% csrf_token %}
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition my-4">Predict</button>
+        </form>
+        <p class="font-semibold">Predicted Soil Moisture: <strong class="text-green-700">{{ predicted_soil_moisture }}</strong></p>
+    </div>
+</div>
+
+
+<div class="bg-white shadow rounded-lg p-6 mt-4">
+    <h3 class="text-lg font-semibold text-green-700 mb-4">Irrigation Recommendation Playground</h3>
+    <div class="overflow-x-auto">
+        <form method="post">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">soil_moisture_percent</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">temperature_celsius</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">humidity_percent</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">battery_voltage</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">timestamp</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.soil_moisture_percent }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.temperature_celsius }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.humidity_percent }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.battery_voltage }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.status }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.timestamp }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% csrf_token %}
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition my-4">Recommend</button>
+        </form>
+        <p class="font-semibold">Predicted Irrigation Recommendation: <strong class="text-green-700">{{ predicted_irrigation_recommendation }}</strong></p>
+    </div>
 </div>
 {% endblock %}
