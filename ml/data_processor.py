@@ -57,6 +57,34 @@ class DataProcessor:
         """
         df = data.copy()
 
+        # Remove duplicate rows
+        df = df.drop_duplicates()
+
+        # Handle outliers for numeric columns (cap to 1.5*IQR)
+        for col in df.select_dtypes(include='number').columns:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower = Q1 - 1.5 * IQR
+            upper = Q3 + 1.5 * IQR
+            df[col] = df[col].clip(lower, upper)
+
+        # Correct invalid values (domain-specific)
+        if 'temperature_celsius' in df.columns:
+            # Remove negative temperatures (set to NaN for imputation later)
+            df.loc[df['temperature_celsius'] < -30, 'temperature_celsius'] = None  # unlikely to be valid
+        if 'humidity_percent' in df.columns:
+            # Humidity should be between 0 and 100
+            df.loc[df['humidity_percent'] < 0, 'humidity_percent'] = 0
+            df.loc[df['humidity_percent'] > 100, 'humidity_percent'] = 100
+        if 'battery_voltage' in df.columns:
+            # Battery voltage should be positive
+            df.loc[df['battery_voltage'] < 0, 'battery_voltage'] = None
+        if 'soil_moisture_percent' in df.columns:
+            # Soil moisture should be between 0 and 100
+            df.loc[df['soil_moisture_percent'] < 0, 'soil_moisture_percent'] = 0
+            df.loc[df['soil_moisture_percent'] > 100, 'soil_moisture_percent'] = 100
+
         if model_type == "soil_moisture_predictor":
             if "timestamp" in df.columns:
                 if df["timestamp"].dtype == "object":
