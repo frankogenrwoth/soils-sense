@@ -4,11 +4,11 @@ from ml import MLEngine
 def test_ml_engine():
     ml_engine = MLEngine()
 
-    # training = ml_engine.train_soil_moisture_predictor()
+    training = ml_engine.train_soil_moisture_predictor()
 
 
 
-    # print(training, "\n" * 5)
+    print(training, "\n" * 5)
 
     test_data = {
         "sensor_id": "1234567890",
