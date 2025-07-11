@@ -32,13 +32,14 @@ class DataProcessor:
             model_type (str): Type of model (e.g., 'soil_moisture_predictor', 'irrigation_recommendation')
 
         Returns:
-            pandas.DataFrame: Training data
+            tuple: (pandas.DataFrame, dict) - Training data and inspection findings
         """
         data_path = DATA_DIR / f"{model_type}.csv"
 
         if data_path.exists():
             data = pd.read_csv(data_path)
-            return data
+            findings = self.inspect_dataframe(data)
+            return data, findings
         else:
             raise FileNotFoundError(
                 f"Training data for {model_type} not found at {data_path}"
@@ -52,9 +53,59 @@ class DataProcessor:
             model_type (str): Type of model
 
         Returns:
-            pandas.DataFrame: Data with engineered features
+            tuple: (pandas.DataFrame, dict) - Data with engineered features and cleaning report
         """
         df = data.copy()
+        cleaning_report = {}
+
+        # Remove duplicate rows
+        num_duplicates = df.duplicated().sum()
+        df = df.drop_duplicates()
+        cleaning_report['duplicates_removed'] = int(num_duplicates)
+
+        # Handle outliers for numeric columns (cap to 1.5*IQR)
+        outlier_caps = {}
+        for col in df.select_dtypes(include='number').columns:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower = Q1 - 1.5 * IQR
+            upper = Q3 + 1.5 * IQR
+            before = df[col].copy()
+            df[col] = df[col].clip(lower, upper)
+            capped = (before != df[col]).sum()
+            outlier_caps[col] = int(capped)
+        cleaning_report['outliers_capped'] = outlier_caps
+
+        # Correct invalid values (domain-specific)
+        invalid_corrections = {}
+        if 'temperature_celsius' in df.columns:
+            # Remove negative temperatures (set to NaN for imputation later)
+            mask = df['temperature_celsius'] < -30
+            invalid_corrections['temperature_celsius_invalid'] = int(mask.sum())
+            df.loc[mask, 'temperature_celsius'] = None  # unlikely to be valid
+        if 'humidity_percent' in df.columns:
+            # Humidity should be between 0 and 100
+            mask_low = df['humidity_percent'] < 0
+            mask_high = df['humidity_percent'] > 100
+            invalid_corrections['humidity_percent_below_0'] = int(mask_low.sum())
+            invalid_corrections['humidity_percent_above_100'] = int(mask_high.sum())
+            df.loc[mask_low, 'humidity_percent'] = 0
+            df.loc[mask_high, 'humidity_percent'] = 100
+        if 'battery_voltage' in df.columns:
+            # Battery voltage should be positive
+            mask = df['battery_voltage'] < 0
+            invalid_corrections['battery_voltage_negative'] = int(mask.sum())
+            df.loc[mask, 'battery_voltage'] = None
+        if 'soil_moisture_percent' in df.columns:
+            # Soil moisture should be between 0 and 100
+            mask_low = df['soil_moisture_percent'] < 0
+            mask_high = df['soil_moisture_percent'] > 100
+            invalid_corrections['soil_moisture_percent_below_0'] = int(mask_low.sum())
+            invalid_corrections['soil_moisture_percent_above_100'] = int(mask_high.sum())
+            df.loc[mask_low, 'soil_moisture_percent'] = 0
+            df.loc[mask_high, 'soil_moisture_percent'] = 100
+        cleaning_report['invalid_value_corrections'] = invalid_corrections
 
         if model_type == "soil_moisture_predictor":
             if "timestamp" in df.columns:
@@ -118,7 +169,7 @@ class DataProcessor:
                 if feature in df.columns:
                     df = df.drop(feature, axis=1)
 
-        return df
+        return df, cleaning_report
 
     def _create_preprocessing_pipeline(self, data, model_type):
         """Create a preprocessing pipeline for the given model type
@@ -266,7 +317,7 @@ class DataProcessor:
             target = MODEL_CONFIGS[model_type]["target"]
 
         # Engineer features based on model type
-        df_engineered = self._engineer_features(df, model_type)
+        df_engineered, cleaning_report = self._engineer_features(df, model_type)
 
         # Create preprocessing pipeline
         preprocessor, numeric_features, categorical_features = (
@@ -497,3 +548,49 @@ class DataProcessor:
                 "valid": True,
                 "message": f"Prediction {prediction} is within the expected range of {mean - 3*std} to {mean + 3*std}",
             }
+
+    def inspect_dataframe(self, df):
+        """Inspect a DataFrame and return a summary of findings for data quality checks.
+
+        Args:
+            df (pandas.DataFrame): DataFrame to inspect
+
+        Returns:
+            dict: Summary of findings
+        """
+        findings = {}
+
+        # 1. Number of rows and columns
+        findings['num_rows'] = df.shape[0]
+        findings['num_columns'] = df.shape[1]
+
+        # 2. Column names and data types
+        findings['columns'] = list(df.columns)
+        findings['dtypes'] = df.dtypes.apply(str).to_dict()
+
+        # 3. Missing values
+        findings['missing_values'] = df.isnull().sum().to_dict()
+
+        # 4. Unique values per column
+        findings['unique_values'] = df.nunique().to_dict()
+
+        # 5. Statistical summary for numeric columns
+        findings['numeric_summary'] = df.describe().to_dict()
+
+        # 6. Outliers (simple: values outside 1.5*IQR)
+        outliers = {}
+        for col in df.select_dtypes(include='number').columns:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            outliers[col] = int(((df[col] < (Q1 - 1.5 * IQR)) | (df[col] > (Q3 + 1.5 * IQR))).sum())
+        findings['outliers'] = outliers
+
+        # 7. Duplicates
+        findings['num_duplicates'] = int(df.duplicated().sum())
+
+        # 8. Date/time columns
+        datetime_cols = [col for col in df.columns if pd.api.types.is_datetime64_any_dtype(df[col])]
+        findings['datetime_columns'] = datetime_cols
+
+        return findings
