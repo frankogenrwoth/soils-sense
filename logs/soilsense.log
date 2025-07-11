@@ -563,3 +563,49 @@ Watching for file changes with StatReloader
 "GET / HTTP/1.1" 200 7339
 "GET /static/images/dashboard.png HTTP/1.1" 404 1874
 "GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+C:\Users\user\Desktop\soils-sense\apps\farmer\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 2781
+"GET /authentication/signup/ HTTP/1.1" 200 4073
+"GET /authentication/login/ HTTP/1.1" 200 2781
+"GET /authentication/signup/ HTTP/1.1" 200 4073
+"GET /contact/ HTTP/1.1" 200 4408
+"GET /authentication/login/ HTTP/1.1" 200 2781
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/reports/ HTTP/1.1" 200 13306
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/profile/ HTTP/1.1" 200 19121
+"GET /authentication/reset/ HTTP/1.1" 200 2197
+"GET /technician/profile/ HTTP/1.1" 200 19121
+"GET /authentication/reset/ HTTP/1.1" 200 3224
+"GET / HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3808
+"GET /authentication/login/ HTTP/1.1" 200 4101
+"GET /static/landing_page/images/slide1.jpg HTTP/1.1" 404 1904
+"GET /authentication/signup/ HTTP/1.1" 200 5393
+"GET /static/landing_page/images/slide1.jpg HTTP/1.1" 404 1904
+"GET /authentication/signup/ HTTP/1.1" 200 5130
+"GET /authentication/login/ HTTP/1.1" 200 3838
+"GET /authentication/reset/ HTTP/1.1" 200 3254
+"POST /authentication/reset/ HTTP/1.1" 302 0
+"GET /authentication/reset/done/ HTTP/1.1" 200 2346
+"GET /authentication/reset/MQ/csrws4-313776a3da19c873485ca1dc2811ab0c/ HTTP/1.1" 302 0
+"GET /authentication/reset/MQ/set-password/ HTTP/1.1" 200 4052
+"GET / HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3838
+"GET /authentication/signup/ HTTP/1.1" 200 5130
+C:\Users\user\Desktop\soils-sense\apps\administrator\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\soilsense\settings.py changed, reloading.
+Watching for file changes with StatReloader
