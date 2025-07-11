@@ -1,0 +1,100 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Edit Threshold - SoilSense Technician Portal{% endblock %}
+
+{% block page_title %}Edit Sensor Threshold{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'technician:sensor_config' %}">Sensor Configuration</a> / Edit Threshold
+{% endblock %}
+
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <a href="{% url 'technician:sensor_config' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Config
+    </a>
+    <button type="submit" form="editThresholdForm" class="btn btn-primary">
+        <i class="fas fa-save me-2"></i>Save Changes
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Edit Sensor Threshold</h5>
+            
+            <form method="post" id="editThresholdForm">
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.farm.id_for_label }}" class="form-label">Farm *</label>
+                        {{ form.farm }}
+                        {% if form.farm.errors %}
+                            <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.parameter.id_for_label }}" class="form-label">Parameter *</label>
+                        {{ form.parameter }}
+                        {% if form.parameter.errors %}
+                            <div class="text-danger small">{{ form.parameter.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.min_value.id_for_label }}" class="form-label">Minimum Value *</label>
+                        {{ form.min_value }}
+                        {% if form.min_value.errors %}
+                            <div class="text-danger small">{{ form.min_value.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.max_value.id_for_label }}" class="form-label">Maximum Value *</label>
+                        {{ form.max_value }}
+                        {% if form.max_value.errors %}
+                            <div class="text-danger small">{{ form.max_value.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
+                        {{ form.unit }}
+                        {% if form.unit.errors %}
+                            <div class="text-danger small">{{ form.unit.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'technician:sensor_config' %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <a href="{% url 'technician:delete_threshold' threshold.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

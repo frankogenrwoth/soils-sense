@@ -59,7 +59,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        return redirect('authentication:login')
+        return redirect('home')
 
 class SignupView(FormView):
     template_name = 'authentication/signup.html'
