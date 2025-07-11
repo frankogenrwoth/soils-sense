@@ -32,13 +32,14 @@ class DataProcessor:
             model_type (str): Type of model (e.g., 'soil_moisture_predictor', 'irrigation_recommendation')
 
         Returns:
-            pandas.DataFrame: Training data
+            tuple: (pandas.DataFrame, dict) - Training data and inspection findings
         """
         data_path = DATA_DIR / f"{model_type}.csv"
 
         if data_path.exists():
             data = pd.read_csv(data_path)
-            return data
+            findings = self.inspect_dataframe(data)
+            return data, findings
         else:
             raise FileNotFoundError(
                 f"Training data for {model_type} not found at {data_path}"
@@ -497,3 +498,49 @@ class DataProcessor:
                 "valid": True,
                 "message": f"Prediction {prediction} is within the expected range of {mean - 3*std} to {mean + 3*std}",
             }
+
+    def inspect_dataframe(self, df):
+        """Inspect a DataFrame and return a summary of findings for data quality checks.
+
+        Args:
+            df (pandas.DataFrame): DataFrame to inspect
+
+        Returns:
+            dict: Summary of findings
+        """
+        findings = {}
+
+        # 1. Number of rows and columns
+        findings['num_rows'] = df.shape[0]
+        findings['num_columns'] = df.shape[1]
+
+        # 2. Column names and data types
+        findings['columns'] = list(df.columns)
+        findings['dtypes'] = df.dtypes.apply(str).to_dict()
+
+        # 3. Missing values
+        findings['missing_values'] = df.isnull().sum().to_dict()
+
+        # 4. Unique values per column
+        findings['unique_values'] = df.nunique().to_dict()
+
+        # 5. Statistical summary for numeric columns
+        findings['numeric_summary'] = df.describe().to_dict()
+
+        # 6. Outliers (simple: values outside 1.5*IQR)
+        outliers = {}
+        for col in df.select_dtypes(include='number').columns:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            outliers[col] = int(((df[col] < (Q1 - 1.5 * IQR)) | (df[col] > (Q3 + 1.5 * IQR))).sum())
+        findings['outliers'] = outliers
+
+        # 7. Duplicates
+        findings['num_duplicates'] = int(df.duplicated().sum())
+
+        # 8. Date/time columns
+        datetime_cols = [col for col in df.columns if pd.api.types.is_datetime64_any_dtype(df[col])]
+        findings['datetime_columns'] = datetime_cols
+
+        return findings
