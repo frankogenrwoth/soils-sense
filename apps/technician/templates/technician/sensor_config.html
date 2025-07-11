@@ -4,6 +4,17 @@
 
 {% block breadcrumb %}Sensor Configuration{% endblock %}
 
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addThresholdModal">
+        <i class="fas fa-plus me-2"></i>Add Threshold
+    </button>
+    <button class="btn btn-light">
+        <i class="fas fa-sync-alt me-2"></i>Refresh
+    </button>
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-12 mb-4">
@@ -53,44 +64,158 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6 mb-4">
+    <div class="col-md-8 mb-4">
         <div class="dashboard-card">
             <h5 class="card-title mb-3">Sensor Thresholds</h5>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>Farm</th>
                             <th>Parameter</th>
-                            <th>Min</th>
-                            <th>Max</th>
+                            <th>Min Value</th>
+                            <th>Max Value</th>
+                            <th>Unit</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for threshold in thresholds %}
                         <tr>
-                            <td>Soil Moisture</td>
-                            <td>30%</td>
-                            <td>70%</td>
-                            <td><span class="badge bg-success">Normal</span></td>
+                            <td>{{ threshold.farm.farm_name }}</td>
+                            <td>{{ threshold.parameter }}</td>
+                            <td>{{ threshold.min_value }}</td>
+                            <td>{{ threshold.max_value }}</td>
+                            <td>{{ threshold.unit }}</td>
+                            <td>
+                                {% if threshold.status == 'Normal' %}
+                                    <span class="badge bg-success">{{ threshold.status }}</span>
+                                {% elif threshold.status == 'Warning' %}
+                                    <span class="badge bg-warning">{{ threshold.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ threshold.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'technician:edit_threshold' threshold.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <a href="{% url 'technician:delete_threshold' threshold.pk %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </a>
+                            </td>
                         </tr>
+                        {% empty %}
                         <tr>
-                            <td>pH Level</td>
-                            <td>6.0</td>
-                            <td>7.5</td>
-                            <td><span class="badge bg-success">Normal</span></td>
+                            <td colspan="7" class="text-center text-muted">No thresholds configured</td>
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="dashboard-card">
-            <h5 class="card-title mb-3">Calibration Status</h5>
-            <div class="chart-container">
-                <p class="text-muted">Calibration metrics will be displayed here</p>
+            <h5 class="card-title mb-3">Quick Stats</h5>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Active Sensors</span>
+                    <span class="badge bg-success">12/12</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                </div>
             </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Thresholds Configured</span>
+                    <span class="badge bg-info">{{ thresholds.count }}</span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Farms Monitored</span>
+                    <span class="badge bg-primary">{{ farms.count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Threshold Modal -->
+<div class="modal fade" id="addThresholdModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Sensor Threshold</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ form.farm.id_for_label }}" class="form-label">Farm *</label>
+                        {{ form.farm }}
+                        {% if form.farm.errors %}
+                            <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.parameter.id_for_label }}" class="form-label">Parameter *</label>
+                        {{ form.parameter }}
+                        {% if form.parameter.errors %}
+                            <div class="text-danger small">{{ form.parameter.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.min_value.id_for_label }}" class="form-label">Minimum Value</label>
+                                {{ form.min_value }}
+                                {% if form.min_value.errors %}
+                                    <div class="text-danger small">{{ form.min_value.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.max_value.id_for_label }}" class="form-label">Maximum Value</label>
+                                {{ form.max_value }}
+                                {% if form.max_value.errors %}
+                                    <div class="text-danger small">{{ form.max_value.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
+                                {{ form.unit }}
+                                {% if form.unit.errors %}
+                                    <div class="text-danger small">{{ form.unit.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Threshold</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

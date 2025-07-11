@@ -1,87 +1,212 @@
 {% extends 'technician/base.html' %}
 
-{% block page_title %}Analytics{% endblock %}
+{% block page_title %}Analytics Dashboard{% endblock %}
 
 {% block breadcrumb %}Analytics{% endblock %}
 
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <button class="btn btn-light">
+        <i class="fas fa-sync-alt me-2"></i>Refresh
+    </button>
+    <button class="btn btn-primary">
+        <i class="fas fa-download me-2"></i>Export Data
+    </button>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-3">Soil Moisture Trends</h5>
-            <div class="chart-container">
-                <p class="text-muted">Soil moisture trend chart will be displayed here</p>
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-farm icon"></i>
+            <div class="title">Total Farms</div>
+            <h3>{{ total_farms }}</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" style="width: 100%"></div>
             </div>
         </div>
     </div>
-
-    <div class="col-md-6 mb-4">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-3">pH Level Analysis</h5>
-            <div class="chart-container">
-                <p class="text-muted">pH level analysis chart will be displayed here</p>
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-chart-line icon"></i>
+            <div class="title">Total Readings</div>
+            <h3>{{ total_readings }}</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-info" style="width: 85%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-tint icon"></i>
+            <div class="title">Avg Moisture</div>
+            <h3>{{ avg_moisture }}%</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-primary" style="width: 75%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card stat-card bg-white">
+            <i class="fas fa-exclamation-triangle icon"></i>
+            <div class="title">Critical Readings</div>
+            <h3>{{ critical_readings }}</h3>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-danger" style="width: 45%"></div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12 mb-4">
+<!-- Charts and Analytics -->
+<div class="row g-3">
+    <!-- Moisture Distribution Chart -->
+    <div class="col-lg-8">
         <div class="dashboard-card">
-            <h5 class="card-title mb-3">Sensor Performance Metrics</h5>
+            <h5 class="mb-4">Moisture Status Distribution</h5>
+            <div class="chart-container">
+                <canvas id="moistureChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Farm Performance -->
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Top Performing Farm</h5>
+            {% if farm_with_most_readings %}
+            <div class="text-center">
+                <i class="fas fa-trophy text-warning" style="font-size: 3rem;"></i>
+                <h6 class="mt-3">{{ farm_with_most_readings.farm_name }}</h6>
+                <p class="text-muted">{{ farm_with_most_readings.reading_count }} readings</p>
+            </div>
+            {% else %}
+            <div class="text-center text-muted">
+                <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                <p>No data available</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Moisture Distribution Table -->
+    <div class="col-lg-6">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Moisture Status Breakdown</h5>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Sensor ID</th>
-                            <th>Type</th>
-                            <th>Uptime</th>
-                            <th>Data Quality</th>
-                            <th>Battery Health</th>
                             <th>Status</th>
+                            <th>Count</th>
+                            <th>Percentage</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for status, count in moisture_distribution.items %}
                         <tr>
-                            <td>S001</td>
-                            <td>Soil Moisture</td>
-                            <td>99.8%</td>
-                            <td>High</td>
-                            <td>Good</td>
-                            <td><span class="badge bg-success">Optimal</span></td>
+                            <td>
+                                {% if status == 'Normal' %}
+                                    <span class="badge bg-success">{{ status }}</span>
+                                {% elif status == 'Dry' %}
+                                    <span class="badge bg-warning">{{ status }}</span>
+                                {% elif status == 'Wet' %}
+                                    <span class="badge bg-info">{{ status }}</span>
+                                {% elif status == 'Critical Low' %}
+                                    <span class="badge bg-danger">{{ status }}</span>
+                                {% elif status == 'Critical High' %}
+                                    <span class="badge bg-danger">{{ status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ count }}</td>
+                            <td>
+                                {% if total_readings > 0 %}
+                                    {{ count|floatformat:1 }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </td>
                         </tr>
-                        <tr>
-                            <td>S002</td>
-                            <td>pH Sensor</td>
-                            <td>98.5%</td>
-                            <td>Medium</td>
-                            <td>Fair</td>
-                            <td><span class="badge bg-warning">Needs Attention</span></td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
+    <!-- Recent Trends -->
+    <div class="col-lg-6">
         <div class="dashboard-card">
-            <h5 class="card-title mb-3">Data Quality Overview</h5>
+            <h5 class="mb-4">Recent Reading Trends</h5>
             <div class="chart-container">
-                <p class="text-muted">Data quality metrics will be displayed here</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 mb-4">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-3">System Health</h5>
-            <div class="chart-container">
-                <p class="text-muted">System health metrics will be displayed here</p>
+                <canvas id="trendChart" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Moisture Distribution Chart
+const moistureCtx = document.getElementById('moistureChart').getContext('2d');
+const moistureChart = new Chart(moistureCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Normal', 'Dry', 'Wet', 'Critical Low', 'Critical High'],
+        datasets: [{
+            data: [
+                {{ moisture_distribution.Normal }},
+                {{ moisture_distribution.Dry }},
+                {{ moisture_distribution.Wet }},
+                {{ moisture_distribution.Critical_Low }},
+                {{ moisture_distribution.Critical_High }}
+            ],
+            backgroundColor: [
+                '#28a745',
+                '#ffc107',
+                '#17a2b8',
+                '#dc3545',
+                '#dc3545'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Trend Chart
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+const trendChart = new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for reading in recent_readings %}'{{ reading.timestamp|date:"M d" }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Moisture %',
+            data: [{% for reading in recent_readings %}{{ reading.soil_moisture_percent }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+</script>
 {% endblock %} 
