@@ -53,15 +53,16 @@ class ModelTrainer:
             hyperparameter_tuning (bool): Whether to perform hyperparameter tuning
 
         Returns:
-            dict: Training results including R² score, RMSE, and model info
+            tuple: (dict, dict or None) - Training results and inspection findings
         """
         if algorithm is None:
             algorithm = DEFAULT_ALGORITHMS.get(model_type, "gradient_boosting")
 
         if custom_data is None:
-            data = self.data_processor.load_training_data(model_type)
+            data, findings = self.data_processor.load_training_data(model_type)
         else:
             data = custom_data
+            findings = self.data_processor.inspect_dataframe(data)
 
         try:
             X_train, X_test, y_train, y_test, feature_names, preprocessor = (
@@ -173,7 +174,7 @@ class ModelTrainer:
 
         print(f"Training time: {training_time:.2f} seconds")
 
-        return self.training_results[model_key]
+        return self.training_results[model_key], findings
 
     def _create_model(self, algorithm, config, task_type="regression"):
         """Create model based on algorithm, configuration, and task type

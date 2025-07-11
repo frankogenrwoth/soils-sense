@@ -37,6 +37,8 @@
             padding-top: 2rem;
             position: fixed;
             width: 250px;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar .nav-link {
@@ -60,6 +62,15 @@
             margin-right: 12px;
             width: 20px;
             text-align: center;
+        }
+
+        .sidebar .nav-link.text-danger {
+            color: #e74c3c !important;
+        }
+
+        .sidebar .nav-link.text-danger:hover {
+            background-color: rgba(231, 76, 60, 0.1) !important;
+            color: #c0392b !important;
         }
 
         .logo-section {
@@ -209,9 +220,8 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-
-        {% block extra_css %}{% endblock %}
     </style>
+            {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="d-flex">
@@ -222,12 +232,15 @@
                 <h5 class="text-white mt-3 mb-1">SoilSense</h5>
                 <p class="text-white-50 small mb-0">Technician Portal</p>
             </div>
-            <nav class="nav flex-column">
+            <nav class="nav flex-column flex-grow-1">
                 <a class="nav-link {% if request.path == '/technician/dashboard/' %}active{% endif %}" href="{% url 'technician:dashboard' %}">
                     <i class="fas fa-home"></i>Dashboard
                 </a>
                 <a class="nav-link {% if request.path == '/technician/farm-locations/' %}active{% endif %}" href="{% url 'technician:farm_locations' %}">
                     <i class="fas fa-map-marker-alt"></i>Farm Locations
+                </a>
+                <a href="{% url 'technician:soil_readings' %}" class="nav-link">
+                    <i class="fas fa-water me-2"></i> Soil Data
                 </a>
                 <a class="nav-link {% if request.path == '/technician/sensor-config/' %}active{% endif %}" href="{% url 'technician:sensor_config' %}">
                     <i class="fas fa-microchip"></i>Sensor Config
@@ -245,6 +258,13 @@
                     <i class="fas fa-cog"></i>Settings
                 </a>
             </nav>
+            
+            <!-- Logout Section -->
+            <div class="mt-auto pt-4 border-top border-white-50">
+                <a href="{% url 'authentication:logout' %}" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt"></i>Logout
+                </a>
+            </div>
         </div>
 
         <!-- Main Content -->

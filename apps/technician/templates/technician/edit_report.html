@@ -1,0 +1,97 @@
+{% extends 'technician/base.html' %}
+
+{% block base_title %}Edit Report - SoilSense Technician Portal{% endblock %}
+
+{% block page_title %}Edit Report{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'technician:reports' %}">Reports</a> / Edit Report
+{% endblock %}
+
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <a href="{% url 'technician:reports' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Reports
+    </a>
+    <button type="submit" form="editReportForm" class="btn btn-primary">
+        <i class="fas fa-save me-2"></i>Save Changes
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <h5 class="mb-4">Edit Report</h5>
+            
+            <form method="post" enctype="multipart/form-data" id="editReportForm">
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.farm.id_for_label }}" class="form-label">Farm *</label>
+                        {{ form.farm }}
+                        {% if form.farm.errors %}
+                            <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.report_type.id_for_label }}" class="form-label">Report Type *</label>
+                        {{ form.report_type }}
+                        {% if form.report_type.errors %}
+                            <div class="text-danger small">{{ form.report_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Title *</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="{{ form.file.id_for_label }}" class="form-label">File</label>
+                        {{ form.file }}
+                        {% if form.file.errors %}
+                            <div class="text-danger small">{{ form.file.errors.0 }}</div>
+                        {% endif %}
+                        {% if report.file %}
+                            <div class="mt-2">
+                                <small class="text-muted">Current file: {{ report.file.name }}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'technician:reports' %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <a href="{% url 'technician:delete_report' report.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
