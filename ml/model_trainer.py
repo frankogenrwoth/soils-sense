@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 from ml.config import (
     MODELS_DIR,
     MODEL_CONFIGS,
-    MODEL_ALGORITHMS,
+    REGRESSION_ALGORITHMS,
     DEFAULT_ALGORITHMS,
     CLASSIFICATION_ALGORITHMS,
 )
@@ -78,7 +78,7 @@ class ModelTrainer:
         if task_type == "classification":
             algorithm_config = CLASSIFICATION_ALGORITHMS.get(algorithm, {})
         else:
-            algorithm_config = MODEL_ALGORITHMS.get(algorithm, {})
+            algorithm_config = REGRESSION_ALGORITHMS.get(algorithm, {})
 
         model = self._create_model(algorithm, algorithm_config, task_type)
         model.fit(X_train, y_train)
