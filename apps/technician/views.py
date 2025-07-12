@@ -198,7 +198,7 @@ def analytics(request):
     """Analytics dashboard view"""
     
     # Get date range (last 30 days)
-    end_date = datetime.now()
+    end_date = datetime.datetime.now()
     start_date = end_date - timedelta(days=30)
     
     # Analytics data

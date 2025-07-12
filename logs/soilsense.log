@@ -611,3 +611,37 @@ C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
 Watching for file changes with StatReloader
 "GET /technician/farm-locations/ HTTP/1.1" 200 22788
 "GET /technician/reports/ HTTP/1.1" 200 18067
+Internal Server Error: /technician/analytics/
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\apps\technician\views.py", line 201, in analytics
+    end_date = datetime.now()
+               ^^^^^^^^^^^^
+AttributeError: module 'datetime' has no attribute 'now'
+"GET /technician/analytics/ HTTP/1.1" 500 70216
+Internal Server Error: /technician/analytics/
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\apps\technician\views.py", line 201, in analytics
+    end_date = datetime.now()
+               ^^^^^^^^^^^^
+AttributeError: module 'datetime' has no attribute 'now'
+"GET /technician/analytics/ HTTP/1.1" 500 70353
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/analytics/ HTTP/1.1" 200 16648
+"GET /technician/reports/ HTTP/1.1" 200 18067
+"GET /technician/reports/export/ HTTP/1.1" 200 343
+"GET /technician/reports/ HTTP/1.1" 200 17942
+"GET /technician/profile/ HTTP/1.1" 200 23414
+"GET /media/users/profile_images/bruno.png HTTP/1.1" 304 0
