@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 from ml.config import (
     MODELS_DIR,
     MODEL_CONFIGS,
-    MODEL_ALGORITHMS,
+    REGRESSION_ALGORITHMS,
     DEFAULT_ALGORITHMS,
     CLASSIFICATION_ALGORITHMS,
 )
@@ -38,7 +38,10 @@ class ModelTrainer:
         self.training_results = {}
 
     def train_model(
-        self, model_type, algorithm=None, custom_data=None, hyperparameter_tuning=False
+        self,
+        model_type,
+        algorithm=None,
+        custom_data=None,
     ):
         """Train a regression model for the specified type
 
@@ -46,10 +49,9 @@ class ModelTrainer:
             model_type (str): Type of model to train (e.g., 'soil_moisture_predictor')
             algorithm (str, optional): Algorithm to use (e.g., 'random_forest', 'gradient_boosting')
             custom_data (pandas.DataFrame, optional): Custom training data
-            hyperparameter_tuning (bool): Whether to perform hyperparameter tuning
 
         Returns:
-            dict: Training results including R² score, RMSE, and model info
+            tuple: (dict, dict or None) - Training results and inspection findings
         """
         if algorithm is None:
             algorithm = DEFAULT_ALGORITHMS.get(model_type, "gradient_boosting")
@@ -58,6 +60,10 @@ class ModelTrainer:
             data = self.data_processor.load_training_data(model_type)
         else:
             data = custom_data
+
+        # save data inspection findings to training_logs
+        self.data_processor.training_logs["data_inspection"] = self.data_processor.inspect_dataframe(data)
+
 
         try:
             X_train, X_test, y_train, y_test, feature_names, preprocessor = (
@@ -73,7 +79,7 @@ class ModelTrainer:
         if task_type == "classification":
             algorithm_config = CLASSIFICATION_ALGORITHMS.get(algorithm, {})
         else:
-            algorithm_config = MODEL_ALGORITHMS.get(algorithm, {})
+            algorithm_config = REGRESSION_ALGORITHMS.get(algorithm, {})
 
         model = self._create_model(algorithm, algorithm_config, task_type)
         model.fit(X_train, y_train)
@@ -150,6 +156,9 @@ class ModelTrainer:
                     "cv_std": cv_std,
                 }
             )
+
+        # save training results to training_logs
+        self.training_results[model_key]["training_logs"] = self.data_processor.training_logs
 
         self._save_model(model_key, model, preprocessor)
 
@@ -282,6 +291,22 @@ class ModelTrainer:
             model_info = self.get_model_info(model_key)
             models.append(model_info)
         return models
+
+    def get_available_algorithms(self, model_type):
+        """Get available algorithms for a specific model type
+
+        Args:
+            model_type (str): Type of model
+
+        Returns:
+            list: List of available algorithms
+        """
+        if MODEL_CONFIGS[model_type]["task_type"] == "regression":
+            return list(REGRESSION_ALGORITHMS.keys())
+        elif MODEL_CONFIGS[model_type]["task_type"] == "classification":
+            return list(CLASSIFICATION_ALGORITHMS.keys())
+        else:
+            raise ValueError(f"Unknown task type: {MODEL_CONFIGS[model_type]['task_type']}")
 
     def get_best_model(self, model_type):
         """Get the best performing model for a specific type

@@ -23,6 +23,7 @@ MODEL_CONFIGS = {
             "irrigation_action",
         ],
         "target": "soil_moisture_percent",
+        "task_type": "regression",
     },
     "irrigation_recommendation": {
         "features": [
@@ -42,7 +43,7 @@ MODEL_CONFIGS = {
     },
 }
 
-MODEL_ALGORITHMS = {
+REGRESSION_ALGORITHMS = {
     "random_forest": {
         "n_estimators": 100,
         "max_depth": 10,
@@ -69,7 +70,7 @@ MODEL_ALGORITHMS = {
         "max_iter": 500,
         "random_state": 42,
     },
-    "linear_regression": {"fit_intercept": True, "normalize": False},
+    "linear_regression": {"fit_intercept": True,},
 }
 
 CLASSIFICATION_ALGORITHMS = {
@@ -105,7 +106,7 @@ DEFAULT_ALGORITHMS = {
 TRAINING_CONFIG = {
     "test_size": 0.2,
     "random_state": 42,
-    "n_splits": 5,  # for cross-validation
+    "n_splits": 5,
     "scoring": "neg_mean_squared_error",
     "shuffle": True,
     "early_stopping": True,
