@@ -443,3 +443,171 @@ Watching for file changes with StatReloader
 "GET /technician/profile/ HTTP/1.1" 200 19435
 "GET /technician/settings/ HTTP/1.1" 200 16943
 "GET /media/users/profile_images/bruno.png HTTP/1.1" 304 0
+"GET /technician/farm-locations/ HTTP/1.1" 200 15142
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+"GET /technician/analytics/ HTTP/1.1" 200 16581
+"GET /technician/reports/ HTTP/1.1" 200 13306
+"GET /technician/farm-locations/ HTTP/1.1" 200 15142
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+"GET /technician/farm-locations/ HTTP/1.1" 200 15142
+"GET /technician/sensor-config/ HTTP/1.1" 200 16623
+"GET /technician/analytics/ HTTP/1.1" 200 16581
+"GET /technician/reports/ HTTP/1.1" 200 13306
+"GET /technician/profile/ HTTP/1.1" 200 19435
+"GET /media/users/profile_images/bruno.png HTTP/1.1" 304 0
+"GET /technician/settings/ HTTP/1.1" 200 16943
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+C:\Users\user\Desktop\soils-sense\apps\technician\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+"GET /technician/soil-readings/ HTTP/1.1" 200 11572
+"GET /technician/reports/ HTTP/1.1" 200 13331
+"GET /technician/reports/export/ HTTP/1.1" 200 50
+C:\Users\user\Desktop\soils-sense\apps\technician\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\models.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /technician/reports/ HTTP/1.1" 200 13381
+"GET /technician/reports/ HTTP/1.1" 200 13381
+"GET /technician/profile/ HTTP/1.1" 200 19435
+"GET /media/users/profile_images/bruno.png HTTP/1.1" 304 0
+"GET /technician/reports/ HTTP/1.1" 200 13381
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/reports/ HTTP/1.1" 200 16083
+Internal Server Error: /technician/reports/
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: technician_report.farm_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\apps\technician\views.py", line 287, in reports
+    report = Report.objects.create(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\Desktop\soils-sense\.venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: NOT NULL constraint failed: technician_report.farm_id
+"POST /technician/reports/ HTTP/1.1" 500 177593
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/sensor-config/ HTTP/1.1" 200 16623
+"GET /technician/dashboard/ HTTP/1.1" 200 22979
+"GET /technician/farm-locations/ HTTP/1.1" 200 15142
+C:\Users\user\Desktop\soils-sense\apps\technician\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/farm-locations/ HTTP/1.1" 200 16379
+"GET /technician/farm-locations/ HTTP/1.1" 200 16379
+"POST /technician/farm-locations/add/ HTTP/1.1" 302 0
+"GET /technician/farm-locations/ HTTP/1.1" 200 19522
+"GET /technician/reports/ HTTP/1.1" 200 16576
+"POST /technician/reports/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 17925
+"GET /technician/farm-locations/ HTTP/1.1" 200 19522
+"GET /technician/farm/1/ HTTP/1.1" 200 15590
+"GET /technician/reports/ HTTP/1.1" 200 17925
+"GET /technician/report/1/download-pdf/ HTTP/1.1" 200 1876
+"GET /technician/farm-locations/ HTTP/1.1" 200 19522
+"POST /technician/farm-locations/add/ HTTP/1.1" 302 0
+"GET /technician/farm-locations/ HTTP/1.1" 200 22788
+"GET /technician/reports/ HTTP/1.1" 200 18063
+"POST /technician/reports/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 19596
+"GET /technician/report/2/download-pdf/ HTTP/1.1" 200 1876
+"POST /technician/reports/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 21127
+"GET /technician/report/3/download-pdf/ HTTP/1.1" 200 1870
+"GET /technician/farm-locations/ HTTP/1.1" 200 22788
+"GET /technician/reports/ HTTP/1.1" 200 21127
+"GET /technician/farm-locations/ HTTP/1.1" 200 22788
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/reports/ HTTP/1.1" 200 21127
+"GET /technician/report/1/delete/ HTTP/1.1" 200 11018
+"POST /technician/report/1/delete/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 19593
+"GET /technician/report/2/delete/ HTTP/1.1" 200 11017
+"POST /technician/report/2/delete/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 18060
+"GET /technician/report/3/delete/ HTTP/1.1" 200 11015
+"POST /technician/report/3/delete/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 16714
+"POST /technician/reports/ HTTP/1.1" 302 0
+"GET /technician/reports/ HTTP/1.1" 200 18067
+"GET /technician/report/4/download-pdf/ HTTP/1.1" 200 1885
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/farm-locations/ HTTP/1.1" 200 22788
+"GET /technician/reports/ HTTP/1.1" 200 18067
