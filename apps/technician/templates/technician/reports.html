@@ -9,9 +9,12 @@
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal">
         <i class="fas fa-plus me-2"></i>New Report
     </button>
-    <button class="btn btn-light">
-        <i class="fas fa-download me-2"></i>Export
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#generatePredictionModal">
+        <i class="fas fa-magic me-2"></i>Generate Prediction
     </button>
+    <a class="btn btn-light" href="{% url 'technician:export_reports' %}">
+        <i class="fas fa-download me-2"></i>Export
+    </a>
 </div>
 {% endblock %}
 
@@ -53,6 +56,11 @@
                                     {% if report.file %}
                                         <a href="{{ report.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
                                             <i class="fas fa-download me-1"></i>Download
+                                        </a>
+                                    {% endif %}
+                                    {% if report.report_type == 'prediction' %}
+                                        <a href="{% url 'technician:download_prediction_pdf' report.pk %}" class="btn btn-sm btn-outline-success" target="_blank">
+                                            <i class="fas fa-file-pdf me-1"></i>PDF
                                         </a>
                                     {% endif %}
                                     <a href="{% url 'technician:edit_report' report.pk %}" class="btn btn-sm btn-outline-secondary">
@@ -136,6 +144,61 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Prediction Modal -->
+<div class="modal fade" id="generatePredictionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Soil Moisture Prediction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'technician:reports' %}">
+                {% csrf_token %}
+                <input type="hidden" name="generate_prediction" value="1">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Farm</label>
+                        <select class="form-select" name="farm_id" required>
+                            <option value="" disabled selected>Select a farm</option>
+                            {% for farm in farms %}
+                                <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Temperature (°C)</label>
+                        <input type="number" class="form-control" name="temperature_celsius" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Humidity (%)</label>
+                        <input type="number" class="form-control" name="humidity_percent" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Battery Voltage</label>
+                        <input type="number" class="form-control" name="battery_voltage" step="0.01" value="3.8" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <input type="text" class="form-control" name="status" value="Normal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Timestamp</label>
+                        <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Predict & Save</button>
                 </div>
             </form>
         </div>
