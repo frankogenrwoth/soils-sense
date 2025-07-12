@@ -13,32 +13,108 @@
 {% endblock %}
 
 {% block content %}
+<script>
+// Live preview for profile image upload
+function previewProfileImage(input) {
+    const preview = document.getElementById('profileImagePreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+
+<style>
+.profile-pic-container {
+    position: relative;
+    display: inline-block;
+}
+.edit-profile-pic-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: #fff;
+    border-radius: 50%;
+    border: 2px solid #4ade80;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+    z-index: 2;
+}
+.edit-profile-pic-btn:hover {
+    background: #e0f7fa;
+}
+</style>
+
 <div class="row">
     <div class="col-lg-8 mb-4">
         <div class="dashboard-card">
             <h5 class="card-title mb-4">Profile Settings</h5>
-            <form method="post" id="profileForm">
+            <form method="post" id="profileForm" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row g-3">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="profile-pic-container">
+                            {% if has_custom_image %}
+                                <img id="profileImagePreview" src="{{ user.image.url }}" alt="Profile Picture"
+                                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #4ade80; background: #f3f4f6;">
+                            {% else %}
+                                <div style="width: 120px; height: 120px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; border: 3px solid #4ade80; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                    <i class="fas fa-user" style="font-size: 64px; color: #60a5fa;"></i>
+                                    <img id="profileImagePreview" src="" alt="Profile Preview" style="display:none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; position: absolute;">
+                                </div>
+                            {% endif %}
+                            <span class="edit-profile-pic-btn" onclick="document.getElementById('id_image').click();">
+                                <i class="fas fa-pencil-alt" style="color: #4ade80; font-size: 18px;"></i>
+                            </span>
+                        </div>
+                    </div>
+                    {{ profile_form.non_field_errors }}
                     <div class="col-md-6">
-                        <label for="first_name" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" 
-                               value="{{ user.first_name }}" required>
+                        <label for="id_first_name" class="form-label">First Name</label>
+                        {{ profile_form.first_name }}
+                        {% if profile_form.first_name.errors %}
+                            <div class="text-danger small">{{ profile_form.first_name.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-md-6">
-                        <label for="last_name" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" 
-                               value="{{ user.last_name }}" required>
+                        <label for="id_last_name" class="form-label">Last Name</label>
+                        {{ profile_form.last_name }}
+                        {% if profile_form.last_name.errors %}
+                            <div class="text-danger small">{{ profile_form.last_name.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-12">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" 
-                               value="{{ user.email }}" required>
+                        <label for="id_email" class="form-label">Email Address</label>
+                        {{ profile_form.email }}
+                        {% if profile_form.email.errors %}
+                            <div class="text-danger small">{{ profile_form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_image" class="form-label">Profile Picture</label>
+                        {{ profile_form.image }}
+                        <script>
+                            document.getElementById('id_image').addEventListener('change', function() {
+                                previewProfileImage(this);
+                            });
+                        </script>
+                        {% if profile_form.image.errors %}
+                            <div class="text-danger small">{{ profile_form.image.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-12">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" 
-                               value="{{ user.username }}" readonly>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
                         <div class="form-text">Username cannot be changed</div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 from django import forms
 from apps.farmer.models import Farm, SoilMoistureReading
 from .models import SensorThreshold, Report
+from authentication.models import User
 
 class FarmEditForm(forms.ModelForm):
     class Meta:
@@ -79,3 +80,14 @@ class SoilReadingFilterForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     ) 
+
+class TechnicianProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'image']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        } 

@@ -1,4 +1,5 @@
 {% extends 'technician/base.html' %}
+{% load static %}
 
 {% block page_title %}Profile{% endblock %}
 
@@ -12,8 +13,15 @@
             <div class="card shadow border-0 rounded-3 h-100" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
                 <div class="card-body">
                     <div class="text-center position-relative mb-4">
-                        <div class="profile-avatar mb-3">
-                            <i class="fas fa-user-circle fa-5x text-primary"></i>
+                        <div class="profile-avatar mb-3" style="position: relative; width: 100px; height: 100px; margin: 0 auto;">
+                            {% if has_custom_image %}
+                                <img src="{{ user.image.url }}" alt="Profile Picture"
+                                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #4ade80; background: #f3f4f6;">
+                            {% else %}
+                                <div style="width: 100px; height: 100px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; border: 3px solid #4ade80;">
+                                    <i class="fas fa-user" style="font-size: 48px; color: #60a5fa;"></i>
+                                </div>
+                            {% endif %}
                         </div>
                         <h4 class="mb-2 fw-bold text-primary">{{ user.username }}</h4>
                         <span class="badge bg-success rounded-pill px-4 py-2">{{ user.role|title }}</span>
