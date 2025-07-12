@@ -24,7 +24,7 @@
 {% if messages %}
 <div class="container mx-auto px-4 mb-4">
     {% for message in messages %}
-    <div class="rounded-lg p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} flex items-center">
+    <div class="rounded-lg p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} flex items-center message-alert">
         {% if message.tags == 'success' %}
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -38,6 +38,22 @@
     </div>
     {% endfor %}
 </div>
+
+<script>
+    // Auto-hide messages after 2 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const messages = document.querySelectorAll('.message-alert');
+        messages.forEach(function(message) {
+            setTimeout(function() {
+                message.style.transition = 'opacity 0.5s ease';
+                message.style.opacity = '0';
+                setTimeout(function() {
+                    message.remove();
+                }, 500);
+            }, 2000);
+        });
+    });
+</script>
 {% endif %}
 
 <div class="container mx-auto px-4 py-8">
