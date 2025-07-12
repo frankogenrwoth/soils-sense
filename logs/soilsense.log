@@ -808,3 +808,20 @@ django.db.utils.OperationalError: no such column: authentication_user.reset_code
 "GET /static/images/chart-preview.png HTTP/1.1" 404 1886
 C:\Users\user\Desktop\soils-sense\apps\technician\models.py changed, reloading.
 Watching for file changes with StatReloader
+"GET /authentication/signup/ HTTP/1.1" 200 5130
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 3398
+"GET /administrator/ HTTP/1.1" 200 6332
+"GET /administrator/data/ HTTP/1.1" 200 6436
+"GET /administrator/ml-models/ HTTP/1.1" 200 15654
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3838
+"GET /authentication/reset/ HTTP/1.1" 200 3254
+"GET /authentication/login/ HTTP/1.1" 200 3838
+"GET / HTTP/1.1" 200 9417
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /authentication/signup/ HTTP/1.1" 200 5130
