@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.core.exceptions import PermissionDenied
 from django.db.models import Avg, Count, Max, Min
 from django.utils.timezone import now, timedelta
-from .forms import FarmEditForm, SoilReadingFilterForm
+from .forms import FarmEditForm, SoilReadingFilterForm, TechnicianProfileForm
 from datetime import datetime, timedelta
 
 
@@ -123,30 +123,10 @@ def dashboard(request):
     return render(request, 'technician/dashboard.html', context)
 
 def profile(request):
-    """Profile management view"""
-    if request.method == 'POST':
-        # Get form data
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        phone_number = request.POST.get('phone_number')
-        
-        # Update user object
-        user = request.user
-        user.first_name = first_name
-        user.last_name = last_name
-        user.email = email
-        user.phone_number = phone_number
-        
-        # Handle profile image upload
-        if 'profile_image' in request.FILES:
-            user.image = request.FILES['profile_image']
-        
-        user.save()
-        messages.success(request, 'Profile updated successfully!')
-        return redirect('technician:profile')
-    
-    return render(request, 'technician/profile.html')
+    user = request.user
+    image_url = user.image.url if user.image else ''
+    has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
+    return render(request, 'technician/profile.html', {'user': user, 'has_custom_image': has_custom_image})
 
 def farm_locations(request):
     """Farm locations management view"""
@@ -284,20 +264,23 @@ def settings(request):
     """Settings view"""
     from django.contrib.auth.forms import PasswordChangeForm
     from django.contrib.auth import update_session_auth_hash
-    
+
     user = request.user
     password_form = PasswordChangeForm(user)
-    
+    profile_form = TechnicianProfileForm(instance=user)
+
+    image_url = user.image.url if user.image else ''
+    has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
+
     if request.method == 'POST':
         if 'update_profile' in request.POST:
-            # Update user profile
-            user.first_name = request.POST.get('first_name', '')
-            user.last_name = request.POST.get('last_name', '')
-            user.email = request.POST.get('email', '')
-            user.save()
-            messages.success(request, 'Profile updated successfully!')
-            return redirect('technician:settings')
-        
+            profile_form = TechnicianProfileForm(request.POST, request.FILES, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('technician:settings')
+            else:
+                messages.error(request, 'Please correct the errors below.')
         elif 'change_password' in request.POST:
             password_form = PasswordChangeForm(user, request.POST)
             if password_form.is_valid():
@@ -307,10 +290,12 @@ def settings(request):
                 return redirect('technician:settings')
             else:
                 messages.error(request, 'Please correct the errors below.')
-    
+
     context = {
         'user': user,
         'password_form': password_form,
+        'profile_form': profile_form,
+        'has_custom_image': has_custom_image,
     }
     return render(request, 'technician/settings.html', context)
 
