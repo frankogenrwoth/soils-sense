@@ -54,7 +54,9 @@ class LoginView(View):
                 return render(request, 'authentication/login.html', {'message': 'Login successful', 'form': form})
             else:
                 return render(request, 'authentication/login.html', {'form': form, 'message': 'Invalid credentials'})
-        return render(request, 'authentication/login.html', {'form': form})
+        else:
+            # Add error handling for form validation
+            return render(request, 'authentication/login.html', {'form': form, 'message': 'Please check your input and try again.'})
 
 class LogoutView(View):
     def get(self, request):

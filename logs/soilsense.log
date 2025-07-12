@@ -18,3 +18,11 @@ Forbidden (CSRF token from POST incorrect.): /authentication/login/
 "GET /farmer/dashboard/ HTTP/1.1" 200 6963
 C:\Users\user\Desktop\soils-sense\apps\administrator\views.py changed, reloading.
 Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\soilsense\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\soilsense\settings.py changed, reloading.
+Watching for file changes with StatReloader
