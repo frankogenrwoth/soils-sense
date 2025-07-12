@@ -645,3 +645,44 @@ Watching for file changes with StatReloader
 "GET /technician/reports/ HTTP/1.1" 200 17942
 "GET /technician/profile/ HTTP/1.1" 200 23414
 "GET /media/users/profile_images/bruno.png HTTP/1.1" 304 0
+"GET /technician/reports/ HTTP/1.1" 200 17942
+"GET /technician/analytics/ HTTP/1.1" 200 16648
+"GET /technician/soil-readings/ HTTP/1.1" 200 11663
+"GET /technician/profile/ HTTP/1.1" 200 19406
+"GET /technician/analytics/ HTTP/1.1" 200 16648
+"GET /technician/reports/ HTTP/1.1" 200 17942
+"GET /technician/reports/ HTTP/1.1" 200 17742
+"GET /technician/reports/ HTTP/1.1" 200 17742
+"GET /technician/reports/ HTTP/1.1" 200 17742
+"GET /technician/reports/ HTTP/1.1" 200 17742
+"GET /technician/reports/ HTTP/1.1" 200 17948
+"GET /technician/reports/ HTTP/1.1" 200 17784
+"GET /technician/reports/ HTTP/1.1" 200 17942
+C:\Users\user\Desktop\soils-sense\ml\model_trainer.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/soil-readings/ HTTP/1.1" 200 11663
+"GET /technician/soil-readings/ HTTP/1.1" 200 11663
+"GET /technician/reports/ HTTP/1.1" 200 17942
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/slide2.jpg HTTP/1.1" 304 0
+"GET /static/images/slide3.jpg HTTP/1.1" 304 0
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 6963
+"GET /farmer/soil-data/ HTTP/1.1" 200 27584
+"GET /farmer/recommendations/ HTTP/1.1" 200 15736
+C:\Users\user\Desktop\soils-sense\apps\farmer\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/recommendations/ HTTP/1.1" 200 16094
+"GET /farmer/predictions/ HTTP/1.1" 200 6449
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
