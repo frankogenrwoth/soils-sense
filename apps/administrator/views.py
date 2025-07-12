@@ -95,15 +95,18 @@ class MLModelManagementView(View):
 
     def post(self, request):
         data = request.POST
+
         ml_engine = MLEngine()
 
         if "sensor_id" in data:
             soil_moisture_form = self.SoilMoistureForm(data)
             irrigation_recommendation_form = self.IrrigationRecommendationForm()
             if soil_moisture_form.is_valid():
+
                 predicted_soil_moisture = ml_engine.predict_soil_moisture(
                     **soil_moisture_form.cleaned_data
                 )
+
             else:
                 predicted_soil_moisture = None
 
