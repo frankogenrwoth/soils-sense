@@ -1,277 +1,208 @@
 {% extends 'farmer/base.html' %}
 
-{% block page_title %}Profile{% endblock %}
+{% block page_title %}Settings{% endblock %}
 
-{% block breadcrumb %}Profile{% endblock %}
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block header_actions %}
+<div class="d-flex gap-2">
+    <button class="btn btn-primary" form="profileForm">
+        <i class="fas fa-save me-2"></i>Save Profile
+    </button>
+</div>
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row g-4">
-        <!-- User Info Card -->
-        <div class="col-lg-5">
-            <div class="card shadow border-0 rounded-3 h-100" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
-                <div class="card-body">
-                    <div class="text-center position-relative mb-4">
-                        <div class="profile-avatar mb-3">
-                            <i class="fas fa-user-circle fa-5x text-primary"></i>
-                        </div>
-                        <h4 class="mb-2 fw-bold text-primary">{{ user.username }}</h4>
-                        <span class="badge bg-success rounded-pill px-4 py-2">{{ user.role|title }}</span>
-                        <div class="mt-3 text-muted">
-                            <i class="fas fa-calendar-alt me-2"></i>Member since {{ user.date_joined|date:"F d, Y" }}
-                        </div>
-                    </div>
-                    
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item bg-white rounded mb-3 border shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="icon-circle bg-primary bg-opacity-10 text-primary">
-                                        <i class="fas fa-envelope"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <small class="text-muted d-block">Email Address</small>
-                                    <div class="fw-medium">{{ user.email }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="list-group-item bg-white rounded mb-3 border shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="icon-circle bg-primary bg-opacity-10 text-primary">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <small class="text-muted d-block">Username</small>
-                                    <div class="fw-medium">{{ user.username }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<script>
+// Live preview for profile image upload
+function previewProfileImage(input) {
+    const preview = document.getElementById('profileImagePreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
-        <!-- Edit Profile & Settings -->
-        <div class="col-lg-7">
-            <div class="row g-4">
-                <!-- Edit Profile Form -->
-                <div class="col-12">
-                    <div class="card shadow border-0 rounded-3">
-                        <div class="card-header border-0" style="background: linear-gradient(to right, #f8f9fa, #ffffff);">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle bg-primary bg-opacity-10 text-primary me-3">
-                                    <i class="fas fa-user-edit"></i>
+<style>
+.profile-pic-container {
+    position: relative;
+    display: inline-block;
+}
+.edit-profile-pic-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: #fff;
+    border-radius: 50%;
+    border: 2px solid #4ade80;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+    z-index: 2;
+}
+.edit-profile-pic-btn:hover {
+    background: #e0f7fa;
+}
+</style>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Profile Settings</h5>
+            <form method="post" id="profileForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="profile-pic-container">
+                            {% if has_custom_image %}
+                                <img id="profileImagePreview" src="{{ user.image.url }}" alt="Profile Picture"
+                                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #4ade80; background: #f3f4f6;">
+                            {% else %}
+                                <div style="width: 120px; height: 120px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; border: 3px solid #4ade80; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                    <i class="fas fa-user" style="font-size: 64px; color: #60a5fa;"></i>
+                                    <img id="profileImagePreview" src="" alt="Profile Preview" style="display:none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; position: absolute;">
                                 </div>
-                                <h5 class="card-title mb-0 fw-bold">Edit Profile</h5>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            {% if messages %}
-                                {% for message in messages %}
-                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-info-circle me-2"></i>{{ message }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                {% endfor %}
                             {% endif %}
-                            
-                            <form method="POST" class="needs-validation" novalidate>
-                                {% csrf_token %}
-                                <div class="mb-4">
-                                    <label class="form-label fw-medium mb-3">Email Address</label>
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text border-0 bg-light">
-                                            <i class="fas fa-envelope text-primary"></i>
-                                        </span>
-                                        <input type="email" class="form-control form-control-lg border-0 bg-light" 
-                                               name="email" value="{{ user.email }}" required 
-                                               placeholder="Enter your email address">
-                                    </div>
-                                    <div class="form-text text-muted mt-2">
-                                        <i class="fas fa-info-circle me-1"></i> 
-                                        Your email address will be used for notifications and password recovery.
-                                    </div>
-                                </div>
-                                
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
-                                        <i class="fas fa-save me-2"></i>Save Changes
-                                    </button>
-                                </div>
-                            </form>
+                            <span class="edit-profile-pic-btn" onclick="document.getElementById('id_image').click();">
+                                <i class="fas fa-pencil-alt" style="color: #4ade80; font-size: 18px;"></i>
+                            </span>
                         </div>
                     </div>
+                    {{ profile_form.non_field_errors }}
+                    <div class="col-md-6">
+                        <label for="id_first_name" class="form-label">First Name</label>
+                        {{ profile_form.first_name }}
+                        {% if profile_form.first_name.errors %}
+                            <div class="text-danger small">{{ profile_form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_last_name" class="form-label">Last Name</label>
+                        {{ profile_form.last_name }}
+                        {% if profile_form.last_name.errors %}
+                            <div class="text-danger small">{{ profile_form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_email" class="form-label">Email Address</label>
+                        {{ profile_form.email }}
+                        {% if profile_form.email.errors %}
+                            <div class="text-danger small">{{ profile_form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="id_image" class="form-label">Profile Picture</label>
+                        {{ profile_form.image }}
+                        <script>
+                            document.getElementById('id_image').addEventListener('change', function() {
+                                previewProfileImage(this);
+                            });
+                        </script>
+                        {% if profile_form.image.errors %}
+                            <div class="text-danger small">{{ profile_form.image.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
+                        <div class="form-text">Username cannot be changed</div>
+                    </div>
                 </div>
+                <hr class="my-4">
+                <button type="submit" name="update_profile" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Update Profile
+                </button>
+            </form>
+        </div>
+    </div>
 
-                <!-- Password Settings -->
-                <div class="col-12">
-                    <div class="card shadow border-0 rounded-3">
-                        <div class="card-header border-0" style="background: linear-gradient(to right, #f8f9fa, #ffffff);">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle bg-primary bg-opacity-10 text-primary me-3">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <h5 class="card-title mb-0 fw-bold">Password Settings</h5>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="security-info mb-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="security-icon me-3">
-                                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Password Security</h6>
-                                        <p class="text-muted mb-0">
-                                            Keep your account secure by regularly updating your password
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="bg-light p-3 rounded-3 mb-4">
-                                    <div class="d-flex align-items-center text-muted">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <small>For security reasons, choose a strong password that you haven't used before.</small>
-                                    </div>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <a href="{% url 'authentication:password_reset' %}" 
-                                       class="btn btn-outline-primary btn-lg rounded-pill">
-                                        <i class="fas fa-key me-2"></i>Reset Password
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="col-lg-4 mb-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Account Information</h5>
+            <div class="mb-3">
+                <label class="form-label">User ID</label>
+                <input type="text" class="form-control" value="{{ user.id }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date Joined</label>
+                <input type="text" class="form-control" value="{{ user.date_joined|date:'M d, Y' }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Login</label>
+                <input type="text" class="form-control" value="{{ user.last_login|date:'M d, Y H:i' }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <input type="text" class="form-control" value="{% if user.is_active %}Active{% else %}Inactive{% endif %}" readonly>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.icon-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Change Password</h5>
+            <form method="post" id="passwordForm">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="{{ password_form.old_password.id_for_label }}" class="form-label">Current Password</label>
+                        {{ password_form.old_password }}
+                        {% if password_form.old_password.errors %}
+                            <div class="text-danger small">{{ password_form.old_password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ password_form.new_password1.id_for_label }}" class="form-label">New Password</label>
+                        {{ password_form.new_password1 }}
+                        {% if password_form.new_password1.errors %}
+                            <div class="text-danger small">{{ password_form.new_password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ password_form.new_password2.id_for_label }}" class="form-label">Confirm New Password</label>
+                        {{ password_form.new_password2 }}
+                        {% if password_form.new_password2.errors %}
+                            <div class="text-danger small">{{ password_form.new_password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr class="my-4">
+                <button type="submit" name="change_password" class="btn btn-warning">
+                    <i class="fas fa-key me-2"></i>Change Password
+                </button>
+            </form>
+        </div>
+    </div>
 
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    color: #0d6efd;
-}
-
-.card {
-    transition: transform 0.2s ease-in-out;
-    border: none;
-    overflow: hidden;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-
-.input-group-text {
-    border: none;
-    background-color: #f8f9fa;
-}
-
-.form-control {
-    border: 1px solid #dee2e6;
-    padding: 0.75rem 1rem;
-}
-
-.form-control-lg {
-    font-size: 1rem;
-}
-
-.form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
-}
-
-.badge {
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    padding: 0.5rem 1rem;
-}
-
-.btn {
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    transition: all 0.2s ease-in-out;
-    padding: 0.75rem 1.5rem;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-}
-
-.btn-lg {
-    padding: 1rem 2rem;
-}
-
-.list-group-item {
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem !important;
-}
-
-.form-text {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.security-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.card-header {
-    padding: 1.25rem;
-}
-
-.input-group-lg > .form-control {
-    min-height: 3.5rem;
-}
-
-.alert {
-    border: none;
-    border-radius: 0.5rem;
-}
-
-.bg-light {
-    background-color: #f8f9fa !important;
-}
-</style>
-
-<!-- Form Validation Script -->
-<script>
-(function () {
-    'use strict'
-    var forms = document.querySelectorAll('.needs-validation')
-    Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-            }
-            form.classList.add('was-validated')
-        }, false)
-    })
-})()
-</script>
-{% endblock %}
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <h5 class="card-title mb-4">Security Tips</h5>
+            <div class="alert alert-info">
+                <h6><i class="fas fa-shield-alt me-2"></i>Password Security</h6>
+                <ul class="mb-0 small">
+                    <li>Use at least 8 characters</li>
+                    <li>Include uppercase and lowercase letters</li>
+                    <li>Add numbers and special characters</li>
+                    <li>Don't reuse passwords</li>
+                </ul>
+            </div>
+            <div class="alert alert-warning">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Important</h6>
+                <p class="mb-0 small">Changing your password will log you out of all other sessions.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

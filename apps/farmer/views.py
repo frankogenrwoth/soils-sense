@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import json
 import csv
 import pandas as pd
+from .forms import FarmerProfileForm
 
 def farmer_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -101,14 +102,44 @@ def dashboard(request):
 
 @login_required
 def profile(request):
+    """profile view"""
+    from django.contrib.auth.forms import PasswordChangeForm
+    from django.contrib.auth import update_session_auth_hash
+
+    user = request.user
+    password_form = PasswordChangeForm(user)
+    profile_form = FarmerProfileForm(instance=user)
+
+    image_url = user.image.url if user.image else ''
+    has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
+
     if request.method == 'POST':
-        email = request.POST.get('email')
-        request.user.email = email
-        request.user.save()
-        messages.success(request, 'Profile updated successfully!')
-        return redirect('farmer:profile')
-    
-    return render(request, 'farmer/profile.html')
+        if 'update_profile' in request.POST:
+            profile_form = FarmerProfileForm(request.POST, request.FILES, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('farmer:profile')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+        elif 'change_password' in request.POST:
+            password_form = PasswordChangeForm(user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Password changed successfully!')
+                return redirect('farmer:profile')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
+    context = {
+        'user': user,
+        'password_form': password_form,
+        'profile_form': profile_form,
+        'has_custom_image': has_custom_image,
+    }
+    return render(request, 'farmer/profile.html', context)
+
 
 @login_required
 def farm_management(request):

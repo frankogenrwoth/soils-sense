@@ -686,3 +686,133 @@ C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
 Watching for file changes with StatReloader
 C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
 Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 11370
+"POST /farmer/predictions/ HTTP/1.1" 200 11571
+"POST /farmer/predictions/ HTTP/1.1" 200 11567
+"POST /farmer/predictions/ HTTP/1.1" 200 11576
+"POST /farmer/predictions/ HTTP/1.1" 200 11576
+"GET /farmer/farm-management/ HTTP/1.1" 200 27912
+"GET /farmer/profile/ HTTP/1.1" 200 15827
+"GET /farmer/soil-data/ HTTP/1.1" 200 27942
+"GET /farmer/dashboard/ HTTP/1.1" 200 7321
+"GET /farmer/soil-data/ HTTP/1.1" 200 27942
+"GET /farmer/profile/ HTTP/1.1" 200 15827
+"GET /farmer/predictions/ HTTP/1.1" 200 11370
+"POST /farmer/predictions/ HTTP/1.1" 200 11576
+C:\Users\user\Desktop\soils-sense\apps\farmer\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /farmer/predictions/ HTTP/1.1" 200 11926
+"GET /farmer/settings/ HTTP/1.1" 200 22517
+"GET /farmer/settings/ HTTP/1.1" 200 22241
+C:\Users\user\Desktop\soils-sense\apps\farmer\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/profile/ HTTP/1.1" 200 15827
+"GET /farmer/profile/ HTTP/1.1" 200 15827
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/slide1.jpg HTTP/1.1" 304 0
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"GET /static/images/logo.webp HTTP/1.1" 304 0
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 23727
+"GET /technician/dashboard/ HTTP/1.1" 200 24003
+"GET /technician/settings/ HTTP/1.1" 200 16943
+"GET /media/users/profile_images/bruno.png HTTP/1.1" 304 0
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 7321
+"GET /farmer/profile/ HTTP/1.1" 200 12960
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/profile/ HTTP/1.1" 200 13932
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 7321
+"GET /farmer/predictions/ HTTP/1.1" 200 11370
+"GET /farmer/recommendations/ HTTP/1.1" 200 16094
+"GET /farmer/profile/ HTTP/1.1" 200 12960
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 24003
+"GET /technician/settings/ HTTP/1.1" 200 16943
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 7321
+"GET /farmer/profile/ HTTP/1.1" 200 13119
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 9417
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 24003
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 9417
+"GET /static/images/dashboard.png HTTP/1.1" 404 1874
+"GET /static/images/chart-preview.png HTTP/1.1" 404 1886
+"GET /authentication/login/ HTTP/1.1" 200 3861
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 7321
+"GET /farmer/profile/ HTTP/1.1" 200 14091
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
