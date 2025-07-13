@@ -33,17 +33,6 @@
 
     <!-- Quick Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Moisture Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-primary hover:shadow-lg transition-shadow">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-tint text-primary text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Temperature Card -->
         <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-shadow">
             <div class="flex items-center">
@@ -98,67 +87,89 @@
         </div>
     </div>
 
-    <!-- Main Dashboard Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Moisture Chart -->
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Moisture Trends</h3>
-            <canvas id="moistureChart" width="400" height="200"></canvas>
+    <!-- Soil Moisture Prediction System Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- About the System -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-brain text-primary text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">How Our Predictions Work</h3>
+            </div>
+            <div class="prose prose-sm text-gray-600">
+                <p class="mb-4">Our advanced AI-powered soil moisture prediction system uses multiple data points to forecast soil conditions and provide tailored recommendations:</p>
+                <ul class="list-disc list-inside space-y-2 mb-4">
+                    <li><span class="font-medium text-gray-700">Real-time Sensors:</span> Continuous monitoring of soil moisture, temperature, and humidity</li>
+                    <li><span class="font-medium text-gray-700">Weather Integration:</span> Local weather forecasts and historical patterns</li>
+                    <li><span class="font-medium text-gray-700">Crop Data:</span> Specific requirements for your crops and growth stages</li>
+                    <li><span class="font-medium text-gray-700">Machine Learning:</span> Advanced algorithms trained on extensive agricultural datasets</li>
+                </ul>
+                <div class="bg-green-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-green-800"><i class="fas fa-lightbulb text-green-600 mr-2"></i>Our predictions are updated every 6 hours to maintain accuracy and reliability.</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Alerts and Activity -->
+        <!-- How Recommendations Work -->
         <div class="bg-white rounded-xl shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h3>
-            <div class="space-y-4">
-                {% if recent_alerts %}
-                    {% for alert in recent_alerts %}
-                        <div class="flex items-center space-x-3 p-3 
-                            {% if alert.severity == 'critical' %}bg-red-50{% elif alert.severity == 'warning' %}bg-yellow-50{% else %}bg-blue-50{% endif %} 
-                            rounded-lg">
-                            <div class="flex-shrink-0">
-                                <div class="w-8 h-8 
-                                    {% if alert.severity == 'critical' %}bg-red-500{% elif alert.severity == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %}
-                                    rounded-full flex items-center justify-center">
-                                    <i class="fas 
-                                        {% if alert.alert_type == 'low_moisture' %}fa-tint{% elif alert.alert_type == 'system_error' %}fa-exclamation{% else %}fa-bell{% endif %}
-                                        text-white text-xs"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium 
-                                    {% if alert.severity == 'critical' %}text-red-900{% elif alert.severity == 'warning' %}text-yellow-900{% else %}text-blue-900{% endif %}">
-                                    {{ alert.message }}
-                                </p>
-                                <p class="text-xs 
-                                    {% if alert.severity == 'critical' %}text-red-700{% elif alert.severity == 'warning' %}text-yellow-700{% else %}text-blue-700{% endif %}">
-                                    {{ alert.timestamp|timesince }} ago
-                                </p>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-gray-500 text-sm">No recent alerts</p>
-                {% endif %}
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-clipboard-list text-blue-500 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Smart Recommendations</h3>
+            </div>
+            <div class="prose prose-sm text-gray-600">
+                <p class="mb-4">Our recommendation engine analyzes multiple factors to provide actionable insights:</p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <h4 class="font-medium text-blue-900 mb-2">Input Factors</h4>
+                        <ul class="text-blue-800 text-sm space-y-1">
+                            <li><i class="fas fa-check-circle mr-1"></i>Soil moisture levels</li>
+                            <li><i class="fas fa-check-circle mr-1"></i>Weather forecasts</li>
+                            <li><i class="fas fa-check-circle mr-1"></i>Crop water needs</li>
+                            <li><i class="fas fa-check-circle mr-1"></i>Growth stage</li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-medium text-purple-900 mb-2">Output Actions</h4>
+                        <ul class="text-purple-800 text-sm space-y-1">
+                            <li><i class="fas fa-arrow-right mr-1"></i>Irrigation timing</li>
+                            <li><i class="fas fa-arrow-right mr-1"></i>Water quantity</li>
+                            <li><i class="fas fa-arrow-right mr-1"></i>Resource optimization</li>
+                            <li><i class="fas fa-arrow-right mr-1"></i>Risk prevention</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 rounded-lg p-4">
+                    <p class="text-sm text-yellow-800"><i class="fas fa-exclamation-circle text-yellow-600 mr-2"></i>Recommendations are customized based on your farm's specific conditions and historical performance.</p>
+                </div>
             </div>
         </div>
     </div>
 
     {% if prediction_available %}
-    <!-- ML Predictions Section -->
-    <div class="mt-8 bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Moisture Predictions</h3>
+    <!-- Current Predictions Section -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Current Predictions & Recommendations</h3>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
                 <canvas id="predictionChart" width="400" height="200"></canvas>
             </div>
             <div>
-                <h4 class="text-md font-semibold text-gray-900 mb-2">Recommendations</h4>
+                <h4 class="text-md font-semibold text-gray-900 mb-4">AI-Generated Recommendations</h4>
                 {% if recommendation %}
-                    <div class="bg-green-50 border-l-4 border-green-500 p-4">
+                    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-robot text-green-600 text-xl mr-3"></i>
+                            <h5 class="font-medium text-green-900">System Suggestion</h5>
+                        </div>
                         <p class="text-green-700">{{ recommendation }}</p>
                     </div>
                 {% else %}
-                    <p class="text-gray-500">No recommendations available</p>
+                    <div class="bg-gray-50 border-l-4 border-gray-500 p-6 rounded-lg">
+                        <p class="text-gray-600">Gathering more data to generate personalized recommendations...</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -178,45 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Moisture history chart
-    const ctx = document.getElementById('moistureChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {{ moisture_dates|safe }},
-            datasets: [{
-                label: 'Soil Moisture (%)',
-                data: {{ moisture_values|safe }},
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            }
-        }
-    });
-
     {% if prediction_available %}
     // Prediction chart
     const predCtx = document.getElementById('predictionChart').getContext('2d');
@@ -225,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: {{ prediction_dates|safe }},
             datasets: [{
-                label: 'Actual',
+                label: 'Actual Moisture',
                 data: {{ moisture_values|safe }},
                 borderColor: '#10B981',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -233,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fill: false
             },
             {
-                label: 'Predicted',
+                label: 'Predicted Moisture',
                 data: {{ moisture_predictions|safe }},
                 borderColor: '#6366F1',
                 backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -246,18 +218,34 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             plugins: {
                 legend: {
-                    display: true
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Soil Moisture Prediction Analysis',
+                    font: {
+                        size: 16
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
                     max: 100,
+                    title: {
+                        display: true,
+                        text: 'Moisture Level (%)'
+                    },
                     grid: {
                         color: 'rgba(0, 0, 0, 0.1)'
                     }
                 },
                 x: {
+                    title: {
+                        display: true,
+                        text: 'Timeline'
+                    },
                     grid: {
                         display: false
                     }

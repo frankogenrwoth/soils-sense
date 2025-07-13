@@ -12,7 +12,6 @@ urlpatterns = [
     path('add-farm/', views.add_farm, name='add_farm'),
     path('add-crop/', views.add_crop, name='add_crop'),
     path('analytics/', views.analytics, name='analytics'),
-    path('recommendations/', views.recommendations, name='recommendations'),
     path('predictions/', views.predictions, name='predictions'),
     
     # New URLs for soil moisture data management
@@ -22,6 +21,4 @@ urlpatterns = [
     path('soil-data/filter/', views.filter_soil_data, name='filter_soil_data'),
     path('soil-data/delete/<int:reading_id>/', views.delete_reading, name='delete_reading'),
     path('download-csv-template/', views.download_csv_template, name='download_csv_template'),
-
-    
 ] 
