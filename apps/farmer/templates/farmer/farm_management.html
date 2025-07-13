@@ -4,131 +4,151 @@
 {% block base_title %}Farm Management{% endblock %}
 
 {% block page_title %}Farm Management{% endblock %}
-{% block page_subtitle %}Manage your farms and crops{% endblock %}
+{% block page_subtitle %}Manage your farms and crops efficiently{% endblock %}
 
 {% block header_actions %}
-<div class="flex gap-2">
-    <button class="bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-200 transform hover:scale-105 shadow-md" data-bs-toggle="modal" data-bs-target="#addFarmModal">
-        <i class="fas fa-plus-circle"></i>
-        <span>Add Farm</span>
+<div class="flex gap-3">
+    <button class="bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg" data-bs-toggle="modal" data-bs-target="#addFarmModal">
+        <i class="fas fa-plus-circle text-lg"></i>
+        <span>New Farm</span>
     </button>
-    <button class="bg-accent hover:bg-secondary text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-200 transform hover:scale-105 shadow-md" data-bs-toggle="modal" data-bs-target="#addCropModal">
-        <i class="fas fa-seedling"></i>
-        <span>Add Crop</span>
+    <button class="bg-accent hover:bg-secondary text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg" data-bs-toggle="modal" data-bs-target="#addCropModal">
+        <i class="fas fa-seedling text-lg"></i>
+        <span>New Crop</span>
     </button>
 </div>
 {% endblock %}
 
 {% block content %}
-<!-- Messages -->
-{% if messages %}
-<div class="container mx-auto px-4 mb-4">
-    {% for message in messages %}
-    <div class="rounded-lg p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} flex items-center">
-        {% if message.tags == 'success' %}
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
-        {% else %}
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        {% endif %}
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Farm Cards Section -->
+    <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-farm text-primary mr-3"></i>
+                My Farms
+            </h2>
+            <span class="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+                Total Farms: {{ farms|length }}
+            </span>
+        </div>
 
-<div class="container mx-auto px-4 py-8">
-    <!-- Farms Section -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 class="text-xl font-semibold mb-4">My Farms</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full table-auto">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area Size</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Soil Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {% for farm in farms %}
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.farm_name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.location }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.area_size }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.soil_type }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ farm.description }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <button onclick="deleteFarm('{{ farm.id }}')" class="text-red-600 hover:text-red-900">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No farms added yet</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for farm in farms %}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div class="bg-gradient-to-r from-primary to-secondary p-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-white">{{ farm.farm_name }}</h3>
+                        <button onclick="deleteFarm('{{ farm.id }}')" class="text-white/80 hover:text-white transition-colors">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Location</p>
+                            <p class="text-gray-700 font-medium">{{ farm.location }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Area Size</p>
+                            <p class="text-gray-700 font-medium">{{ farm.area_size }} acres</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <p class="text-sm text-gray-500">Soil Type</p>
+                        <p class="text-gray-700 font-medium">{{ farm.soil_type }}</p>
+                    </div>
+                    {% if farm.description %}
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <p class="text-sm text-blue-800">{{ farm.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full bg-gray-50 rounded-xl p-8 text-center">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-farm text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-gray-500 text-lg mb-2">No Farms Added Yet</h3>
+                <p class="text-gray-400 mb-4">Start by adding your first farm</p>
+                <button class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition-colors" data-bs-toggle="modal" data-bs-target="#addFarmModal">
+                    <i class="fas fa-plus-circle mr-2"></i>Add Farm
+                </button>
+            </div>
+            {% endfor %}
         </div>
     </div>
 
     <!-- Crops Section -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4">My Crops</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full table-auto">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Crop Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variety</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Planting Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Harvest</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {% for crop in crops %}
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.farm.farm_name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.crop_name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.variety }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.planting_date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ crop.expected_harvest_date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                {% if crop.status == 'Growing' %}bg-green-100 text-green-800
-                                {% elif crop.status == 'Harvested' %}bg-blue-100 text-blue-800
-                                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                {{ crop.status }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <button onclick="deleteCrop('{{ crop.id }}')" class="text-red-600 hover:text-red-900">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">No crops added yet</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-seedling text-accent mr-3"></i>
+                My Crops
+            </h2>
+            <span class="bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
+                Total Crops: {{ crops|length }}
+            </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for crop in crops %}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div class="bg-gradient-to-r from-accent to-secondary p-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-white">{{ crop.crop_name }}</h3>
+                        <button onclick="deleteCrop('{{ crop.id }}')" class="text-white/80 hover:text-white transition-colors">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <p class="text-white/80 text-sm">{{ crop.farm.farm_name }}</p>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Variety</p>
+                            <p class="text-gray-700 font-medium">{{ crop.variety }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Area Planted</p>
+                            <p class="text-gray-700 font-medium">{{ crop.area_planted }} acres</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Planting Date</p>
+                            <p class="text-gray-700 font-medium">{{ crop.planting_date }}</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-500">Expected Harvest</p>
+                            <p class="text-gray-700 font-medium">{{ crop.expected_harvest_date }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <span class="text-sm text-gray-500">Status</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium 
+                            {% if crop.status == 'Growing' %}bg-green-100 text-green-800
+                            {% elif crop.status == 'Harvested' %}bg-blue-100 text-blue-800
+                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ crop.status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full bg-gray-50 rounded-xl p-8 text-center">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-seedling text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-gray-500 text-lg mb-2">No Crops Added Yet</h3>
+                <p class="text-gray-400 mb-4">Start by adding your first crop</p>
+                <button class="bg-accent text-white px-6 py-2 rounded-lg hover:bg-secondary transition-colors" data-bs-toggle="modal" data-bs-target="#addCropModal">
+                    <i class="fas fa-plus-circle mr-2"></i>Add Crop
+                </button>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
@@ -314,7 +334,8 @@
         </div>
     </div>
 </div>
-{% endblock %}
+
+{% endblock content %}
 
 {% block extra_css %}
 <style>
@@ -335,30 +356,42 @@
     opacity: 1;
 }
 
-/* Ensure modal appears above everything */
-.modal {
-    z-index: 1050;
-}
-
-.modal-backdrop {
-    z-index: 1040;
-}
-
-/* Form focus styles */
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+/* Form focus and hover effects */
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+    border-color: #10B981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-/* Custom select arrow */
-select {
-    background-image: none;
+.form-group input:hover, 
+.form-group select:hover, 
+.form-group textarea:hover {
+    border-color: #10B981;
 }
 
-/* Hover effects */
-.form-group input:hover, .form-group select:hover, .form-group textarea:hover {
-    border-color: var(--primary-color);
+/* Card hover effects */
+.farm-card:hover,
+.crop-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transitions */
+.farm-card,
+.crop-card {
+    transition: all 0.3s ease;
+}
+
+/* Status badge animations */
+.status-badge {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 </style>
 {% endblock %}
@@ -369,8 +402,19 @@ select {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Form submission handling - just handle the loading state
-    ['addFarmForm', 'addCropForm'].forEach(function(formId) {
+    // Auto-hide messages
+    const messages = document.querySelectorAll('.message-alert');
+    messages.forEach(message => {
+        setTimeout(() => {
+            message.style.transition = 'all 0.5s ease';
+            message.style.opacity = '0';
+            message.style.transform = 'translateY(-20px)';
+            setTimeout(() => message.remove(), 500);
+        }, 3000);
+    });
+
+    // Form submission handling
+    ['addFarmForm', 'addCropForm'].forEach(formId => {
         const form = document.getElementById(formId);
         if (form) {
             form.addEventListener('submit', function() {
@@ -383,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Saving...
+                            Processing...
                         </div>
                     `;
                 }
@@ -391,45 +435,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Get CSRF token function (needed for delete operations)
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    // Delete farm function
+    // Delete functions
     window.deleteFarm = function(farmId) {
-        if (confirm('Are you sure you want to delete this farm? This will also delete all associated crops and readings.')) {
-            const csrftoken = getCookie('csrftoken');
+        if (confirm('Are you sure you want to delete this farm? This action cannot be undone.')) {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             
             fetch(`/farmer/farm-management/delete-farm/${farmId}/`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': csrftoken
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
                 },
                 credentials: 'same-origin'
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error || `HTTP error! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.reload();
+                    location.reload();
                 } else {
                     throw new Error(data.error || 'Failed to delete farm');
                 }
@@ -439,31 +461,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error deleting farm: ' + error.message);
             });
         }
-    }
+    };
 
-    // Delete crop function
     window.deleteCrop = function(cropId) {
-        if (confirm('Are you sure you want to delete this crop?')) {
-            const csrftoken = getCookie('csrftoken');
+        if (confirm('Are you sure you want to delete this crop? This action cannot be undone.')) {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             
             fetch(`/farmer/farm-management/delete-crop/${cropId}/`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': csrftoken
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
                 },
                 credentials: 'same-origin'
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error || `HTTP error! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.reload();
+                    location.reload();
                 } else {
                     throw new Error(data.error || 'Failed to delete crop');
                 }
@@ -473,11 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error deleting crop: ' + error.message);
             });
         }
-    }
+    };
 });
 </script>
-{% endblock %}
-
-<style>
-/* Remove unused toast animations */
-</style> 
+{% endblock %} 
