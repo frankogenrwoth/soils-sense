@@ -12,6 +12,18 @@ import pandas as pd
 from ml import MLEngine
 
 
+def setup_example():
+    """Demonstrate setup of the ML Engine"""
+    print("=" * 60)
+    print("SETUP - TRAINING ALL MODELS")
+    print("=" * 60)
+    ml_engine = MLEngine()
+    ml_engine.train_model_on_all_algorithms("irrigation_recommendation")
+    ml_engine.train_model_on_all_algorithms("soil_moisture_predictor")
+
+    print("=" * 60)
+
+
 def basic_usage_example():
     """Demonstrate basic ML Engine usage"""
     print("=" * 60)
@@ -230,9 +242,7 @@ def main():
         irrigation_recommendation_example()
         model_training_example()
         model_management_example()
-    
-    
-    
+
         comprehensive_test()
 
         print("\n🎉 All examples completed successfully!")
