@@ -1057,24 +1057,3 @@ django.template.exceptions.TemplateSyntaxError: Unclosed tag on line 22: 'block'
 "GET /farmer/profile/ HTTP/1.1" 200 15937
 "GET /farmer/dashboard/ HTTP/1.1" 200 13620
 "GET /farmer/soil-data/ HTTP/1.1" 200 30221
-"GET /farmer/profile/ HTTP/1.1" 200 15937
-"GET /farmer/soil-data/ HTTP/1.1" 200 30221
-"GET /farmer/predictions/ HTTP/1.1" 200 11486
-C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
-Watching for file changes with StatReloader
-C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
-Watching for file changes with StatReloader
-C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
-Watching for file changes with StatReloader
-"GET /farmer/predictions/ HTTP/1.1" 200 11486
-"POST /farmer/predictions/ HTTP/1.1" 200 11785
-"GET /farmer/farm-management/ HTTP/1.1" 200 35340
-"GET /farmer/farm-management/ HTTP/1.1" 200 35340
-"GET /farmer/dashboard/ HTTP/1.1" 200 13620
-"GET /farmer/soil-data/ HTTP/1.1" 200 30221
-"GET /farmer/profile/ HTTP/1.1" 200 15937
-"GET /farmer/analytics/ HTTP/1.1" 200 13138
-"GET /farmer/predictions/ HTTP/1.1" 200 11486
-"POST /farmer/predictions/ HTTP/1.1" 200 11670
-"POST /farmer/predictions/ HTTP/1.1" 200 11670
-"POST /farmer/predictions/ HTTP/1.1" 200 11670
