@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import json
 import csv
 import pandas as pd
+from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
 
 def farmer_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -41,16 +42,16 @@ def dashboard(request):
 
     latest_reading = SoilMoistureReading.objects.filter(
         farm=selected_farm
-    ).first()
+    ).order_by('-timestamp').first()
 
     latest_weather = WeatherData.objects.filter(
         farm=selected_farm,
         is_forecast=False
-    ).first()
+    ).order_by('-timestamp').first()
 
     latest_irrigation = IrrigationEvent.objects.filter(
         farm=selected_farm
-    ).first()
+    ).order_by('-start_time').first()
 
     recent_alerts = Alert.objects.filter(
         farm=selected_farm,
@@ -60,31 +61,52 @@ def dashboard(request):
     seven_days_ago = datetime.now() - timedelta(days=7)
     moisture_history = SoilMoistureReading.objects.filter(
         farm=selected_farm,
-        timestamp__gte=seven_days_ago
+        timestamp__gte=seven_days_ago,
+        soil_moisture_percent__isnull=False  # Exclude null values
     ).order_by('timestamp')
 
-    moisture_dates = [reading.timestamp.strftime('%Y-%m-%d') for reading in moisture_history]
-    moisture_values = [float(reading.soil_moisture_percent) for reading in moisture_history]
+    # Filter out any None values and safely convert to float
+    moisture_dates = []
+    moisture_values = []
+    for reading in moisture_history:
+        try:
+            if reading.soil_moisture_percent is not None:
+                moisture_dates.append(reading.timestamp.strftime('%Y-%m-%d'))
+                moisture_values.append(float(reading.soil_moisture_percent))
+        except (ValueError, TypeError):
+            continue
 
     yesterday = datetime.now() - timedelta(days=1)
     today_avg = SoilMoistureReading.objects.filter(
         farm=selected_farm,
-        timestamp__date=datetime.now().date()
+        timestamp__date=datetime.now().date(),
+        soil_moisture_percent__isnull=False  # Exclude null values
     ).aggregate(Avg('soil_moisture_percent'))['soil_moisture_percent__avg'] or 0
 
     yesterday_avg = SoilMoistureReading.objects.filter(
         farm=selected_farm,
-        timestamp__date=yesterday.date()
+        timestamp__date=yesterday.date(),
+        soil_moisture_percent__isnull=False  # Exclude null values
     ).aggregate(Avg('soil_moisture_percent'))['soil_moisture_percent__avg'] or 0
 
     moisture_change = today_avg - yesterday_avg if yesterday_avg > 0 else 0
 
+    # Safely handle None values when getting latest readings
+    try:
+        current_moisture = round(float(latest_reading.soil_moisture_percent), 1) if latest_reading and latest_reading.soil_moisture_percent is not None else 0
+        temperature = round(float(latest_reading.temperature_celsius), 1) if latest_reading and latest_reading.temperature_celsius is not None else 0
+        humidity = round(float(latest_reading.humidity_percent), 1) if latest_reading and latest_reading.humidity_percent is not None else 0
+    except (ValueError, TypeError, AttributeError):
+        current_moisture = 0
+        temperature = 0
+        humidity = 0
+
     context = {
         'farms': farms,
         'selected_farm': selected_farm,
-        'current_moisture': round(float(latest_reading.soil_moisture_percent), 1) if latest_reading else 0,
-        'temperature': round(float(latest_reading.temperature_celsius), 1) if latest_reading else 0,
-        'humidity': round(float(latest_reading.humidity_percent), 1) if latest_reading else 0,
+        'current_moisture': current_moisture,
+        'temperature': temperature,
+        'humidity': humidity,
         'moisture_change': round(moisture_change, 1),
         'moisture_change_direction': 'up' if moisture_change >= 0 else 'down',
         'moisture_dates': json.dumps(moisture_dates),
@@ -172,22 +194,25 @@ def add_crop(request):
 def analytics(request):
     return render(request, 'farmer/analytics.html')
 
+
 @login_required
 def recommendations(request):
     return render(request, 'farmer/recommendations.html')
 
+=======
 #Predictions here
+
 @login_required
 def predictions(request):
-    from ml import MLEngine
-    import datetime
-    now = datetime.datetime.now()
     soil_moisture_result = None
     irrigation_result = None
+    from datetime import datetime
+    now = datetime.now()
+
     if request.method == 'POST':
-        ml = MLEngine()
         predict_type = request.POST.get('predict_type')
         if predict_type == 'soil_moisture':
+            # Extract form data
             location = request.POST.get('location')
             temperature_celsius = request.POST.get('temperature_celsius')
             humidity_percent = request.POST.get('humidity_percent')
@@ -195,12 +220,11 @@ def predictions(request):
             status = request.POST.get('status')
             irrigation_action = request.POST.get('irrigation_action')
             timestamp = request.POST.get('timestamp')
-            sensor_id = 'manual'
-            if not timestamp:
-                timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = timestamp.replace('T', ' ')
-            soil_moisture_result = ml.predict_soil_moisture(
+            # Use a default sensor_id for now (could be improved)
+            sensor_id = 'SENSOR_DEFAULT'
+            # Call ML predictor
+            predictor = SoilMoisturePredictor()
+            soil_moisture_result = predictor.predict_moisture(
                 sensor_id=sensor_id,
                 location=location,
                 temperature_celsius=float(temperature_celsius),
@@ -208,32 +232,32 @@ def predictions(request):
                 battery_voltage=float(battery_voltage),
                 status=status,
                 irrigation_action=irrigation_action,
-                timestamp=timestamp,
+                timestamp=timestamp
             )
         elif predict_type == 'irrigation':
+            # Extract form data
             soil_moisture_percent = request.POST.get('soil_moisture_percent')
             temperature_celsius = request.POST.get('temperature_celsius')
             humidity_percent = request.POST.get('humidity_percent')
             battery_voltage = request.POST.get('battery_voltage')
             status = request.POST.get('status')
             timestamp = request.POST.get('timestamp')
-            if not timestamp:
-                timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = timestamp.replace('T', ' ')
-            irrigation_result = ml.recommend_irrigation(
+            # Call ML recommender
+            recommender = IrrigationRecommender()
+            irrigation_result = recommender.recommend_irrigation(
                 soil_moisture_percent=float(soil_moisture_percent),
                 temperature_celsius=float(temperature_celsius),
                 humidity_percent=float(humidity_percent),
                 battery_voltage=float(battery_voltage),
                 status=status,
-                timestamp=timestamp,
+                timestamp=timestamp
             )
-    return render(request, 'farmer/predictions.html', {
+    context = {
         'soil_moisture_result': soil_moisture_result,
         'irrigation_result': irrigation_result,
         'now': now,
-    })
+    }
+    return render(request, 'farmer/predictions.html', context)
 
 @login_required
 def soil_data_management(request):
