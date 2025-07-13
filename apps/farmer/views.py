@@ -196,11 +196,6 @@ def analytics(request):
 
 
 @login_required
-def recommendations(request):
-    return render(request, 'farmer/recommendations.html')
-
-
-@login_required
 def predictions(request):
     soil_moisture_result = None
     irrigation_result = None
