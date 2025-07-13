@@ -1029,3 +1029,7 @@ Watching for file changes with StatReloader
 "GET /technician/dashboard/ HTTP/1.1" 200 24003
 "GET /technician/reports/ HTTP/1.1" 200 17942
 "GET /technician/report/4/download-pdf/ HTTP/1.1" 200 1885
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\user\Desktop\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
