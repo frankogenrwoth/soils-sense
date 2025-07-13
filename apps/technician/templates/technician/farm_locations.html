@@ -157,22 +157,40 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="post" action="{% url 'farmer:add_farm' %}">
+                <form method="post" action="{% url 'technician:add_farm' %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label">Select Farmer's Farm</label>
-                        <select class="form-select" name="farm_id" required>
-                            <option value="">Select Farm</option>
-                            {% for farm in farmer_farms %}
-                                <option value="{{ farm.id }}">{{ farm.name }} ({{ farm.location }})</option>
-                            {% endfor %}
+                        <label class="form-label">Farm Name</label>
+                        <input type="text" class="form-control" name="farm_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Area Size (acres)</label>
+                        <input type="number" class="form-control" name="area_size" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soil Type</label>
+                        <select class="form-select" name="soil_type" required>
+                            <option value="">Select soil type</option>
+                            <option value="Clay">Clay</option>
+                            <option value="Sandy">Sandy</option>
+                            <option value="Loam">Loam</option>
+                            <option value="Silt">Silt</option>
+                            <option value="Peat">Peat</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="2"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Farm</button>
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" form="addFarmForm">Add Farm</button>
             </div>
         </div>
     </div>

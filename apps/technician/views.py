@@ -8,8 +8,15 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.core.exceptions import PermissionDenied
 from django.db.models import Avg, Count, Max, Min
 from django.utils.timezone import now, timedelta
-from .forms import FarmEditForm, SoilReadingFilterForm
+from .forms import FarmEditForm, SoilReadingFilterForm, TechnicianProfileForm
 from datetime import datetime, timedelta
+import csv
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from django.http import Http404
+from ml import MLEngine
+import datetime
 
 
 
@@ -123,30 +130,10 @@ def dashboard(request):
     return render(request, 'technician/dashboard.html', context)
 
 def profile(request):
-    """Profile management view"""
-    if request.method == 'POST':
-        # Get form data
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        phone_number = request.POST.get('phone_number')
-        
-        # Update user object
-        user = request.user
-        user.first_name = first_name
-        user.last_name = last_name
-        user.email = email
-        user.phone_number = phone_number
-        
-        # Handle profile image upload
-        if 'profile_image' in request.FILES:
-            user.image = request.FILES['profile_image']
-        
-        user.save()
-        messages.success(request, 'Profile updated successfully!')
-        return redirect('technician:profile')
-    
-    return render(request, 'technician/profile.html')
+    user = request.user
+    image_url = user.image.url if user.image else ''
+    has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
+    return render(request, 'technician/profile.html', {'user': user, 'has_custom_image': has_custom_image})
 
 def farm_locations(request):
     """Farm locations management view"""
@@ -211,7 +198,7 @@ def analytics(request):
     """Analytics dashboard view"""
     
     # Get date range (last 30 days)
-    end_date = datetime.now()
+    end_date = datetime.datetime.now()
     start_date = end_date - timedelta(days=30)
     
     # Analytics data
@@ -258,46 +245,138 @@ def reports(request):
     """Reports management view"""
     from .models import Report
     from .forms import ReportForm
-    
+    from apps.farmer.models import Farm
     if request.method == 'POST':
-        form = ReportForm(request.POST, request.FILES)
-        if form.is_valid():
-            report = form.save(commit=False)
-            report.generated_by = request.user.get_full_name() or request.user.username
-            report.save()
-            messages.success(request, 'Report created successfully!')
+        if request.POST.get('generate_prediction'):
+            # Handle prediction form
+            farm_id = request.POST.get('farm_id')
+            if not farm_id:
+                messages.error(request, "Please select a farm.")
+                form = ReportForm()
+                reports = Report.objects.select_related('farm').all().order_by('-created_at')
+                user_farms = Farm.objects.filter(user=request.user)
+                context = {
+                    'form': form,
+                    'reports': reports,
+                    'farms': user_farms,
+                }
+                return render(request, 'technician/reports.html', context)
+            try:
+                farm = Farm.objects.get(id=farm_id, user=request.user)
+            except Farm.DoesNotExist:
+                messages.error(request, "Selected farm not found.")
+                form = ReportForm()
+                reports = Report.objects.select_related('farm').all().order_by('-created_at')
+                user_farms = Farm.objects.filter(user=request.user)
+                context = {
+                    'form': form,
+                    'reports': reports,
+                    'farms': user_farms,
+                }
+                return render(request, 'technician/reports.html', context)
+            location = request.POST.get('location')
+            temperature_celsius = request.POST.get('temperature_celsius')
+            humidity_percent = request.POST.get('humidity_percent')
+            battery_voltage = request.POST.get('battery_voltage')
+            status = request.POST.get('status')
+            timestamp = request.POST.get('timestamp')
+            if timestamp:
+                timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # Use dummy values for sensor_id and irrigation_action for soil moisture prediction
+            ml = MLEngine()
+            soil_pred = ml.predict_soil_moisture(
+                sensor_id='manual',
+                location=location,
+                temperature_celsius=float(temperature_celsius),
+                humidity_percent=float(humidity_percent),
+                battery_voltage=float(battery_voltage),
+                status=status,
+                irrigation_action='None',
+                timestamp=timestamp,
+            )
+            predicted_soil_moisture = soil_pred.get('predicted_value')
+            # Now use this value to get irrigation recommendation
+            ir_pred = ml.recommend_irrigation(
+                soil_moisture_percent=predicted_soil_moisture,
+                temperature_celsius=float(temperature_celsius),
+                humidity_percent=float(humidity_percent),
+                battery_voltage=float(battery_voltage),
+                status=status,
+                timestamp=timestamp,
+            )
+            irrigation_action = ir_pred.get('predicted_value')
+            # Compose description
+            description = f"Location: {location}\nTemperature: {temperature_celsius}°C\nHumidity: {humidity_percent}%\nBattery Voltage: {battery_voltage}V\nStatus: {status}\nTimestamp: {timestamp}\n\nPredicted Soil Moisture: {predicted_soil_moisture}%\nRecommended Irrigation Action: {irrigation_action}"
+            report = Report.objects.create(
+                farm=farm,
+                report_type='prediction',
+                title=f"Soil Moisture Prediction ({location})",
+                description=description,
+                generated_by=request.user.get_full_name() or request.user.username
+            )
+            messages.success(request, 'Prediction report generated and saved!')
             return redirect('technician:reports')
+        else:
+            form = ReportForm(request.POST, request.FILES)
+            if form.is_valid():
+                report = form.save(commit=False)
+                report.generated_by = request.user.get_full_name() or request.user.username
+                report.save()
+                messages.success(request, 'Report created successfully!')
+                return redirect('technician:reports')
     else:
         form = ReportForm()
-    
-    # Get existing reports
+    # Only show farms belonging to the current user (technician)
+    user_farms = Farm.objects.filter(user=request.user)
     reports = Report.objects.select_related('farm').all().order_by('-created_at')
-    
     context = {
         'form': form,
         'reports': reports,
-        'farms': Farm.objects.all(),
+        'farms': user_farms,
     }
     return render(request, 'technician/reports.html', context)
+
+def export_reports(request):
+    from .models import Report
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="reports.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Title', 'Farm', 'Type', 'Generated By', 'Created', 'Description'])
+    for report in Report.objects.select_related('farm').all().order_by('-created_at'):
+        writer.writerow([
+            report.title,
+            report.farm.farm_name if report.farm else '',
+            report.report_type,
+            report.generated_by,
+            report.created_at.strftime('%Y-%m-%d %H:%M'),
+            report.description or ''
+        ])
+    return response
 
 def settings(request):
     """Settings view"""
     from django.contrib.auth.forms import PasswordChangeForm
     from django.contrib.auth import update_session_auth_hash
-    
+
     user = request.user
     password_form = PasswordChangeForm(user)
-    
+    profile_form = TechnicianProfileForm(instance=user)
+
+    image_url = user.image.url if user.image else ''
+    has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
+
     if request.method == 'POST':
         if 'update_profile' in request.POST:
-            # Update user profile
-            user.first_name = request.POST.get('first_name', '')
-            user.last_name = request.POST.get('last_name', '')
-            user.email = request.POST.get('email', '')
-            user.save()
-            messages.success(request, 'Profile updated successfully!')
-            return redirect('technician:settings')
-        
+            profile_form = TechnicianProfileForm(request.POST, request.FILES, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('technician:settings')
+            else:
+                messages.error(request, 'Please correct the errors below.')
         elif 'change_password' in request.POST:
             password_form = PasswordChangeForm(user, request.POST)
             if password_form.is_valid():
@@ -307,10 +386,12 @@ def settings(request):
                 return redirect('technician:settings')
             else:
                 messages.error(request, 'Please correct the errors below.')
-    
+
     context = {
         'user': user,
         'password_form': password_form,
+        'profile_form': profile_form,
+        'has_custom_image': has_custom_image,
     }
     return render(request, 'technician/settings.html', context)
 
@@ -436,3 +517,76 @@ def edit_report(request, pk):
         'farms': Farm.objects.all(),
     }
     return render(request, 'technician/edit_report.html', context)
+
+def download_prediction_pdf(request, pk):
+    from .models import Report
+    report = get_object_or_404(Report, pk=pk)
+    if report.report_type != 'prediction':
+        raise Http404('Not a prediction report')
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="prediction_report_{report.pk}.pdf"'
+
+    p = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+    y = height - 50
+
+    p.setFont('Helvetica-Bold', 16)
+    p.drawString(50, y, f'Prediction Report: {report.title}')
+    y -= 30
+    p.setFont('Helvetica', 12)
+    p.drawString(50, y, f'Farm: {report.farm.farm_name if report.farm else "N/A"}')
+    y -= 20
+    p.drawString(50, y, f'Generated By: {report.generated_by}')
+    y -= 20
+    p.drawString(50, y, f'Created: {report.created_at.strftime("%Y-%m-%d %H:%M")}')
+    y -= 30
+    p.setFont('Helvetica-Bold', 12)
+    p.drawString(50, y, 'Description:')
+    y -= 20
+    p.setFont('Helvetica', 12)
+    text = p.beginText(50, y)
+    for line in (report.description or '').splitlines():
+        text.textLine(line)
+    p.drawText(text)
+    p.showPage()
+    p.save()
+    return response
+
+def ml_predict_soil_moisture(location, soil_moisture, temperature, humidity):
+    # Stub ML function: returns a fake status and irrigation action
+    # Replace with real ML model call
+    if float(soil_moisture) < 30:
+        status = 'Dry'
+        irrigation_action = 'Irrigate'
+    else:
+        status = 'Normal'
+        irrigation_action = 'No Action'
+    return status, irrigation_action
+
+def add_farm(request):
+    """Technician add farm view (POST only)"""
+    if request.method == 'POST':
+        farm_name = request.POST.get('farm_name')
+        location = request.POST.get('location')
+        area_size = request.POST.get('area_size')
+        soil_type = request.POST.get('soil_type')
+        description = request.POST.get('description')
+        if not (farm_name and location and area_size and soil_type):
+            messages.error(request, 'All fields except description are required.')
+            return redirect('technician:farm_locations')
+        try:
+            Farm.objects.create(
+                user=request.user,
+                farm_name=farm_name,
+                location=location,
+                area_size=area_size,
+                soil_type=soil_type,
+                description=description
+            )
+            messages.success(request, f'Farm "{farm_name}" added successfully!')
+        except Exception as e:
+            messages.error(request, f'Error adding farm: {e}')
+        return redirect('technician:farm_locations')
+    else:
+        return redirect('technician:farm_locations')

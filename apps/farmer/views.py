@@ -176,6 +176,65 @@ def analytics(request):
 def recommendations(request):
     return render(request, 'farmer/recommendations.html')
 
+#Predictions here
+@login_required
+def predictions(request):
+    from ml import MLEngine
+    import datetime
+    now = datetime.datetime.now()
+    soil_moisture_result = None
+    irrigation_result = None
+    if request.method == 'POST':
+        ml = MLEngine()
+        predict_type = request.POST.get('predict_type')
+        if predict_type == 'soil_moisture':
+            location = request.POST.get('location')
+            temperature_celsius = request.POST.get('temperature_celsius')
+            humidity_percent = request.POST.get('humidity_percent')
+            battery_voltage = request.POST.get('battery_voltage')
+            status = request.POST.get('status')
+            irrigation_action = request.POST.get('irrigation_action')
+            timestamp = request.POST.get('timestamp')
+            sensor_id = 'manual'
+            if not timestamp:
+                timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                timestamp = timestamp.replace('T', ' ')
+            soil_moisture_result = ml.predict_soil_moisture(
+                sensor_id=sensor_id,
+                location=location,
+                temperature_celsius=float(temperature_celsius),
+                humidity_percent=float(humidity_percent),
+                battery_voltage=float(battery_voltage),
+                status=status,
+                irrigation_action=irrigation_action,
+                timestamp=timestamp,
+            )
+        elif predict_type == 'irrigation':
+            soil_moisture_percent = request.POST.get('soil_moisture_percent')
+            temperature_celsius = request.POST.get('temperature_celsius')
+            humidity_percent = request.POST.get('humidity_percent')
+            battery_voltage = request.POST.get('battery_voltage')
+            status = request.POST.get('status')
+            timestamp = request.POST.get('timestamp')
+            if not timestamp:
+                timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                timestamp = timestamp.replace('T', ' ')
+            irrigation_result = ml.recommend_irrigation(
+                soil_moisture_percent=float(soil_moisture_percent),
+                temperature_celsius=float(temperature_celsius),
+                humidity_percent=float(humidity_percent),
+                battery_voltage=float(battery_voltage),
+                status=status,
+                timestamp=timestamp,
+            )
+    return render(request, 'farmer/predictions.html', {
+        'soil_moisture_result': soil_moisture_result,
+        'irrigation_result': irrigation_result,
+        'now': now,
+    })
+
 @login_required
 def soil_data_management(request):
     farms = Farm.objects.filter(user=request.user)
