@@ -41,16 +41,16 @@ def dashboard(request):
 
     latest_reading = SoilMoistureReading.objects.filter(
         farm=selected_farm
-    ).first()
+    ).order_by('-timestamp').first()
 
     latest_weather = WeatherData.objects.filter(
         farm=selected_farm,
         is_forecast=False
-    ).first()
+    ).order_by('-timestamp').first()
 
     latest_irrigation = IrrigationEvent.objects.filter(
         farm=selected_farm
-    ).first()
+    ).order_by('-start_time').first()
 
     recent_alerts = Alert.objects.filter(
         farm=selected_farm,
@@ -60,31 +60,52 @@ def dashboard(request):
     seven_days_ago = datetime.now() - timedelta(days=7)
     moisture_history = SoilMoistureReading.objects.filter(
         farm=selected_farm,
-        timestamp__gte=seven_days_ago
+        timestamp__gte=seven_days_ago,
+        soil_moisture_percent__isnull=False  # Exclude null values
     ).order_by('timestamp')
 
-    moisture_dates = [reading.timestamp.strftime('%Y-%m-%d') for reading in moisture_history]
-    moisture_values = [float(reading.soil_moisture_percent) for reading in moisture_history]
+    # Filter out any None values and safely convert to float
+    moisture_dates = []
+    moisture_values = []
+    for reading in moisture_history:
+        try:
+            if reading.soil_moisture_percent is not None:
+                moisture_dates.append(reading.timestamp.strftime('%Y-%m-%d'))
+                moisture_values.append(float(reading.soil_moisture_percent))
+        except (ValueError, TypeError):
+            continue
 
     yesterday = datetime.now() - timedelta(days=1)
     today_avg = SoilMoistureReading.objects.filter(
         farm=selected_farm,
-        timestamp__date=datetime.now().date()
+        timestamp__date=datetime.now().date(),
+        soil_moisture_percent__isnull=False  # Exclude null values
     ).aggregate(Avg('soil_moisture_percent'))['soil_moisture_percent__avg'] or 0
 
     yesterday_avg = SoilMoistureReading.objects.filter(
         farm=selected_farm,
-        timestamp__date=yesterday.date()
+        timestamp__date=yesterday.date(),
+        soil_moisture_percent__isnull=False  # Exclude null values
     ).aggregate(Avg('soil_moisture_percent'))['soil_moisture_percent__avg'] or 0
 
     moisture_change = today_avg - yesterday_avg if yesterday_avg > 0 else 0
 
+    # Safely handle None values when getting latest readings
+    try:
+        current_moisture = round(float(latest_reading.soil_moisture_percent), 1) if latest_reading and latest_reading.soil_moisture_percent is not None else 0
+        temperature = round(float(latest_reading.temperature_celsius), 1) if latest_reading and latest_reading.temperature_celsius is not None else 0
+        humidity = round(float(latest_reading.humidity_percent), 1) if latest_reading and latest_reading.humidity_percent is not None else 0
+    except (ValueError, TypeError, AttributeError):
+        current_moisture = 0
+        temperature = 0
+        humidity = 0
+
     context = {
         'farms': farms,
         'selected_farm': selected_farm,
-        'current_moisture': round(float(latest_reading.soil_moisture_percent), 1) if latest_reading else 0,
-        'temperature': round(float(latest_reading.temperature_celsius), 1) if latest_reading else 0,
-        'humidity': round(float(latest_reading.humidity_percent), 1) if latest_reading else 0,
+        'current_moisture': current_moisture,
+        'temperature': temperature,
+        'humidity': humidity,
         'moisture_change': round(moisture_change, 1),
         'moisture_change_direction': 'up' if moisture_change >= 0 else 'down',
         'moisture_dates': json.dumps(moisture_dates),
@@ -171,10 +192,6 @@ def add_crop(request):
 @login_required
 def analytics(request):
     return render(request, 'farmer/analytics.html')
-
-@login_required
-def recommendations(request):
-    return render(request, 'farmer/recommendations.html')
 
 #Predictions here
 @login_required
