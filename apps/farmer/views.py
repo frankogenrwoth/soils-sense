@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import json
 import csv
 import pandas as pd
-from .forms import FarmerProfileForm
+from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
 
 def farmer_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -102,44 +102,14 @@ def dashboard(request):
 
 @login_required
 def profile(request):
-    """profile view"""
-    from django.contrib.auth.forms import PasswordChangeForm
-    from django.contrib.auth import update_session_auth_hash
-
-    user = request.user
-    password_form = PasswordChangeForm(user)
-    profile_form = FarmerProfileForm(instance=user)
-
-    image_url = user.image.url if user.image else ''
-    has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
-
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
-            profile_form = FarmerProfileForm(request.POST, request.FILES, instance=user)
-            if profile_form.is_valid():
-                profile_form.save()
-                messages.success(request, 'Profile updated successfully!')
-                return redirect('farmer:profile')
-            else:
-                messages.error(request, 'Please correct the errors below.')
-        elif 'change_password' in request.POST:
-            password_form = PasswordChangeForm(user, request.POST)
-            if password_form.is_valid():
-                user = password_form.save()
-                update_session_auth_hash(request, user)
-                messages.success(request, 'Password changed successfully!')
-                return redirect('farmer:profile')
-            else:
-                messages.error(request, 'Please correct the errors below.')
-
-    context = {
-        'user': user,
-        'password_form': password_form,
-        'profile_form': profile_form,
-        'has_custom_image': has_custom_image,
-    }
-    return render(request, 'farmer/profile.html', context)
-
+        email = request.POST.get('email')
+        request.user.email = email
+        request.user.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('farmer:profile')
+    
+    return render(request, 'farmer/profile.html')
 
 @login_required
 def farm_management(request):
@@ -207,18 +177,17 @@ def analytics(request):
 def recommendations(request):
     return render(request, 'farmer/recommendations.html')
 
-#Predictions here
 @login_required
 def predictions(request):
-    from ml import MLEngine
-    import datetime
-    now = datetime.datetime.now()
     soil_moisture_result = None
     irrigation_result = None
+    from datetime import datetime
+    now = datetime.now()
+
     if request.method == 'POST':
-        ml = MLEngine()
         predict_type = request.POST.get('predict_type')
         if predict_type == 'soil_moisture':
+            # Extract form data
             location = request.POST.get('location')
             temperature_celsius = request.POST.get('temperature_celsius')
             humidity_percent = request.POST.get('humidity_percent')
@@ -226,12 +195,11 @@ def predictions(request):
             status = request.POST.get('status')
             irrigation_action = request.POST.get('irrigation_action')
             timestamp = request.POST.get('timestamp')
-            sensor_id = 'manual'
-            if not timestamp:
-                timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = timestamp.replace('T', ' ')
-            soil_moisture_result = ml.predict_soil_moisture(
+            # Use a default sensor_id for now (could be improved)
+            sensor_id = 'SENSOR_DEFAULT'
+            # Call ML predictor
+            predictor = SoilMoisturePredictor()
+            soil_moisture_result = predictor.predict_moisture(
                 sensor_id=sensor_id,
                 location=location,
                 temperature_celsius=float(temperature_celsius),
@@ -239,32 +207,32 @@ def predictions(request):
                 battery_voltage=float(battery_voltage),
                 status=status,
                 irrigation_action=irrigation_action,
-                timestamp=timestamp,
+                timestamp=timestamp
             )
         elif predict_type == 'irrigation':
+            # Extract form data
             soil_moisture_percent = request.POST.get('soil_moisture_percent')
             temperature_celsius = request.POST.get('temperature_celsius')
             humidity_percent = request.POST.get('humidity_percent')
             battery_voltage = request.POST.get('battery_voltage')
             status = request.POST.get('status')
             timestamp = request.POST.get('timestamp')
-            if not timestamp:
-                timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = timestamp.replace('T', ' ')
-            irrigation_result = ml.recommend_irrigation(
+            # Call ML recommender
+            recommender = IrrigationRecommender()
+            irrigation_result = recommender.recommend_irrigation(
                 soil_moisture_percent=float(soil_moisture_percent),
                 temperature_celsius=float(temperature_celsius),
                 humidity_percent=float(humidity_percent),
                 battery_voltage=float(battery_voltage),
                 status=status,
-                timestamp=timestamp,
+                timestamp=timestamp
             )
-    return render(request, 'farmer/predictions.html', {
+    context = {
         'soil_moisture_result': soil_moisture_result,
         'irrigation_result': irrigation_result,
         'now': now,
-    })
+    }
+    return render(request, 'farmer/predictions.html', context)
 
 @login_required
 def soil_data_management(request):
