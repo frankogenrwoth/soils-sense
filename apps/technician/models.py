@@ -20,6 +20,7 @@ class Report(models.Model):
         ('soil_analysis', 'Soil Analysis'),
         ('sensor_maintenance', 'Sensor Maintenance'),
         ('custom', 'Custom'),
+        ('prediction', 'Prediction'),
     ]
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='reports')
     report_type = models.CharField(max_length=50, choices=REPORT_TYPES, default='custom')

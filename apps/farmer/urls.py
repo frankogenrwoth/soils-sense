@@ -12,6 +12,7 @@ urlpatterns = [
     path('add-farm/', views.add_farm, name='add_farm'),
     path('add-crop/', views.add_crop, name='add_crop'),
     path('analytics/', views.analytics, name='analytics'),
+
     path('recommendations/', views.recommendations, name='recommendations'),
     path('predictions/', views.predictions, name='predictions'),
     
