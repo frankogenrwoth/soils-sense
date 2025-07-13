@@ -21,4 +21,6 @@ urlpatterns = [
     path('soil-data/filter/', views.filter_soil_data, name='filter_soil_data'),
     path('soil-data/delete/<int:reading_id>/', views.delete_reading, name='delete_reading'),
     path('download-csv-template/', views.download_csv_template, name='download_csv_template'),
+
+    
 ] 
