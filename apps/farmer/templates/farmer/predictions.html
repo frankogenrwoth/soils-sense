@@ -44,6 +44,14 @@
                                 <label class="form-label">Timestamp</label>
                                 <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Model Algorithm</label>
+                                <select class="form-control" name="algorithm">
+                                    {% for alg in soil_algorithms %}
+                                        <option value="{{ alg }}" {% if alg == default_soil_algorithm %}selected{% endif %}>{{ alg|title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                         <div class="mt-4 d-grid">
                             <button type="submit" class="btn btn-success btn-lg">Predict Soil Moisture</button>
@@ -88,6 +96,14 @@
                             <div class="col-md-6">
                                 <label class="form-label">Timestamp</label>
                                 <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Model Algorithm</label>
+                                <select class="form-control" name="algorithm">
+                                    {% for alg in irrigation_algorithms %}
+                                        <option value="{{ alg }}" {% if alg == default_irrigation_algorithm %}selected{% endif %}>{{ alg|title }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="mt-4 d-grid">
