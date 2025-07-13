@@ -6,11 +6,11 @@
 
 {% block header_actions %}
 <div class="d-flex gap-2">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal">
-        <i class="fas fa-plus me-2"></i>New Report
-    </button>
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#generatePredictionModal">
         <i class="fas fa-magic me-2"></i>Generate Prediction
+    </button>
+    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#generateIrrigationModal">
+        <i class="fas fa-tint me-2"></i>Generate Irrigation Recommendation
     </button>
 </div>
 {% endblock %}
@@ -192,10 +192,81 @@
                         <label class="form-label">Timestamp</label>
                         <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Model Algorithm</label>
+                        <select class="form-select" name="algorithm" required>
+                            {% for alg in soil_algorithms %}
+                                <option value="{{ alg }}" {% if alg == default_soil_algorithm %}selected{% endif %}>{{ alg|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Predict & Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Irrigation Recommendation Modal -->
+<div class="modal fade" id="generateIrrigationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Irrigation Recommendation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'technician:reports' %}">
+                {% csrf_token %}
+                <input type="hidden" name="generate_irrigation" value="1">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Farm</label>
+                        <select class="form-select" name="farm_id" required>
+                            <option value="" disabled selected>Select a farm</option>
+                            {% for farm in farms %}
+                                <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soil Moisture (%)</label>
+                        <input type="number" class="form-control" name="soil_moisture_percent" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Temperature (°C)</label>
+                        <input type="number" class="form-control" name="temperature_celsius" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Humidity (%)</label>
+                        <input type="number" class="form-control" name="humidity_percent" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Battery Voltage</label>
+                        <input type="number" class="form-control" name="battery_voltage" step="0.01" value="3.8" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <input type="text" class="form-control" name="status" value="Normal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Timestamp</label>
+                        <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Model Algorithm</label>
+                        <select class="form-select" name="algorithm" required>
+                            {% for alg in soil_algorithms %}
+                                <option value="{{ alg }}" {% if alg == default_soil_algorithm %}selected{% endif %}>{{ alg|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info">Recommend & Save</button>
                 </div>
             </form>
         </div>
