@@ -199,7 +199,65 @@ def analytics(request):
 def recommendations(request):
     return render(request, 'farmer/recommendations.html')
 
+=======
 #Predictions here
+
+@login_required
+def predictions(request):
+    soil_moisture_result = None
+    irrigation_result = None
+    from datetime import datetime
+    now = datetime.now()
+
+    if request.method == 'POST':
+        predict_type = request.POST.get('predict_type')
+        if predict_type == 'soil_moisture':
+            # Extract form data
+            location = request.POST.get('location')
+            temperature_celsius = request.POST.get('temperature_celsius')
+            humidity_percent = request.POST.get('humidity_percent')
+            battery_voltage = request.POST.get('battery_voltage')
+            status = request.POST.get('status')
+            irrigation_action = request.POST.get('irrigation_action')
+            timestamp = request.POST.get('timestamp')
+            # Use a default sensor_id for now (could be improved)
+            sensor_id = 'SENSOR_DEFAULT'
+            # Call ML predictor
+            predictor = SoilMoisturePredictor()
+            soil_moisture_result = predictor.predict_moisture(
+                sensor_id=sensor_id,
+                location=location,
+                temperature_celsius=float(temperature_celsius),
+                humidity_percent=float(humidity_percent),
+                battery_voltage=float(battery_voltage),
+                status=status,
+                irrigation_action=irrigation_action,
+                timestamp=timestamp
+            )
+        elif predict_type == 'irrigation':
+            # Extract form data
+            soil_moisture_percent = request.POST.get('soil_moisture_percent')
+            temperature_celsius = request.POST.get('temperature_celsius')
+            humidity_percent = request.POST.get('humidity_percent')
+            battery_voltage = request.POST.get('battery_voltage')
+            status = request.POST.get('status')
+            timestamp = request.POST.get('timestamp')
+            # Call ML recommender
+            recommender = IrrigationRecommender()
+            irrigation_result = recommender.recommend_irrigation(
+                soil_moisture_percent=float(soil_moisture_percent),
+                temperature_celsius=float(temperature_celsius),
+                humidity_percent=float(humidity_percent),
+                battery_voltage=float(battery_voltage),
+                status=status,
+                timestamp=timestamp
+            )
+    context = {
+        'soil_moisture_result': soil_moisture_result,
+        'irrigation_result': irrigation_result,
+        'now': now,
+    }
+    return render(request, 'farmer/predictions.html', context)
 
 @login_required
 def predictions(request):
