@@ -75,12 +75,7 @@
                         <span>Analytics</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'farmer:predictions' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'predictions' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-lightbulb w-5 h-5 mr-3"></i>
-                        <span>Predictions</span>
-                    </a>
-                </li>
+            
                 <li>
                     <a href="{% url 'farmer:predictions' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'predictions' %}bg-primary text-white{% endif %}">
                         <i class="fas fa-robot w-5 h-5 mr-3"></i>
