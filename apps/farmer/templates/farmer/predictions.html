@@ -1,0 +1,107 @@
+{% extends 'farmer/base.html' %}
+
+{% block page_title %}Predictions{% endblock %}
+{% block breadcrumb %}Predictions{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Soil Moisture Prediction</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="predict_type" value="soil_moisture">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-control" name="location" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Temperature (°C)</label>
+                                <input type="number" class="form-control" name="temperature_celsius" step="0.01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Humidity (%)</label>
+                                <input type="number" class="form-control" name="humidity_percent" step="0.01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Battery Voltage</label>
+                                <input type="number" class="form-control" name="battery_voltage" step="0.01" value="3.8" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                <input type="text" class="form-control" name="status" value="Normal" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Irrigation Action</label>
+                                <input type="text" class="form-control" name="irrigation_action" value="None" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Timestamp</label>
+                                <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">Predict Soil Moisture</button>
+                        </div>
+                    </form>
+                    {% if soil_moisture_result %}
+                        <div class="alert alert-info mt-3">
+                            <strong>Predicted Soil Moisture:</strong> {{ soil_moisture_result.predicted_value }}%
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Irrigation Recommendation</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="predict_type" value="irrigation">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Soil Moisture (%)</label>
+                                <input type="number" class="form-control" name="soil_moisture_percent" step="0.01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Temperature (°C)</label>
+                                <input type="number" class="form-control" name="temperature_celsius" step="0.01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Humidity (%)</label>
+                                <input type="number" class="form-control" name="humidity_percent" step="0.01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Battery Voltage</label>
+                                <input type="number" class="form-control" name="battery_voltage" step="0.01" value="3.8" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                <input type="text" class="form-control" name="status" value="Normal" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Timestamp</label>
+                                <input type="datetime-local" class="form-control" name="timestamp" value="{{ now|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">Get Irrigation Recommendation</button>
+                        </div>
+                    </form>
+                    {% if irrigation_result %}
+                        <div class="alert alert-info mt-3">
+                            <strong>Recommended Irrigation Action:</strong> {{ irrigation_result.predicted_value }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
