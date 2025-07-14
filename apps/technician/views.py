@@ -672,3 +672,9 @@ def add_farm(request):
         return redirect('technician:farm_locations')
     else:
         return redirect('technician:farm_locations')
+
+def models_view(request):
+    # Get all trained models with details
+    ml_engine = MLEngine()
+    models = ml_engine.list_all_models()
+    return render(request, 'technician/models.html', {'models': models})
