@@ -758,12 +758,9 @@ def download_csv_template(request):
     response['Content-Disposition'] = 'attachment; filename="soil_moisture_template.csv"'
     
     writer = csv.writer(response)
-    writer.writerow(['record_id', 'sensor_id', 'location', 'soil_moisture_percent', 
-                    'temperature_celsius', 'humidity_percent', 'timestamp', 
-                    'status', 'battery_voltage', 'irrigation_action'])
+    writer.writerow(['sensor_id', 'location', 'temperature_celsius', 'humidity_percent', 'timestamp', 'status', 'battery_voltage'])
     
-    writer.writerow(['1', 'SENSOR_1', 'Farm A', '45.5', '25.3', '65.2', 
-                    '2024-03-21 14:30:00', 'Normal', '3.62', 'None'])
+    writer.writerow(['SENSOR_1', 'Farm A', '25.3', '65.2', '2024-03-21 14:30:00', 'Normal', '3.62'])
     
     return response
 
@@ -786,9 +783,7 @@ def upload_soil_data(request):
             
             try:
                 df = pd.read_csv(csv_file)
-                required_columns = ['record_id', 'sensor_id', 'location', 'soil_moisture_percent',
-                                'temperature_celsius', 'humidity_percent', 'timestamp',
-                                'status', 'battery_voltage']
+                required_columns = ['sensor_id', 'location', 'temperature_celsius', 'humidity_percent', 'timestamp', 'status', 'battery_voltage']
                 
                 df.columns = df.columns.str.lower().str.strip()
                 
@@ -803,13 +798,14 @@ def upload_soil_data(request):
                 for index, row in df.iterrows():
                     try:
                         timestamp = pd.to_datetime(row['timestamp'])
-                        soil_moisture = float(row['soil_moisture_percent'])
                         temperature = float(row['temperature_celsius'])
                         humidity = float(row['humidity_percent'])
                         battery = float(row['battery_voltage'])
                         
-                        if not (0 <= soil_moisture <= 100):
-                            raise ValueError('Soil moisture must be between 0 and 100%')
+                        # Calculate soil moisture as in manual entry
+                        soil_moisture = (humidity * 0.7) + (30 - temperature * 0.3)
+                        soil_moisture = max(0, min(100, soil_moisture))
+                        
                         if not (0 <= humidity <= 100):
                             raise ValueError('Humidity must be between 0 and 100%')
                         if not (-50 <= temperature <= 100):
