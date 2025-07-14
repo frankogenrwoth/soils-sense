@@ -56,98 +56,12 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Farm Selection -->
-            <div class="card shadow border-0 rounded-3 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0 prediction-title">Select Farm</h4>
-                </div>
-                <div class="card-body">
-                    <form id="farmSelectForm" class="mb-3">
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label for="farmSelect" class="form-label">Farm</label>
-                                <select class="form-select form-select-lg" id="farmSelect" name="farm" required>
-                                    <option value="">Select a farm...</option>
-                                    {% for farm in farms %}
-                                        <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Alert for Messages -->
-            <div id="alertMessage" class="alert d-none mb-4" role="alert"></div>
-
-            {% if messages %}
-            <div class="mb-4">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- Soil Moisture Prediction Form -->
-            <div class="card shadow border-0 rounded-3 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0 prediction-title">Get Predictions</h4>
-                </div>
-                <div class="card-body">
-                    <form id="soilMoistureForm" method="POST" action="" class="mb-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="predict_type" value="soil_moisture">
-                        <input type="hidden" name="farm" id="selectedFarmId">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="location" class="form-label">Location</label>
-                                <input type="text" class="form-control" id="location" name="location" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="temperature" class="form-label">Temperature (°C)</label>
-                                <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="humidity" class="form-label">Humidity (%)</label>
-                                <input type="number" step="0.1" class="form-control" id="humidity" name="humidity" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="battery_voltage" class="form-label">Battery Voltage</label>
-                                <input type="number" step="0.1" class="form-control" id="battery_voltage" name="battery_voltage" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="algorithm" class="form-label">Soil Moisture Algorithm</label>
-                                <select class="form-select" id="algorithm" name="algorithm">
-                                    {% for algo in soil_algorithms %}
-                                        <option value="{{ algo }}" {% if algo == default_soil_algorithm %}selected{% endif %}>{{ algo }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="algorithm_irr" class="form-label">Irrigation Algorithm</label>
-                                <select class="form-select" id="algorithm_irr" name="algorithm_irr">
-                                    {% for algo in irrigation_algorithms %}
-                                        <option value="{{ algo }}" {% if algo == default_irrigation_algorithm %}selected{% endif %}>{{ algo }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary px-4">Get Predictions</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Prediction History -->
+            <!-- Only Prediction History (remove Recent Reports card) -->
             <div class="history-section">
-                <h4 class="mb-3 prediction-title">Prediction History</h4>
+                <h4 class="mb-3 prediction-title" style="margin-top: 0;">Prediction History</h4>
                 {% if predictions %}
                     {% for prediction in predictions %}
-                    <div class="card prediction-result-card">
+                    <div class="card prediction-result-card" style="border-left: 4px solid #28a745; width: 900px; margin-left: auto; margin-right: auto;">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
@@ -160,10 +74,17 @@
                                     </div>
                                 </div>
                                 <div class="action-buttons">
-                                    <!-- Delete and Download PDF actions can be implemented for technician if needed -->
+                                    <form method="post" action="{% url 'technician:delete_report' prediction.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'technician:download_prediction_pdf' prediction.id %}" class="btn btn-primary">
+                                        <i class="fas fa-download"></i> Download PDF
+                                    </a>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="card mb-3">
@@ -189,7 +110,7 @@
                     {% endfor %}
                 {% else %}
                     <div class="no-predictions">
-                        <p class="mb-0">No predictions available. Make a prediction to see results here.</p>
+                        <p class="mb-0">No predictions available.</p>
                     </div>
                 {% endif %}
             </div>

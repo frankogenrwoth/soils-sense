@@ -93,9 +93,9 @@ def dashboard(request):
     threshold_count = SensorThreshold.objects.count()
     warning_thresholds = SensorThreshold.objects.filter(status='Warning').count()
     
-    # Recent reports
+    # Recent reports (exclude auto-generated farm registration reports)
     from .models import Report
-    recent_reports = Report.objects.select_related('farm').order_by('-created_at')[:3]
+    recent_reports = Report.objects.select_related('farm').exclude(title='Farm Registered').order_by('-created_at')[:3]
     
     # Daily moisture trend (last 7 days)
     days = []
@@ -139,11 +139,8 @@ def profile(request):
     return render(request, 'technician/profile.html', {'user': user, 'has_custom_image': has_custom_image})
 
 def farm_locations(request):
-    """Farm locations management view"""
-    farms = Farm.objects.all()  # Or filter as needed
-    return render(request, 'technician/farm_locations.html', {
-        'farms': farms
-    })
+    farms = Farm.objects.filter(user__isnull=False)  # Only show farms added by farmers
+    return render(request, 'technician/farm_locations.html', {'farms': farms})
 
 def delete_farm(request, pk):
     """
@@ -246,8 +243,12 @@ def analytics(request):
 
 @login_required
 def reports(request):
-    farms = Farm.objects.all()  # Technicians see all farms
+    farms = Farm.objects.filter(user__isnull=False)  # Only show farms added by farmers
     predictions = PredictionResult.objects.select_related('farm').order_by('-created_at')
+
+    # Add recent reports for the reports page (exclude auto-generated farm registration reports)
+    from .models import Report
+    recent_reports = Report.objects.select_related('farm').exclude(title='Farm Registered').order_by('-created_at')[:3]
 
     if request.method == 'POST':
         try:
@@ -326,7 +327,8 @@ def reports(request):
         'soil_algorithms': REGRESSION_ALGORITHMS,
         'irrigation_algorithms': CLASSIFICATION_ALGORITHMS,
         'default_soil_algorithm': DEFAULT_ALGORITHMS['soil_moisture_predictor'],
-        'default_irrigation_algorithm': DEFAULT_ALGORITHMS['irrigation_recommendation']
+        'default_irrigation_algorithm': DEFAULT_ALGORITHMS['irrigation_recommendation'],
+        'recent_reports': recent_reports,  # Add this line
     }
     return render(request, 'technician/reports.html', context)
 
