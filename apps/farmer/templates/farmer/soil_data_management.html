@@ -91,7 +91,7 @@
         
         <!-- Download Template Button -->
         <div class="mb-6">
-            <p class="text-sm text-gray-600 mb-2">First time uploading? Download our template to ensure your data is formatted correctly:</p>
+            <p class="text-sm text-gray-600 mb-2">Download our template to ensure your data is formatted correctly:</p>
             <a href="{% url 'farmer:download_csv_template' %}" class="inline-flex items-center px-4 py-2 border border-primary text-sm font-medium rounded-md text-primary bg-white hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                 <svg class="mr-2 -ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -149,8 +149,6 @@
                                     <li>battery_voltage (e.g., 3.7)</li>
                                     <li>status (Normal, Dry, Wet, Critical Low, Critical High)</li>
                                 </ul>
-                                <p class="mt-2">Note: Soil moisture will be calculated automatically.</p>
-                                <p class="mt-2">The readings will be associated with the farm you select above.</p>
                             </div>
                         </div>
                     </div>
