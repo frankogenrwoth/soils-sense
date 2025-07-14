@@ -1,0 +1,50 @@
+{% extends 'technician/base.html' %}
+
+{% block page_title %}Prediction Models{% endblock %}
+{% block breadcrumb %}Models{% endblock %}
+
+{% block content %}
+<div class="dashboard-card mb-4">
+    <h5 class="mb-4">All Prediction Models</h5>
+    {% if models %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Model Type</th>
+                        <th>Algorithm</th>
+                        <th>Last Trained</th>
+                        <th>Metrics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model in models %}
+                        <tr>
+                            <td class="fw-bold">{{ model.model_type|default:'-' }}</td>
+                            <td>{{ model.algorithm|default:'-' }}</td>
+                            <td>{{ model.trained_at|default:'-' }}</td>
+                            <td>
+                                {% if model.task_type == 'regression' %}
+                                    <div>R²: <span class="text-success">{{ model.test_r2|default:'-' }}</span></div>
+                                    <div>RMSE: <span class="text-info">{{ model.test_rmse|default:'-' }}</span></div>
+                                    <div>MAE: <span class="text-warning">{{ model.test_mae|default:'-' }}</span></div>
+                                {% elif model.task_type == 'classification' %}
+                                    <div>Accuracy: <span class="text-success">{{ model.test_accuracy|default:'-' }}</span></div>
+                                    <div>F1: <span class="text-info">{{ model.test_f1|default:'-' }}</span></div>
+                                {% else %}
+                                    <span>-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-muted text-center py-4">
+            <i class="fas fa-cubes fa-2x mb-2"></i>
+            <p>No models found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

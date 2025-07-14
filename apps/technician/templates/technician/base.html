@@ -242,8 +242,8 @@
                 <a href="{% url 'technician:soil_readings' %}" class="nav-link">
                     <i class="fas fa-water me-2"></i> Soil Data
                 </a>
-                <a class="nav-link {% if request.path == '/technician/sensor-config/' %}active{% endif %}" href="{% url 'technician:sensor_config' %}">
-                    <i class="fas fa-microchip"></i>Sensor Config
+                <a class="nav-link {% if request.path == '/technician/models/' %}active{% endif %}" href="{% url 'technician:models' %}">
+                    <i class="fas fa-cubes"></i>Models
                 </a>
                 <a class="nav-link {% if request.path == '/technician/analytics/' %}active{% endif %}" href="{% url 'technician:analytics' %}">
                     <i class="fas fa-chart-line"></i>Analytics
