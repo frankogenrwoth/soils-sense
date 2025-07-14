@@ -16,6 +16,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.http import Http404
 from ml import MLEngine
+from django.utils import timezone
 import datetime
 from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS, DEFAULT_ALGORITHMS
 from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
@@ -599,3 +600,189 @@ def models_view(request):
     ml_engine = MLEngine()
     models = ml_engine.list_all_models()
     return render(request, 'technician/models.html', {'models': models})
+
+def delete_prediction(request, pk):
+    """Delete a prediction result from Prediction History"""
+    prediction = get_object_or_404(PredictionResult, pk=pk)
+    if request.method == 'POST':
+        prediction.delete()
+        messages.success(request, 'Prediction deleted successfully!')
+        return redirect('technician:reports')
+    return HttpResponse(status=405)  # Method not allowed for GET
+
+def download_predictionresult_pdf(request, pk):
+    try:
+        from reportlab.lib import colors
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import inch, cm
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.enums import TA_CENTER
+        from io import BytesIO
+        import os
+        from django.conf import settings
+
+        # Get the prediction (no farm__user restriction for technician)
+        prediction = get_object_or_404(PredictionResult, id=pk)
+
+        # Create the PDF buffer
+        buffer = BytesIO()
+
+        # Set up the document with margins
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=A4,
+            rightMargin=1.5*cm,
+            leftMargin=1.5*cm,
+            topMargin=1.5*cm,
+            bottomMargin=1.5*cm
+        )
+
+        # Styles
+        styles = getSampleStyleSheet()
+        styles.add(ParagraphStyle(
+            name='CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+            textColor=colors.HexColor('#1a5f7a'),
+            alignment=TA_CENTER
+        ))
+        styles.add(ParagraphStyle(
+            name='SubTitle',
+            parent=styles['Heading2'],
+            fontSize=16,
+            textColor=colors.HexColor('#2c3e50'),
+            spaceAfter=20,
+            spaceBefore=20
+        ))
+        styles.add(ParagraphStyle(
+            name='SectionTitle',
+            parent=styles['Heading3'],
+            fontSize=14,
+            textColor=colors.HexColor('#34495e'),
+            spaceAfter=10,
+            spaceBefore=10
+        ))
+        styles.add(ParagraphStyle(
+            name='NormalText',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#2c3e50'),
+            spaceAfter=5
+        ))
+
+        # Start building the document
+        elements = []
+
+        # Add logo if exists (skip gracefully if not found)
+        try:
+            logo_path = os.path.join(settings.STATIC_ROOT, 'images', 'logo.png')
+            if os.path.exists(logo_path):
+                logo = Image(logo_path)
+                logo.drawHeight = 1.5*inch
+                logo.drawWidth = 1.5*inch
+                elements.append(logo)
+                elements.append(Spacer(1, 20))
+        except Exception:
+            pass
+
+        # Title
+        elements.append(Paragraph('Soil Sense - Prediction and Irrigation Recommendation Report', styles['CustomTitle']))
+
+        # Farm Information Section (no farmer info)
+        elements.append(Paragraph('Farm Information', styles['SubTitle']))
+        farm_info = [
+            ['Farm Name:', prediction.farm.farm_name],
+            ['Farm Location:', prediction.farm.location],
+            ['Area Size:', f"{prediction.farm.area_size} hectares"],
+            ['Soil Type:', prediction.farm.soil_type]
+        ]
+        farm_table = Table(farm_info, colWidths=[120, 350])
+        farm_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#34495e')),
+            ('TEXTCOLOR', (1, 0), (1, -1), colors.HexColor('#2c3e50')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ecf0f1')),
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f8f9fa')),
+        ]))
+        elements.append(farm_table)
+        elements.append(Spacer(1, 20))
+
+        # Prediction Results Section
+        elements.append(Paragraph('Prediction Results', styles['SubTitle']))
+        prediction_data = [
+            ['Soil Moisture Prediction', 'Irrigation Recommendation'],
+            [f"{prediction.soil_moisture_result:.2f}%", prediction.irrigation_result],
+            ['Algorithm: ' + prediction.algorithm, 'Algorithm: ' + prediction.algorithm_irr]
+        ]
+        prediction_table = Table(prediction_data, colWidths=[235, 235])
+        prediction_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 1), (-1, 1), 20),
+            ('FONTSIZE', (0, 2), (-1, 2), 9),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+            ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#1a5f7a')),
+            ('TEXTCOLOR', (0, 2), (-1, 2), colors.HexColor('#7f8c8d')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ecf0f1')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#bdc3c7')),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        elements.append(prediction_table)
+        elements.append(Spacer(1, 20))
+
+        # Measurement Details
+        elements.append(Paragraph('Measurement Details', styles['SubTitle']))
+        measurement_data = [
+            ['Parameter', 'Value', 'Unit'],
+            ['Temperature', f"{prediction.temperature:.1f}", '°C'],
+            ['Humidity', f"{prediction.humidity:.1f}", '%'],
+            ['Battery Voltage', f"{prediction.battery_voltage:.1f}", 'V'],
+            ['Location', prediction.location, ''],
+            ['Date & Time', prediction.created_at.strftime('%B %d, %Y %H:%M'), '']
+        ]
+        measurement_table = Table(measurement_data, colWidths=[160, 160, 150])
+        measurement_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#ecf0f1')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#34495e')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('ALIGN', (1, 1), (2, -2), 'CENTER'),
+        ]))
+        elements.append(measurement_table)
+
+        # Footer
+        elements.append(Spacer(1, 40))
+        footer_text = f"Generated by Soil Sense on {timezone.now().strftime('%B %d, %Y %H:%M')}"
+        footer_style = ParagraphStyle(
+            'Footer',
+            parent=styles['Normal'],
+            fontSize=8,
+            textColor=colors.HexColor('#95a5a6'),
+            alignment=TA_CENTER
+        )
+        elements.append(Paragraph(footer_text, footer_style))
+
+        # Build PDF
+        doc.build(elements)
+        pdf = buffer.getvalue()
+        buffer.close()
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="soil_sense_prediction_{pk}.pdf"'
+        response.write(pdf)
+        return response
+    except Exception as e:
+        messages.error(request, f'Error generating PDF: {str(e)}')
+        return redirect('technician:reports')

@@ -7,9 +7,17 @@
 {% if messages %}
   <ul class="mb-4">
     {% for message in messages %}
-      <li class="text-green-600 text-center">{{ message }}</li>
+      {% if 'login' in message.tags or 'error' in message.tags or 'warning' in message.tags or 'success' in message.tags %}
+        <li class="text-green-600 text-center">{{ message }}</li>
+      {% endif %}
     {% endfor %}
   </ul>
+  <script>
+    // Clear messages after displaying
+    if (window.sessionStorage) {
+      sessionStorage.removeItem('messages');
+    }
+  </script>
 {% endif %}
 
 {% if form.errors %}
