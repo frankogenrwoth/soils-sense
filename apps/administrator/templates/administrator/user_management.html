@@ -36,23 +36,30 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                {% for user in users %}
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">John Doe</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">john@example.com</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Admin</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ user.get_user_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ user.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ user.role }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button class="text-blue-600 hover:underline mr-2">Edit</button>
-                        <button class="text-red-600 hover:underline">Delete</button>
+                        <a href="{% url 'administrator:user_detail' user.id %}">
+                            <button class="bg-green-600 text-white px-2 py-1 text-sm rounded hover:bg-green-700 transition mr-2">View</button>
+                        </a>
+                        <button class="bg-blue-600 text-white px-2 py-1 text-sm rounded hover:bg-blue-700 transition mr-2">Update</button>
+                        <button class="bg-red-600 text-white px-2 py-1 text-sm rounded hover:bg-red-700 transition text-sm">Delete</button>
                     </td>
                 </tr>
-                <!-- More user rows here -->
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-4 whitespace-nowrap text-gray-500">No users found</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-    <p class="text-gray-400 mt-4">(User list placeholder)</p>
 </div>
 {% endblock %}

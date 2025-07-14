@@ -1,0 +1,114 @@
+{% extends 'administrator/base.html' %}
+
+{% block header_title %}User Management{% endblock %}
+
+{% block breadcrumb %}
+<li>
+    <div class="flex items-center">
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M7.05 4.05a.75.75 0 011.06 0l5.25 5.25a.75.75 0 010 1.06l-5.25 5.25a.75.75 0 11-1.06-1.06L11.19 10 7.05 5.86a.75.75 0 010-1.06z"/>
+        </svg>
+        <span class="text-gray-600">User Management</span>
+    </div>
+</li>
+{% endblock %}
+
+{% block header_content %}
+<div class="mb-8">
+    <h2 class="text-xl font-semibold text-green-700">Manage {{ user.get_user_name|lower }}</h2>
+    <p class="text-gray-500">View, edit, or remove {{ user.get_user_name|lower }} from the platform.</p>
+</div>
+{% endblock %}
+
+{% block header_tools %}
+<div class="flex justify-end mb-4">
+    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Update User</button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+        <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+            <!-- Profile Image -->
+            <div class="flex-shrink-0">
+                <img 
+                    src="{% if user.image %}{{ user.image.url }}{% else %}/static/images/default.webp{% endif %}" 
+                    alt="Profile Image" 
+                    class="w-32 h-32 object-cover shadow rounded-lg"
+                >
+                <a href="{% if user.image %}{{ user.image.url }}{% else %}/static/images/default.webp{% endif %}" download>
+                    <button class="text-underline text-primary py-2 rounded transition mt-2">Download</button>
+                </a>
+            </div>
+            <!-- Profile Details -->
+            <div class="flex-1">
+                <h3 class="text-2xl font-bold text-green-700 mb-2 flex items-center gap-2">
+                    {{ user.get_user_name }}
+                    {% if user.role == "admin" %}
+                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Admin</span>
+                    {% elif user.role == "farmer" %}
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">Farmer</span>
+                    {% elif user.role == "technician" %}
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">Technician</span>
+                    {% endif %}
+                </h3>
+                <dl class="divide-y divide-gray-100">
+                    <div class="py-2 flex items-center">
+                        <dt class="w-32 text-gray-500 font-medium">Full Name:</dt>
+                        <dd class="text-gray-700">
+                            {% if user.first_name and user.last_name %}
+                                {{ user.get_full_name }}
+                            {% else %}
+                                <span class="text-gray-400 italic">Not provided</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div class="py-2 flex items-center">
+                        <dt class="w-32 text-gray-500 font-medium">Email:</dt>
+                        <dd class="text-gray-700">{{ user.email }}</dd>
+                    </div>
+                    <div class="py-2 flex items-center">
+                        <dt class="w-32 text-gray-500 font-medium">Phone:</dt>
+                        <dd class="text-gray-700">
+                            {% if user.phone_number %}
+                                {{ user.phone_number }}
+                            {% else %}
+                                <span class="text-gray-400 italic">Not provided</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div class="py-2 flex items-center">
+                        <dt class="w-32 text-gray-500 font-medium">Role:</dt>
+                        <dd class="text-gray-700 capitalize">{{ user.role }}</dd>
+                    </div>
+                    <div class="py-2 flex items-center">
+                        <dt class="w-32 text-gray-500 font-medium">Created At:</dt>
+                        <dd class="text-gray-700">{{ user.date_joined|date:"F j, Y, g:i a" }}</dd>
+                    </div>
+                    <div class="py-2 flex items-center">
+                        <dt class="w-32 text-gray-500 font-medium">Last Login:</dt>
+                        <dd class="text-gray-700">
+                            {% if user.last_login %}
+                                {{ user.last_login|date:"F j, Y, g:i a" }}
+                            {% else %}
+                                <span class="text-gray-400 italic">N/A</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function downloadImage() {
+        const image = document.querySelector('img');
+        const link = document.createElement('a');
+        link.href = image.src;
+        link.download = 'profile_image.jpg';
+        link.click();
+    }
+</script>
+{% endblock %}

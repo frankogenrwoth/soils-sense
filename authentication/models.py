@@ -7,12 +7,13 @@ class Role(models.TextChoices):
     FARMER = "farmer"
     TECHNICIAN = "technician"
 
+
 # Create your models here.
 class User(AbstractUser):
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.FARMER)
     image = models.ImageField(
-        upload_to="users/profile_images/",
-        default="users/profile_images/default.webp",
+        upload_to="users/profiles/",
+        default="users/profiles/default.webp",
         null=True,
         blank=True,
     )
@@ -22,6 +23,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def get_user_name(self):
+        if self.username:
+            return self.username
+
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+
+        return self.email
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"

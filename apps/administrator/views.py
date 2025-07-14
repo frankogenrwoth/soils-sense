@@ -1,13 +1,16 @@
+import logging
+
 from django.shortcuts import render
 from django.views import View
-from ml import MLEngine
-import logging
+from django.contrib.auth import get_user_model
 from django import forms
+from django.shortcuts import get_object_or_404
 
+from ml import MLEngine
 from .forms import UserForm
 
-
 logger = logging.getLogger(__name__)
+User = get_user_model()
 
 
 class DashboardView(View):
@@ -19,13 +22,29 @@ class DashboardView(View):
 
 
 class UserManagementView(View):
+    """Admin should be able to manage other users on the platform (view, create, edit, delete, assign roles, reset passwords)."""
     template_name = "administrator/user_management.html"
     form_class = UserForm
 
-
     def get(self, request):
-        context = {}
+        users = User.objects.all()
+
+        context = {
+            "users": users
+        }
+
         return render(request, self.template_name, context=context)
+
+    class UserDetailView(View):
+        template_name = "administrator/user_detail.html"
+
+        def get(self, request, pk):
+            user = get_object_or_404(User, id=pk)
+            context = {
+                "user": user,
+            }
+
+            return render(request, self.template_name, context=context)
 
 
 class DataManagementView(View):
