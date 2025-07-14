@@ -19,6 +19,7 @@ from ml import MLEngine
 import datetime
 from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS, DEFAULT_ALGORITHMS
 from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
+from apps.farmer.models import PredictionResult
 
 
 
@@ -243,171 +244,89 @@ def analytics(request):
     }
     return render(request, 'technician/analytics.html', context)
 
+@login_required
 def reports(request):
-    """Reports management view"""
-    from .models import Report
-    from .forms import ReportForm
-    from apps.farmer.models import Farm
-    from datetime import datetime
-    # Available algorithms for dropdown
-    soil_algorithms = list(REGRESSION_ALGORITHMS.keys())
-    default_soil_algorithm = DEFAULT_ALGORITHMS["soil_moisture_predictor"]
+    farms = Farm.objects.all()  # Technicians see all farms
+    predictions = PredictionResult.objects.select_related('farm').order_by('-created_at')
+
     if request.method == 'POST':
-        if request.POST.get('generate_prediction'):
-            farm_id = request.POST.get('farm_id')
-            if not farm_id:
-                messages.error(request, "Please select a farm.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
-            try:
-                farm = Farm.objects.get(id=farm_id, user=request.user)
-            except Farm.DoesNotExist:
-                messages.error(request, "Selected farm not found.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
+        try:
+            farm_id = request.POST.get('farm')
+            farm = get_object_or_404(Farm, id=farm_id)
+
+            # Get form data
             location = request.POST.get('location')
-            temperature_celsius = request.POST.get('temperature_celsius')
-            humidity_percent = request.POST.get('humidity_percent')
-            battery_voltage = request.POST.get('battery_voltage')
-            status = request.POST.get('status')
-            timestamp = request.POST.get('timestamp')
-            algorithm = request.POST.get('algorithm') or default_soil_algorithm
-            if timestamp:
-                timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            predictor = SoilMoisturePredictor()
-            soil_pred = predictor.predict_moisture(
-                sensor_id='manual',
+            temperature = float(request.POST.get('temperature'))
+            humidity = float(request.POST.get('humidity'))
+            battery_voltage = float(request.POST.get('battery_voltage'))
+            algorithm = request.POST.get('algorithm')
+            algorithm_irr = request.POST.get('algorithm_irr')
+
+            # Make predictions
+            soil_predictor = SoilMoisturePredictor()
+            irrigation_recommender = IrrigationRecommender()
+
+            # Get current timestamp
+            from django.utils import timezone
+            current_time = timezone.now()
+
+            # Predict soil moisture
+            soil_moisture_result = soil_predictor.predict_moisture(
+                sensor_id=1,  # Default sensor ID
                 location=location,
-                temperature_celsius=float(temperature_celsius),
-                humidity_percent=float(humidity_percent),
-                battery_voltage=float(battery_voltage),
-                status=status,
-                irrigation_action='None',
-                timestamp=timestamp,
+                temperature_celsius=temperature,
+                humidity_percent=humidity,
+                battery_voltage=battery_voltage,
+                status="Normal",  # Default status
+                irrigation_action="None",  # Default - no irrigation
+                timestamp=current_time,
                 algorithm=algorithm
             )
-            predicted_soil_moisture = soil_pred.get('predicted_value')
-            recommender = IrrigationRecommender()
-            ir_pred = recommender.recommend_irrigation(
-                soil_moisture_percent=predicted_soil_moisture,
-                temperature_celsius=float(temperature_celsius),
-                humidity_percent=float(humidity_percent),
-                battery_voltage=float(battery_voltage),
-                status=status,
-                timestamp=timestamp,
-                algorithm=algorithm
+
+            # Get the predicted value
+            soil_moisture_value = soil_moisture_result['predicted_value'] if isinstance(soil_moisture_result, dict) else soil_moisture_result
+
+            # Get irrigation recommendation
+            irrigation_result = irrigation_recommender.recommend_irrigation(
+                soil_moisture_percent=soil_moisture_value,
+                temperature_celsius=temperature,
+                humidity_percent=humidity,
+                battery_voltage=battery_voltage,
+                status="Normal",
+                timestamp=current_time,
+                algorithm=algorithm_irr
             )
-            irrigation_action = ir_pred.get('predicted_value')
-            description = f"Location: {location}\nTemperature: {temperature_celsius}°C\nHumidity: {humidity_percent}%\nBattery Voltage: {battery_voltage}V\nStatus: {status}\nTimestamp: {timestamp}\nAlgorithm: {algorithm}\n\nPredicted Soil Moisture: {predicted_soil_moisture}"
-            report = Report.objects.create(
+
+            # Get the recommendation value
+            irrigation_recommendation = irrigation_result['predicted_value'] if isinstance(irrigation_result, dict) else irrigation_result
+
+            # Save the prediction result
+            PredictionResult.objects.create(
                 farm=farm,
-                report_type='prediction',
-                title=f"Soil Moisture Prediction ({location})",
-                description=description,
-                generated_by=request.user.get_full_name() or request.user.username
+                location=location,
+                temperature=temperature,
+                humidity=humidity,
+                battery_voltage=battery_voltage,
+                soil_moisture_result=soil_moisture_value,
+                irrigation_result=irrigation_recommendation,
+                algorithm=algorithm,
+                algorithm_irr=algorithm_irr
             )
-            messages.success(request, 'Prediction report generated and saved!')
+
+            messages.success(request, 'Prediction created successfully!')
             return redirect('technician:reports')
-        elif request.POST.get('generate_irrigation'):
-            farm_id = request.POST.get('farm_id')
-            if not farm_id:
-                messages.error(request, "Please select a farm.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
-            try:
-                farm = Farm.objects.get(id=farm_id, user=request.user)
-            except Farm.DoesNotExist:
-                messages.error(request, "Selected farm not found.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
-            soil_moisture_percent = request.POST.get('soil_moisture_percent')
-            temperature_celsius = request.POST.get('temperature_celsius')
-            humidity_percent = request.POST.get('humidity_percent')
-            battery_voltage = request.POST.get('battery_voltage')
-            status = request.POST.get('status')
-            timestamp = request.POST.get('timestamp')
-            algorithm = request.POST.get('algorithm') or default_soil_algorithm
-            if timestamp:
-                timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            recommender = IrrigationRecommender()
-            ir_pred = recommender.recommend_irrigation(
-                soil_moisture_percent=float(soil_moisture_percent),
-                temperature_celsius=float(temperature_celsius),
-                humidity_percent=float(humidity_percent),
-                battery_voltage=float(battery_voltage),
-                status=status,
-                timestamp=timestamp,
-                algorithm=algorithm
-            )
-            irrigation_action = ir_pred.get('predicted_value')
-            description = f"Soil Moisture: {soil_moisture_percent}%\nTemperature: {temperature_celsius}°C\nHumidity: {humidity_percent}%\nBattery Voltage: {battery_voltage}V\nStatus: {status}\nTimestamp: {timestamp}\nAlgorithm: {algorithm}\n\nRecommended Irrigation Action: {irrigation_action}"
-            report = Report.objects.create(
-                farm=farm,
-                report_type='prediction',
-                title=f"Irrigation Recommendation ({farm.location})",
-                description=description,
-                generated_by=request.user.get_full_name() or request.user.username
-            )
-            messages.success(request, 'Irrigation recommendation report generated and saved!')
+
+        except Exception as e:
+            messages.error(request, f'Error making prediction: {str(e)}')
             return redirect('technician:reports')
-        else:
-            form = ReportForm(request.POST, request.FILES)
-            if form.is_valid():
-                report = form.save(commit=False)
-                report.generated_by = request.user.get_full_name() or request.user.username
-                report.save()
-                messages.success(request, 'Report created successfully!')
-                return redirect('technician:reports')
-    else:
-        form = ReportForm()
-    user_farms = Farm.objects.filter(user=request.user)
-    reports = Report.objects.select_related('farm').all().order_by('-created_at')
+
     context = {
-        'form': form,
-        'reports': reports,
-        'farms': user_farms,
-        'soil_algorithms': soil_algorithms,
-        'default_soil_algorithm': default_soil_algorithm,
+        'farms': farms,
+        'predictions': predictions,
+        'soil_algorithms': REGRESSION_ALGORITHMS,
+        'irrigation_algorithms': CLASSIFICATION_ALGORITHMS,
+        'default_soil_algorithm': DEFAULT_ALGORITHMS['soil_moisture_predictor'],
+        'default_irrigation_algorithm': DEFAULT_ALGORITHMS['irrigation_recommendation']
     }
     return render(request, 'technician/reports.html', context)
 
