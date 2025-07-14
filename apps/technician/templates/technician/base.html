@@ -91,7 +91,8 @@
         /* Main Content Styling */
         .main-content {
             margin-left: 250px;
-            padding: 2rem;
+            width: 100%;
+            padding: 2rem 2.5rem 2rem 2.5rem;
         }
 
         .page-header {
@@ -228,7 +229,6 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="logo-section">
-                <img src="https://via.placeholder.com/80" alt="SoilSense Logo">
                 <h5 class="text-white mt-3 mb-1">SoilSense</h5>
                 <p class="text-white-50 small mb-0">Technician Portal</p>
             </div>
@@ -242,8 +242,8 @@
                 <a href="{% url 'technician:soil_readings' %}" class="nav-link">
                     <i class="fas fa-water me-2"></i> Soil Data
                 </a>
-                <a class="nav-link {% if request.path == '/technician/sensor-config/' %}active{% endif %}" href="{% url 'technician:sensor_config' %}">
-                    <i class="fas fa-microchip"></i>Sensor Config
+                <a class="nav-link {% if request.path == '/technician/models/' %}active{% endif %}" href="{% url 'technician:models' %}">
+                    <i class="fas fa-cubes"></i>Models
                 </a>
                 <a class="nav-link {% if request.path == '/technician/analytics/' %}active{% endif %}" href="{% url 'technician:analytics' %}">
                     <i class="fas fa-chart-line"></i>Analytics

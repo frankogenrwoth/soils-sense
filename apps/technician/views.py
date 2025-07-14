@@ -16,9 +16,11 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.http import Http404
 from ml import MLEngine
+from django.utils import timezone
 import datetime
 from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS, DEFAULT_ALGORITHMS
 from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
+from apps.farmer.models import PredictionResult
 
 
 
@@ -92,9 +94,9 @@ def dashboard(request):
     threshold_count = SensorThreshold.objects.count()
     warning_thresholds = SensorThreshold.objects.filter(status='Warning').count()
     
-    # Recent reports
+    # Recent reports (exclude auto-generated farm registration reports)
     from .models import Report
-    recent_reports = Report.objects.select_related('farm').order_by('-created_at')[:3]
+    recent_reports = Report.objects.select_related('farm').exclude(title='Farm Registered').order_by('-created_at')[:3]
     
     # Daily moisture trend (last 7 days)
     days = []
@@ -138,11 +140,8 @@ def profile(request):
     return render(request, 'technician/profile.html', {'user': user, 'has_custom_image': has_custom_image})
 
 def farm_locations(request):
-    """Farm locations management view"""
-    farms = Farm.objects.all()  # Or filter as needed
-    return render(request, 'technician/farm_locations.html', {
-        'farms': farms
-    })
+    farms = Farm.objects.filter(user__isnull=False)  # Only show farms added by farmers
+    return render(request, 'technician/farm_locations.html', {'farms': farms})
 
 def delete_farm(request, pk):
     """
@@ -243,171 +242,94 @@ def analytics(request):
     }
     return render(request, 'technician/analytics.html', context)
 
+@login_required
 def reports(request):
-    """Reports management view"""
+    farms = Farm.objects.filter(user__isnull=False)  # Only show farms added by farmers
+    predictions = PredictionResult.objects.select_related('farm').order_by('-created_at')
+
+    # Add recent reports for the reports page (exclude auto-generated farm registration reports)
     from .models import Report
-    from .forms import ReportForm
-    from apps.farmer.models import Farm
-    from datetime import datetime
-    # Available algorithms for dropdown
-    soil_algorithms = list(REGRESSION_ALGORITHMS.keys())
-    default_soil_algorithm = DEFAULT_ALGORITHMS["soil_moisture_predictor"]
+    recent_reports = Report.objects.select_related('farm').exclude(title='Farm Registered').order_by('-created_at')[:3]
+
     if request.method == 'POST':
-        if request.POST.get('generate_prediction'):
-            farm_id = request.POST.get('farm_id')
-            if not farm_id:
-                messages.error(request, "Please select a farm.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
-            try:
-                farm = Farm.objects.get(id=farm_id, user=request.user)
-            except Farm.DoesNotExist:
-                messages.error(request, "Selected farm not found.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
+        try:
+            farm_id = request.POST.get('farm')
+            farm = get_object_or_404(Farm, id=farm_id)
+
+            # Get form data
             location = request.POST.get('location')
-            temperature_celsius = request.POST.get('temperature_celsius')
-            humidity_percent = request.POST.get('humidity_percent')
-            battery_voltage = request.POST.get('battery_voltage')
-            status = request.POST.get('status')
-            timestamp = request.POST.get('timestamp')
-            algorithm = request.POST.get('algorithm') or default_soil_algorithm
-            if timestamp:
-                timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            predictor = SoilMoisturePredictor()
-            soil_pred = predictor.predict_moisture(
-                sensor_id='manual',
+            temperature = float(request.POST.get('temperature'))
+            humidity = float(request.POST.get('humidity'))
+            battery_voltage = float(request.POST.get('battery_voltage'))
+            algorithm = request.POST.get('algorithm')
+            algorithm_irr = request.POST.get('algorithm_irr')
+
+            # Make predictions
+            soil_predictor = SoilMoisturePredictor()
+            irrigation_recommender = IrrigationRecommender()
+
+            # Get current timestamp
+            from django.utils import timezone
+            current_time = timezone.now()
+
+            # Predict soil moisture
+            soil_moisture_result = soil_predictor.predict_moisture(
+                sensor_id=1,  # Default sensor ID
                 location=location,
-                temperature_celsius=float(temperature_celsius),
-                humidity_percent=float(humidity_percent),
-                battery_voltage=float(battery_voltage),
-                status=status,
-                irrigation_action='None',
-                timestamp=timestamp,
+                temperature_celsius=temperature,
+                humidity_percent=humidity,
+                battery_voltage=battery_voltage,
+                status="Normal",  # Default status
+                irrigation_action="None",  # Default - no irrigation
+                timestamp=current_time,
                 algorithm=algorithm
             )
-            predicted_soil_moisture = soil_pred.get('predicted_value')
-            recommender = IrrigationRecommender()
-            ir_pred = recommender.recommend_irrigation(
-                soil_moisture_percent=predicted_soil_moisture,
-                temperature_celsius=float(temperature_celsius),
-                humidity_percent=float(humidity_percent),
-                battery_voltage=float(battery_voltage),
-                status=status,
-                timestamp=timestamp,
-                algorithm=algorithm
+
+            # Get the predicted value
+            soil_moisture_value = soil_moisture_result['predicted_value'] if isinstance(soil_moisture_result, dict) else soil_moisture_result
+
+            # Get irrigation recommendation
+            irrigation_result = irrigation_recommender.recommend_irrigation(
+                soil_moisture_percent=soil_moisture_value,
+                temperature_celsius=temperature,
+                humidity_percent=humidity,
+                battery_voltage=battery_voltage,
+                status="Normal",
+                timestamp=current_time,
+                algorithm=algorithm_irr
             )
-            irrigation_action = ir_pred.get('predicted_value')
-            description = f"Location: {location}\nTemperature: {temperature_celsius}°C\nHumidity: {humidity_percent}%\nBattery Voltage: {battery_voltage}V\nStatus: {status}\nTimestamp: {timestamp}\nAlgorithm: {algorithm}\n\nPredicted Soil Moisture: {predicted_soil_moisture}"
-            report = Report.objects.create(
+
+            # Get the recommendation value
+            irrigation_recommendation = irrigation_result['predicted_value'] if isinstance(irrigation_result, dict) else irrigation_result
+
+            # Save the prediction result
+            PredictionResult.objects.create(
                 farm=farm,
-                report_type='prediction',
-                title=f"Soil Moisture Prediction ({location})",
-                description=description,
-                generated_by=request.user.get_full_name() or request.user.username
+                location=location,
+                temperature=temperature,
+                humidity=humidity,
+                battery_voltage=battery_voltage,
+                soil_moisture_result=soil_moisture_value,
+                irrigation_result=irrigation_recommendation,
+                algorithm=algorithm,
+                algorithm_irr=algorithm_irr
             )
-            messages.success(request, 'Prediction report generated and saved!')
+
+            messages.success(request, 'Prediction created successfully!')
             return redirect('technician:reports')
-        elif request.POST.get('generate_irrigation'):
-            farm_id = request.POST.get('farm_id')
-            if not farm_id:
-                messages.error(request, "Please select a farm.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
-            try:
-                farm = Farm.objects.get(id=farm_id, user=request.user)
-            except Farm.DoesNotExist:
-                messages.error(request, "Selected farm not found.")
-                form = ReportForm()
-                reports = Report.objects.select_related('farm').all().order_by('-created_at')
-                user_farms = Farm.objects.filter(user=request.user)
-                context = {
-                    'form': form,
-                    'reports': reports,
-                    'farms': user_farms,
-                    'soil_algorithms': soil_algorithms,
-                    'default_soil_algorithm': default_soil_algorithm,
-                }
-                return render(request, 'technician/reports.html', context)
-            soil_moisture_percent = request.POST.get('soil_moisture_percent')
-            temperature_celsius = request.POST.get('temperature_celsius')
-            humidity_percent = request.POST.get('humidity_percent')
-            battery_voltage = request.POST.get('battery_voltage')
-            status = request.POST.get('status')
-            timestamp = request.POST.get('timestamp')
-            algorithm = request.POST.get('algorithm') or default_soil_algorithm
-            if timestamp:
-                timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M').strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            recommender = IrrigationRecommender()
-            ir_pred = recommender.recommend_irrigation(
-                soil_moisture_percent=float(soil_moisture_percent),
-                temperature_celsius=float(temperature_celsius),
-                humidity_percent=float(humidity_percent),
-                battery_voltage=float(battery_voltage),
-                status=status,
-                timestamp=timestamp,
-                algorithm=algorithm
-            )
-            irrigation_action = ir_pred.get('predicted_value')
-            description = f"Soil Moisture: {soil_moisture_percent}%\nTemperature: {temperature_celsius}°C\nHumidity: {humidity_percent}%\nBattery Voltage: {battery_voltage}V\nStatus: {status}\nTimestamp: {timestamp}\nAlgorithm: {algorithm}\n\nRecommended Irrigation Action: {irrigation_action}"
-            report = Report.objects.create(
-                farm=farm,
-                report_type='prediction',
-                title=f"Irrigation Recommendation ({farm.location})",
-                description=description,
-                generated_by=request.user.get_full_name() or request.user.username
-            )
-            messages.success(request, 'Irrigation recommendation report generated and saved!')
+
+        except Exception as e:
+            messages.error(request, f'Error making prediction: {str(e)}')
             return redirect('technician:reports')
-        else:
-            form = ReportForm(request.POST, request.FILES)
-            if form.is_valid():
-                report = form.save(commit=False)
-                report.generated_by = request.user.get_full_name() or request.user.username
-                report.save()
-                messages.success(request, 'Report created successfully!')
-                return redirect('technician:reports')
-    else:
-        form = ReportForm()
-    user_farms = Farm.objects.filter(user=request.user)
-    reports = Report.objects.select_related('farm').all().order_by('-created_at')
+
     context = {
-        'form': form,
-        'reports': reports,
-        'farms': user_farms,
-        'soil_algorithms': soil_algorithms,
-        'default_soil_algorithm': default_soil_algorithm,
+        'farms': farms,
+        'predictions': predictions,
+        'soil_algorithms': REGRESSION_ALGORITHMS,
+        'irrigation_algorithms': CLASSIFICATION_ALGORITHMS,
+        'default_soil_algorithm': DEFAULT_ALGORITHMS['soil_moisture_predictor'],
+        'default_irrigation_algorithm': DEFAULT_ALGORITHMS['irrigation_recommendation'],
+        'recent_reports': recent_reports,  # Add this line
     }
     return render(request, 'technician/reports.html', context)
 
@@ -672,3 +594,195 @@ def add_farm(request):
         return redirect('technician:farm_locations')
     else:
         return redirect('technician:farm_locations')
+
+def models_view(request):
+    # Get all trained models with details
+    ml_engine = MLEngine()
+    models = ml_engine.list_all_models()
+    return render(request, 'technician/models.html', {'models': models})
+
+def delete_prediction(request, pk):
+    """Delete a prediction result from Prediction History"""
+    prediction = get_object_or_404(PredictionResult, pk=pk)
+    if request.method == 'POST':
+        prediction.delete()
+        messages.success(request, 'Prediction deleted successfully!')
+        return redirect('technician:reports')
+    return HttpResponse(status=405)  # Method not allowed for GET
+
+def download_predictionresult_pdf(request, pk):
+    try:
+        from reportlab.lib import colors
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import inch, cm
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.enums import TA_CENTER
+        from io import BytesIO
+        import os
+        from django.conf import settings
+
+        # Get the prediction (no farm__user restriction for technician)
+        prediction = get_object_or_404(PredictionResult, id=pk)
+
+        # Create the PDF buffer
+        buffer = BytesIO()
+
+        # Set up the document with margins
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=A4,
+            rightMargin=1.5*cm,
+            leftMargin=1.5*cm,
+            topMargin=1.5*cm,
+            bottomMargin=1.5*cm
+        )
+
+        # Styles
+        styles = getSampleStyleSheet()
+        styles.add(ParagraphStyle(
+            name='CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+            textColor=colors.HexColor('#1a5f7a'),
+            alignment=TA_CENTER
+        ))
+        styles.add(ParagraphStyle(
+            name='SubTitle',
+            parent=styles['Heading2'],
+            fontSize=16,
+            textColor=colors.HexColor('#2c3e50'),
+            spaceAfter=20,
+            spaceBefore=20
+        ))
+        styles.add(ParagraphStyle(
+            name='SectionTitle',
+            parent=styles['Heading3'],
+            fontSize=14,
+            textColor=colors.HexColor('#34495e'),
+            spaceAfter=10,
+            spaceBefore=10
+        ))
+        styles.add(ParagraphStyle(
+            name='NormalText',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#2c3e50'),
+            spaceAfter=5
+        ))
+
+        # Start building the document
+        elements = []
+
+        # Add logo if exists (skip gracefully if not found)
+        try:
+            logo_path = os.path.join(settings.STATIC_ROOT, 'images', 'logo.png')
+            if os.path.exists(logo_path):
+                logo = Image(logo_path)
+                logo.drawHeight = 1.5*inch
+                logo.drawWidth = 1.5*inch
+                elements.append(logo)
+                elements.append(Spacer(1, 20))
+        except Exception:
+            pass
+
+        # Title
+        elements.append(Paragraph('Soil Sense - Prediction and Irrigation Recommendation Report', styles['CustomTitle']))
+
+        # Farm Information Section (no farmer info)
+        elements.append(Paragraph('Farm Information', styles['SubTitle']))
+        farm_info = [
+            ['Farm Name:', prediction.farm.farm_name],
+            ['Farm Location:', prediction.farm.location],
+            ['Area Size:', f"{prediction.farm.area_size} hectares"],
+            ['Soil Type:', prediction.farm.soil_type]
+        ]
+        farm_table = Table(farm_info, colWidths=[120, 350])
+        farm_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#34495e')),
+            ('TEXTCOLOR', (1, 0), (1, -1), colors.HexColor('#2c3e50')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ecf0f1')),
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f8f9fa')),
+        ]))
+        elements.append(farm_table)
+        elements.append(Spacer(1, 20))
+
+        # Prediction Results Section
+        elements.append(Paragraph('Prediction Results', styles['SubTitle']))
+        prediction_data = [
+            ['Soil Moisture Prediction', 'Irrigation Recommendation'],
+            [f"{prediction.soil_moisture_result:.2f}%", prediction.irrigation_result],
+            ['Algorithm: ' + prediction.algorithm, 'Algorithm: ' + prediction.algorithm_irr]
+        ]
+        prediction_table = Table(prediction_data, colWidths=[235, 235])
+        prediction_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('FONTSIZE', (0, 1), (-1, 1), 20),
+            ('FONTSIZE', (0, 2), (-1, 2), 9),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+            ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#1a5f7a')),
+            ('TEXTCOLOR', (0, 2), (-1, 2), colors.HexColor('#7f8c8d')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ecf0f1')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#bdc3c7')),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        elements.append(prediction_table)
+        elements.append(Spacer(1, 20))
+
+        # Measurement Details
+        elements.append(Paragraph('Measurement Details', styles['SubTitle']))
+        measurement_data = [
+            ['Parameter', 'Value', 'Unit'],
+            ['Temperature', f"{prediction.temperature:.1f}", '°C'],
+            ['Humidity', f"{prediction.humidity:.1f}", '%'],
+            ['Battery Voltage', f"{prediction.battery_voltage:.1f}", 'V'],
+            ['Location', prediction.location, ''],
+            ['Date & Time', prediction.created_at.strftime('%B %d, %Y %H:%M'), '']
+        ]
+        measurement_table = Table(measurement_data, colWidths=[160, 160, 150])
+        measurement_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#ecf0f1')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#34495e')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('ALIGN', (1, 1), (2, -2), 'CENTER'),
+        ]))
+        elements.append(measurement_table)
+
+        # Footer
+        elements.append(Spacer(1, 40))
+        footer_text = f"Generated by Soil Sense on {timezone.now().strftime('%B %d, %Y %H:%M')}"
+        footer_style = ParagraphStyle(
+            'Footer',
+            parent=styles['Normal'],
+            fontSize=8,
+            textColor=colors.HexColor('#95a5a6'),
+            alignment=TA_CENTER
+        )
+        elements.append(Paragraph(footer_text, footer_style))
+
+        # Build PDF
+        doc.build(elements)
+        pdf = buffer.getvalue()
+        buffer.close()
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="soil_sense_prediction_{pk}.pdf"'
+        response.write(pdf)
+        return response
+    except Exception as e:
+        messages.error(request, f'Error generating PDF: {str(e)}')
+        return redirect('technician:reports')
