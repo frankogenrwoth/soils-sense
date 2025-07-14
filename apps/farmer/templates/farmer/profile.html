@@ -1,208 +1,233 @@
 {% extends 'farmer/base.html' %}
 
-{% block page_title %}Settings{% endblock %}
+{% block page_title %}Profile Settings{% endblock %}
 
-{% block breadcrumb %}Settings{% endblock %}
+{% block breadcrumb %}Profile Settings{% endblock %}
 
 {% block header_actions %}
 <div class="d-flex gap-2">
-    <button class="btn btn-primary" form="profileForm">
-        <i class="fas fa-save me-2"></i>Save Profile
-    </button>
+    {% if not edit_mode %}
+    <a href="?edit=true" class="btn btn-primary px-4 py-2 text-base">
+        <i class="fas fa-edit me-2"></i>Edit Profile
+    </a>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block content %}
-<script>
-// Live preview for profile image upload
-function previewProfileImage(input) {
-    const preview = document.getElementById('profileImagePreview');
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(input.files[0]);
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Main Profile Section -->
+    <div class="lg:col-span-8 space-y-6">
+        <!-- Profile Information Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h5 class="text-2xl font-semibold text-gray-900">Profile Information</h5>
+                {% if edit_mode %}
+                <button type="submit" form="profileForm" class="btn btn-primary px-6 py-2.5 text-base">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+                {% endif %}
+            </div>
+
+            {% if edit_mode %}
+            <form method="post" id="profileForm" class="space-y-8">
+                {% csrf_token %}
+                <input type="hidden" name="update_profile" value="true">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                        <input type="text" 
+                               id="first_name" 
+                               name="first_name" 
+                               class="block w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-base"
+                               value="{{ user.first_name }}">
+                    </div>
+                    
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                        <input type="text" 
+                               id="last_name" 
+                               name="last_name" 
+                               class="block w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-base"
+                               value="{{ user.last_name }}">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           class="block w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-base"
+                           value="{{ user.email|default:user.username|add:'@soilsense.com' }}" 
+                           required>
+                    <p class="mt-2 text-sm text-gray-500">This field is required. If not provided, a default email will be used.</p>
+                </div>
+
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" 
+                           id="username" 
+                           class="block w-full h-12 px-4 rounded-lg border border-gray-300 bg-gray-50 text-base cursor-not-allowed"
+                           value="{{ user.username }}" 
+                           readonly>
+                    <p class="mt-2 text-sm text-gray-500">Username cannot be changed</p>
+                </div>
+            </form>
+            {% else %}
+            <div class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h6 class="text-sm font-medium text-gray-700 mb-2">First Name</h6>
+                        <p class="text-lg text-gray-900">{{ user.first_name|default:"-" }}</p>
+                    </div>
+                    <div>
+                        <h6 class="text-sm font-medium text-gray-700 mb-2">Last Name</h6>
+                        <p class="text-lg text-gray-900">{{ user.last_name|default:"-" }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h6 class="text-sm font-medium text-gray-700 mb-2">Email Address</h6>
+                    <p class="text-lg text-gray-900">{{ user.email }}</p>
+                </div>
+
+                <div>
+                    <h6 class="text-sm font-medium text-gray-700 mb-2">Username</h6>
+                    <p class="text-lg text-gray-900">{{ user.username }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Password Change Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h5 class="text-2xl font-semibold text-gray-900">Change Password</h5>
+            </div>
+            
+            <form method="post" id="passwordForm" class="space-y-8">
+                {% csrf_token %}
+                <div>
+                    <label for="old_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                    <input type="password" 
+                           id="old_password" 
+                           name="old_password" 
+                           class="block w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-base"
+                           required>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label for="new_password1" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                        <input type="password" 
+                               id="new_password1" 
+                               name="new_password1" 
+                               class="block w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-base"
+                               required>
+                    </div>
+                    <div>
+                        <label for="new_password2" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                        <input type="password" 
+                               id="new_password2" 
+                               name="new_password2" 
+                               class="block w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-base"
+                               required>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" name="change_password" class="btn btn-warning px-6 py-2.5 text-base">
+                        <i class="fas fa-key me-2"></i>Change Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="lg:col-span-4">
+        <!-- Security Tips Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h5 class="text-2xl font-semibold text-gray-900 mb-8">Security Tips</h5>
+            
+            <div class="space-y-6">
+                <div class="bg-blue-50 rounded-lg p-6">
+                    <h6 class="text-base font-medium text-blue-800 mb-4">
+                        <i class="fas fa-shield-alt me-2"></i>Password Security
+                    </h6>
+                    <ul class="text-sm text-blue-700 space-y-2 list-disc list-inside">
+                        <li>Use at least 8 characters</li>
+                        <li>Include uppercase and lowercase letters</li>
+                        <li>Add numbers and special characters</li>
+                        <li>Don't reuse passwords</li>
+                    </ul>
+                </div>
+
+                <div class="bg-yellow-50 rounded-lg p-6">
+                    <h6 class="text-base font-medium text-yellow-800 mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Important
+                    </h6>
+                    <p class="text-sm text-yellow-700">
+                        Changing your password will log you out of all other sessions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="fixed bottom-4 right-4 z-50">
+    {% for message in messages %}
+    <div class="animate-fade-in-up mb-4 rounded-lg p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700 border border-green-400{% elif message.tags == 'error' %}bg-red-100 text-red-700 border border-red-400{% else %}bg-blue-100 text-blue-700 border border-blue-400{% endif %}" role="alert">
+        {{ message }}
+        <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 focus:ring-gray-400 p-1.5 inline-flex h-8 w-8 text-gray-500 hover:text-gray-700" data-dismiss="alert" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.animate-fade-in-up {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
-</script>
 
-<style>
-.profile-pic-container {
-    position: relative;
-    display: inline-block;
+/* Custom button styles */
+.btn {
+    font-weight: 500;
+    transition: all 0.2s;
 }
-.edit-profile-pic-btn {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background: #fff;
-    border-radius: 50%;
-    border: 2px solid #4ade80;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: background 0.2s;
-    z-index: 2;
+
+.btn:hover {
+    transform: translateY(-1px);
 }
-.edit-profile-pic-btn:hover {
-    background: #e0f7fa;
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Input focus styles */
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 </style>
-
-<div class="row">
-    <div class="col-lg-8 mb-4">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-4">Profile Settings</h5>
-            <form method="post" id="profileForm" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <div class="d-flex justify-content-center mb-3">
-                        <div class="profile-pic-container">
-                            {% if has_custom_image %}
-                                <img id="profileImagePreview" src="{{ user.image.url }}" alt="Profile Picture"
-                                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #4ade80; background: #f3f4f6;">
-                            {% else %}
-                                <div style="width: 120px; height: 120px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; border: 3px solid #4ade80; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                                    <i class="fas fa-user" style="font-size: 64px; color: #60a5fa;"></i>
-                                    <img id="profileImagePreview" src="" alt="Profile Preview" style="display:none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; position: absolute;">
-                                </div>
-                            {% endif %}
-                            <span class="edit-profile-pic-btn" onclick="document.getElementById('id_image').click();">
-                                <i class="fas fa-pencil-alt" style="color: #4ade80; font-size: 18px;"></i>
-                            </span>
-                        </div>
-                    </div>
-                    {{ profile_form.non_field_errors }}
-                    <div class="col-md-6">
-                        <label for="id_first_name" class="form-label">First Name</label>
-                        {{ profile_form.first_name }}
-                        {% if profile_form.first_name.errors %}
-                            <div class="text-danger small">{{ profile_form.first_name.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_last_name" class="form-label">Last Name</label>
-                        {{ profile_form.last_name }}
-                        {% if profile_form.last_name.errors %}
-                            <div class="text-danger small">{{ profile_form.last_name.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-12">
-                        <label for="id_email" class="form-label">Email Address</label>
-                        {{ profile_form.email }}
-                        {% if profile_form.email.errors %}
-                            <div class="text-danger small">{{ profile_form.email.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-12">
-                        <label for="id_image" class="form-label">Profile Picture</label>
-                        {{ profile_form.image }}
-                        <script>
-                            document.getElementById('id_image').addEventListener('change', function() {
-                                previewProfileImage(this);
-                            });
-                        </script>
-                        {% if profile_form.image.errors %}
-                            <div class="text-danger small">{{ profile_form.image.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-12">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
-                        <div class="form-text">Username cannot be changed</div>
-                    </div>
-                </div>
-                <hr class="my-4">
-                <button type="submit" name="update_profile" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i>Update Profile
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div class="col-lg-4 mb-4">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-4">Account Information</h5>
-            <div class="mb-3">
-                <label class="form-label">User ID</label>
-                <input type="text" class="form-control" value="{{ user.id }}" readonly>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Date Joined</label>
-                <input type="text" class="form-control" value="{{ user.date_joined|date:'M d, Y' }}" readonly>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Last Login</label>
-                <input type="text" class="form-control" value="{{ user.last_login|date:'M d, Y H:i' }}" readonly>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Status</label>
-                <input type="text" class="form-control" value="{% if user.is_active %}Active{% else %}Inactive{% endif %}" readonly>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-8">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-4">Change Password</h5>
-            <form method="post" id="passwordForm">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label for="{{ password_form.old_password.id_for_label }}" class="form-label">Current Password</label>
-                        {{ password_form.old_password }}
-                        {% if password_form.old_password.errors %}
-                            <div class="text-danger small">{{ password_form.old_password.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ password_form.new_password1.id_for_label }}" class="form-label">New Password</label>
-                        {{ password_form.new_password1 }}
-                        {% if password_form.new_password1.errors %}
-                            <div class="text-danger small">{{ password_form.new_password1.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6">
-                        <label for="{{ password_form.new_password2.id_for_label }}" class="form-label">Confirm New Password</label>
-                        {{ password_form.new_password2 }}
-                        {% if password_form.new_password2.errors %}
-                            <div class="text-danger small">{{ password_form.new_password2.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                <hr class="my-4">
-                <button type="submit" name="change_password" class="btn btn-warning">
-                    <i class="fas fa-key me-2"></i>Change Password
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div class="col-lg-4">
-        <div class="dashboard-card">
-            <h5 class="card-title mb-4">Security Tips</h5>
-            <div class="alert alert-info">
-                <h6><i class="fas fa-shield-alt me-2"></i>Password Security</h6>
-                <ul class="mb-0 small">
-                    <li>Use at least 8 characters</li>
-                    <li>Include uppercase and lowercase letters</li>
-                    <li>Add numbers and special characters</li>
-                    <li>Don't reuse passwords</li>
-                </ul>
-            </div>
-            <div class="alert alert-warning">
-                <h6><i class="fas fa-exclamation-triangle me-2"></i>Important</h6>
-                <p class="mb-0 small">Changing your password will log you out of all other sessions.</p>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %} 
+{% endblock %}
