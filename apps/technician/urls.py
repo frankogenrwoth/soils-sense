@@ -28,4 +28,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('soil-readings/', views.technician_soil_readings, name='soil_readings'),
+    path('prediction/<int:pk>/delete/', views.delete_prediction, name='delete_prediction'),
+    path('prediction/<int:pk>/download-pdf/', views.download_predictionresult_pdf, name='download_predictionresult_pdf'),
 ]
