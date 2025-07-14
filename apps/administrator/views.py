@@ -4,6 +4,9 @@ from ml import MLEngine
 import logging
 from django import forms
 
+from .forms import UserForm
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,6 +20,8 @@ class DashboardView(View):
 
 class UserManagementView(View):
     template_name = "administrator/user_management.html"
+    form_class = UserForm
+
 
     def get(self, request):
         context = {}
