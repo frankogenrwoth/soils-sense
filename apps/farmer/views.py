@@ -237,110 +237,123 @@ def add_crop(request):
 
 @login_required
 def analytics(request):
-    # Get user's farms
     farms = Farm.objects.filter(user=request.user)
     
-    # Get selected farm or default to first farm
-    selected_farm_id = request.GET.get('farm_id')
-    if selected_farm_id:
-        selected_farm = farms.filter(id=selected_farm_id).first()
+    # Get selected farm and time range
+    farm_id = request.GET.get('farm_id')
+    time_range = int(request.GET.get('time_range', 7))  # Default to 7 days
+    algorithm = request.GET.get('algorithm', DEFAULT_ALGORITHMS["soil_moisture_predictor"])
+    
+    if farm_id:
+        selected_farm = get_object_or_404(Farm, id=farm_id, user=request.user)
     else:
         selected_farm = farms.first()
-
+    
     if not selected_farm:
         messages.error(request, 'No farms found. Please add a farm first.')
-        return render(request, 'farmer/analytics.html', {'farms': []})
+        return redirect('farmer:dashboard')
 
-    # Get date range (default to last 7 days)
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=7)
-
-    # Get soil moisture readings for the selected farm
-    moisture_readings = SoilMoistureReading.objects.filter(
+    # Calculate date range
+    end_date = timezone.now()
+    start_date = end_date - timedelta(days=time_range)
+    
+    # Get soil moisture readings
+    readings = SoilMoistureReading.objects.filter(
         farm=selected_farm,
         timestamp__range=(start_date, end_date)
     ).order_by('timestamp')
-
-    # Initialize ML predictor
+    
+    # Initialize predictor
     predictor = SoilMoisturePredictor()
     
-    # Get algorithm from request or use default
-    algorithm = request.GET.get('algorithm', DEFAULT_ALGORITHMS["soil_moisture_predictor"])
-
-    # Prepare data for charts with predictions
+    # Prepare data for charts
     dates = []
-    moisture_values = []
-    temp_values = []
-    humidity_values = []
-    predicted_moisture_values = []
-
-    for reading in moisture_readings:
+    actual_values = []
+    predicted_values = []
+    correlation_data = []
+    
+    # Process readings and generate predictions
+    for reading in readings:
         try:
-            # Get prediction for each reading
+            # Get actual reading
+            if reading.soil_moisture_percent is not None:
+                actual_value = float(reading.soil_moisture_percent)
+                actual_values.append(actual_value)
+            else:
+                actual_values.append(None)
+                
+            # Generate prediction
             prediction_result = predictor.predict_moisture(
                 sensor_id=reading.sensor_id,
-                location=reading.farm.location,
+                location=selected_farm.location,
                 temperature_celsius=float(reading.temperature_celsius),
                 humidity_percent=float(reading.humidity_percent),
                 battery_voltage=float(reading.battery_voltage),
                 status=reading.status,
-                irrigation_action="None",  # Default to None since this is historical data
+                irrigation_action="None",
                 timestamp=reading.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                 algorithm=algorithm
             )
             
             if prediction_result.get('success'):
-                dates.append(reading.timestamp.strftime('%Y-%m-%d'))
-                predicted_value = prediction_result['predicted_value']
-                predicted_moisture_values.append(round(float(predicted_value), 1))
-                temp_values.append(float(reading.temperature_celsius))
-                humidity_values.append(float(reading.humidity_percent))
+                predicted_value = float(prediction_result['predicted_value'])
+                predicted_values.append(predicted_value)
+            else:
+                predicted_values.append(None)
+                
+            # Add date
+            dates.append(reading.timestamp.strftime('%Y-%m-%d'))
+            
+            # Add correlation data point if both values exist
+            if reading.temperature_celsius is not None and prediction_result.get('success'):
+                correlation_data.append({
+                    'x': float(reading.temperature_celsius),
+                    'y': predicted_value
+                })
+                
         except Exception as e:
+            print(f"Error processing reading: {str(e)}")
             continue
-
-    # Calculate average predicted moisture
-    avg_moisture = (sum(predicted_moisture_values) / len(predicted_moisture_values)) if predicted_moisture_values else 0
-    avg_moisture = round(avg_moisture, 1)
-
-    # Get irrigation events
-    irrigation_events = IrrigationEvent.objects.filter(
-        farm=selected_farm,
-        start_time__range=(start_date, end_date)
-    ).count()
-
-    # Calculate water savings based on predicted values
-    water_saved = sum(
-        max(0, (moisture - 70) * 0.1)  # 0.1L saved per 1% above optimal
-        for moisture in predicted_moisture_values
-        if moisture > 70
-    )
-
-    # Get weather impact
-    weather_data = WeatherData.objects.filter(
-        farm=selected_farm,
-        timestamp__range=(start_date, end_date)
-    )
-
-    # Calculate weather effects
-    rainfall_effect = weather_data.filter(precipitation__gt=0).count()
-    high_temp_effect = weather_data.filter(temperature__gt=30).count()
-    wind_effect = weather_data.filter(wind_speed__gt=20).count()
+    
+    # Calculate statistics from predictions
+    valid_predictions = [v for v in predicted_values if v is not None]
+    if valid_predictions:
+        avg_moisture = sum(valid_predictions) / len(valid_predictions)
+        max_moisture = max(valid_predictions)
+        min_moisture = min(valid_predictions)
+        
+        # Get dates for max and min moisture
+        max_moisture_date = None
+        min_moisture_date = None
+        for i, value in enumerate(predicted_values):
+            if value == max_moisture:
+                max_moisture_date = datetime.strptime(dates[i], '%Y-%m-%d')
+            if value == min_moisture:
+                min_moisture_date = datetime.strptime(dates[i], '%Y-%m-%d')
+    else:
+        avg_moisture = 0
+        max_moisture = 0
+        min_moisture = 0
+        max_moisture_date = None
+        min_moisture_date = None
     
     context = {
         'farms': farms,
         'selected_farm': selected_farm,
+        'time_range': time_range,
+        'selected_algorithm': algorithm,
+        'soil_algorithms': REGRESSION_ALGORITHMS,
+        # Statistics using predicted values
+        'avg_moisture': round(float(avg_moisture), 2),
+        'max_moisture': round(float(max_moisture), 2),
+        'min_moisture': round(float(min_moisture), 2),
+        'max_moisture_date': max_moisture_date,
+        'min_moisture_date': min_moisture_date,
+        # Chart data
         'dates': json.dumps(dates),
-        'moisture_values': json.dumps(predicted_moisture_values),  # Use predicted values
-        'temp_values': json.dumps(temp_values),
-        'humidity_values': json.dumps(humidity_values),
-        'avg_moisture': avg_moisture,
-        'irrigation_events': irrigation_events,
-        'water_saved': round(water_saved, 1),
-        'rainfall_effect': round((rainfall_effect / max(1, len(dates))) * 100, 1),
-        'temperature_effect': round((high_temp_effect / max(1, len(dates))) * 100, 1),
-        'wind_effect': round((wind_effect / max(1, len(dates))) * 100, 1),
-        'selected_algorithm': algorithm,  # Add selected algorithm to context
-        'available_algorithms': list(REGRESSION_ALGORITHMS.keys()),  # Add available algorithms
+        'actual_values': json.dumps(actual_values),
+        'predicted_values': json.dumps(predicted_values),
+        'correlation_data': json.dumps(correlation_data)
     }
     
     return render(request, 'farmer/analytics.html', context)
@@ -745,12 +758,9 @@ def download_csv_template(request):
     response['Content-Disposition'] = 'attachment; filename="soil_moisture_template.csv"'
     
     writer = csv.writer(response)
-    writer.writerow(['record_id', 'sensor_id', 'location', 'soil_moisture_percent', 
-                    'temperature_celsius', 'humidity_percent', 'timestamp', 
-                    'status', 'battery_voltage', 'irrigation_action'])
+    writer.writerow(['sensor_id', 'location', 'temperature_celsius', 'humidity_percent', 'timestamp', 'status', 'battery_voltage'])
     
-    writer.writerow(['1', 'SENSOR_1', 'Farm A', '45.5', '25.3', '65.2', 
-                    '2024-03-21 14:30:00', 'Normal', '3.62', 'None'])
+    writer.writerow(['SENSOR_1', 'Farm A', '25.3', '65.2', '2024-03-21 14:30:00', 'Normal', '3.62'])
     
     return response
 
@@ -773,9 +783,7 @@ def upload_soil_data(request):
             
             try:
                 df = pd.read_csv(csv_file)
-                required_columns = ['record_id', 'sensor_id', 'location', 'soil_moisture_percent',
-                                'temperature_celsius', 'humidity_percent', 'timestamp',
-                                'status', 'battery_voltage']
+                required_columns = ['sensor_id', 'location', 'temperature_celsius', 'humidity_percent', 'timestamp', 'status', 'battery_voltage']
                 
                 df.columns = df.columns.str.lower().str.strip()
                 
@@ -790,13 +798,14 @@ def upload_soil_data(request):
                 for index, row in df.iterrows():
                     try:
                         timestamp = pd.to_datetime(row['timestamp'])
-                        soil_moisture = float(row['soil_moisture_percent'])
                         temperature = float(row['temperature_celsius'])
                         humidity = float(row['humidity_percent'])
                         battery = float(row['battery_voltage'])
                         
-                        if not (0 <= soil_moisture <= 100):
-                            raise ValueError('Soil moisture must be between 0 and 100%')
+                        # Calculate soil moisture as in manual entry
+                        soil_moisture = (humidity * 0.7) + (30 - temperature * 0.3)
+                        soil_moisture = max(0, min(100, soil_moisture))
+                        
                         if not (0 <= humidity <= 100):
                             raise ValueError('Humidity must be between 0 and 100%')
                         if not (-50 <= temperature <= 100):
