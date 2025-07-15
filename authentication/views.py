@@ -38,6 +38,11 @@ class LoginView(View):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             user = authenticate(request, username=username, password=password)
+
+            next_url = request.GET.get("next")
+            if next_url and next_url != "/authentication/login/":
+                return redirect(next_url)
+
             if user is not None:
                 login(request, user)
                 if user.role == Role.ADMINISTRATOR:
