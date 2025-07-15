@@ -407,11 +407,11 @@ def recommendations(request):
                 current_moisture = round(float(prediction_result['predicted_value']), 1)
                 # Determine moisture status based on predicted value
                 if current_moisture < 30:
-                    moisture_status = 'Low'
+                    moisture_status = 'Low Soil Moisture'
                 elif current_moisture > 70:
-                    moisture_status = 'High'
+                    moisture_status = 'High Soil Moisture'
                 else:
-                    moisture_status = 'Optimal'
+                    moisture_status = 'Optimal Soil Moisture'
         except Exception as e:
             print(f"Prediction error: {str(e)}")
             # Fallback to raw reading if prediction fails
@@ -420,13 +420,13 @@ def recommendations(request):
     # Get irrigation recommendation based on predicted moisture
     irrigation_recommendation = "No irrigation needed at this time."
     water_amount = None
-    if moisture_status == 'Low':
+    if moisture_status == 'Low Soil Moisture':
         irrigation_recommendation = "Immediate irrigation recommended"
         # Calculate water amount based on area and moisture deficit
         area_size = float(selected_farm.area_size)
         moisture_deficit = 50 - current_moisture  # Assuming 50% is optimal
         water_amount = round(area_size * moisture_deficit * 100)  # Simple calculation, adjust as needed
-    elif moisture_status == 'High':
+    elif moisture_status == 'High Soil Moisture':
         irrigation_recommendation = "Hold irrigation until soil moisture decreases"
 
     # Get farm's crops and prepare recommendations
@@ -435,18 +435,18 @@ def recommendations(request):
         # Use the predicted moisture value for crop recommendations
         moisture_percentage = current_moisture
         if current_moisture < 30:
-            moisture_status = 'Critical'
+            moisture_status = 'Low Soil Moisture'
             status_class = 'text-red-600'
         elif current_moisture < 50:
-            moisture_status = 'Warning'
+            moisture_status = 'Warning Soil Moisture'
             status_class = 'text-yellow-600'
         else:
-            moisture_status = 'Good'
+            moisture_status = 'Good Soil Moisture'
             status_class = 'text-green-600'
 
         # Generate recommended actions based on predicted conditions
         recommended_actions = []
-        if moisture_status == 'Critical':
+        if moisture_status == 'Critical Soil Moisture':
             recommended_actions.append("Implement immediate irrigation")
             recommended_actions.append("Consider mulching to retain moisture")
         elif moisture_status == 'Warning':
@@ -580,6 +580,42 @@ def predictions(request):
         'default_irrigation_algorithm': DEFAULT_ALGORITHMS['irrigation_recommendation']
     }
     return render(request, 'farmer/predictions.html', context)
+
+@login_required
+def download_predictions_csv(request):
+    import csv
+    from django.http import HttpResponse
+    from .models import PredictionResult
+
+    # Get all predictions for the user's farms
+    farms = Farm.objects.filter(user=request.user)
+    predictions = PredictionResult.objects.filter(farm__in=farms).select_related('farm').order_by('-created_at')
+
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="soil_sense_predictions.csv"'
+
+    writer = csv.writer(response)
+    # Write header
+    writer.writerow([
+        'Farm Name', 'Location', 'Date & Time', 'Temperature (°C)', 'Humidity (%)', 'Battery Voltage (V)',
+        'Soil Moisture Prediction (%)', 'Irrigation Recommendation', 'Soil Algorithm', 'Irrigation Algorithm'
+    ])
+    # Write data rows
+    for p in predictions:
+        writer.writerow([
+            p.farm.farm_name,
+            p.location,
+            p.created_at.strftime('%Y-%m-%d %H:%M'),
+            p.temperature,
+            p.humidity,
+            p.battery_voltage,
+            p.soil_moisture_result,
+            p.irrigation_result,
+            p.algorithm,
+            p.algorithm_irr
+        ])
+    return response
 
 @login_required
 def get_latest_readings(request, farm_id):

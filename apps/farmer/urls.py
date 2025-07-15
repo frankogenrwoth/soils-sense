@@ -17,6 +17,7 @@ urlpatterns = [
     path('predictions/', views.predictions, name='predictions'),
     path('predictions/delete/<int:prediction_id>/', views.delete_prediction, name='delete_prediction'),
     path('predictions/download/<int:prediction_id>/', views.download_prediction_pdf, name='download_prediction_pdf'),
+    path('predictions/download-csv/', views.download_predictions_csv, name='download_predictions_csv'),
     path('get-latest-readings/<int:farm_id>/', views.get_latest_readings, name='get_latest_readings'),
     
     # New URLs for soil moisture data management

@@ -39,7 +39,7 @@
         <div class="bg-white rounded-xl shadow-md p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <i class="fas fa-thermometer-half text-primary mr-2"></i>
-                Current Conditions (ML Predicted)
+                Current Conditions 
             </h3>
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-gray-50 rounded-lg p-4">
@@ -48,7 +48,7 @@
                 </div>
                 <div class="bg-gray-50 rounded-lg p-4">
                     <p class="text-sm text-gray-500">Moisture Status</p>
-                    <p class="text-lg font-semibold {% if moisture_status == 'Optimal' %}text-green-600{% elif moisture_status == 'Low' %}text-red-600{% else %}text-yellow-600{% endif %}">
+                    <p class="text-lg font-semibold {% if moisture_status == 'Optimal Soil Moisture' %}text-green-600{% elif moisture_status == 'Low Soil Moisture' %}text-red-600{% else %}text-yellow-600{% endif %}">
                         {{ moisture_status }}
                     </p>
                 </div>
@@ -60,7 +60,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <i class="fas fa-tint text-blue-500 mr-2"></i>
                 Irrigation Recommendation
-                <span class="ml-2 text-sm text-gray-500">(Based on ML predictions)</span>
+                
             </h3>
             <div class="bg-blue-50 rounded-lg p-4">
                 <p class="text-blue-800 font-medium">{{ irrigation_recommendation }}</p>
@@ -76,35 +76,45 @@
         <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
             <i class="fas fa-leaf text-green-500 mr-2"></i>
             Crop-Specific Recommendations
-            <span class="ml-2 text-sm text-gray-500">(Using ML-predicted moisture levels)</span>
         </h3>
         
         <div class="grid grid-cols-1 gap-6">
             {% for crop in crops %}
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
                 <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
-                    <h4 class="text-lg font-semibold text-white">{{ crop.crop_name }} ({{ crop.variety }})</h4>
+                    <h4 class="text-lg font-semibold text-white">{{ crop.crop_name }}</h4>
                     <p class="text-green-100 text-sm">Status: {{ crop.status }}</p>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Moisture Analysis -->
-                        <div class="space-y-4">
-                            <h5 class="font-medium text-gray-900">Moisture Analysis (ML Predicted)</h5>
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm text-gray-600">Current vs. Optimal</span>
-                                    <span class="text-sm font-medium {% if crop.moisture_status == 'Good' %}text-green-600{% elif crop.moisture_status == 'Critical' %}text-red-600{% else %}text-yellow-600{% endif %}">
-                                        {{ crop.moisture_status }}
-                                    </span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-primary h-2.5 rounded-full" style="width: {{ crop.moisture_percentage }}%"></div>
-                                </div>
+                        <!-- Growth Timeline (now left) -->
+                        <div class="mt-6 md:mt-0">
+                            <h5 class="font-medium text-gray-900 mb-4">Growth Timeline</h5>
+                            <div class="relative">
+                                <div class="absolute h-full w-0.5 bg-gray-200 left-2.5"></div>
+                                <ul class="space-y-4 relative">
+                                    <li class="flex items-center space-x-4">
+                                        <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                            <i class="fas fa-seedling text-white text-xs"></i>
+                                        </div>
+                                        <span class="text-sm">Planted: {{ crop.planting_date }}</span>
+                                    </li>
+                                    <li class="flex items-center space-x-4">
+                                        <div class="w-5 h-5 rounded-full {% if crop.status == 'Growing' %}bg-blue-500{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                                            <i class="fas fa-leaf text-white text-xs"></i>
+                                        </div>
+                                        <span class="text-sm">Growing Phase</span>
+                                    </li>
+                                    <li class="flex items-center space-x-4">
+                                        <div class="w-5 h-5 rounded-full {% if crop.status == 'Harvested' %}bg-yellow-500{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                                            <i class="fas fa-wheat-awn text-white text-xs"></i>
+                                        </div>
+                                        <span class="text-sm">Expected Harvest: {{ crop.expected_harvest_date }}</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-
-                        <!-- Recommendations -->
+                        <!-- Recommendations (now right) -->
                         <div class="space-y-4">
                             <h5 class="font-medium text-gray-900">Actions Needed</h5>
                             <ul class="space-y-2">
@@ -114,34 +124,6 @@
                                     <span class="text-gray-700">{{ action }}</span>
                                 </li>
                                 {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Timeline -->
-                    <div class="mt-6">
-                        <h5 class="font-medium text-gray-900 mb-4">Growth Timeline</h5>
-                        <div class="relative">
-                            <div class="absolute h-full w-0.5 bg-gray-200 left-2.5"></div>
-                            <ul class="space-y-4 relative">
-                                <li class="flex items-center space-x-4">
-                                    <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                                        <i class="fas fa-seedling text-white text-xs"></i>
-                                    </div>
-                                    <span class="text-sm">Planted: {{ crop.planting_date }}</span>
-                                </li>
-                                <li class="flex items-center space-x-4">
-                                    <div class="w-5 h-5 rounded-full {% if crop.status == 'Growing' %}bg-blue-500{% else %}bg-gray-300{% endif %} flex items-center justify-center">
-                                        <i class="fas fa-leaf text-white text-xs"></i>
-                                    </div>
-                                    <span class="text-sm">Growing Phase</span>
-                                </li>
-                                <li class="flex items-center space-x-4">
-                                    <div class="w-5 h-5 rounded-full {% if crop.status == 'Harvested' %}bg-yellow-500{% else %}bg-gray-300{% endif %} flex items-center justify-center">
-                                        <i class="fas fa-wheat-awn text-white text-xs"></i>
-                                    </div>
-                                    <span class="text-sm">Expected Harvest: {{ crop.expected_harvest_date }}</span>
-                                </li>
                             </ul>
                         </div>
                     </div>
