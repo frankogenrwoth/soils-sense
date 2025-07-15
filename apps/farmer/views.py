@@ -379,6 +379,7 @@ def recommendations(request):
         farm=selected_farm
     ).order_by('-timestamp').first()
 
+
     # Initialize ML predictor and get algorithm
     predictor = SoilMoisturePredictor()
     algorithm = request.GET.get('algorithm', DEFAULT_ALGORITHMS["soil_moisture_predictor"])
@@ -488,6 +489,7 @@ def recommendations(request):
     }
     
     return render(request, 'farmer/recommendations.html', context)
+
 #Predictions here
 
 @login_required

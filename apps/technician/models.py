@@ -1,8 +1,15 @@
 from django.db import models
 from apps.farmer.models import Farm
 
-# Create your models here.
+class Sensor(models.Model):
+    sensor_id = models.CharField(max_length=50, unique=True)
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='sensors')
+    description = models.CharField(max_length=255, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    installed_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.sensor_id} ({getattr(self.farm, 'farm_name', str(self.farm))})"
 
 class SensorThreshold(models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='sensor_thresholds')
@@ -32,4 +39,3 @@ class Report(models.Model):
 
     def __str__(self):
         return f"{self.title} - {getattr(self.farm, 'farm_name', str(self.farm))}"
-

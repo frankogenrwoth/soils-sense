@@ -18,9 +18,64 @@ from django.http import Http404
 from ml import MLEngine
 from django.utils import timezone
 import datetime
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Sensor
+from apps.farmer.models import Farm
+from .forms import SensorForm  # We will create this next
+
+def is_technician(user):
+    return user.is_authenticated and user.role == 'technician'
+
+@login_required
+@user_passes_test(is_technician)
+def sensor_list(request):
+    sensors = Sensor.objects.select_related('farm').all()
+    return render(request, 'technician/sensor_list.html', {'sensors': sensors})
+
+@login_required
+@user_passes_test(is_technician)
+def sensor_add(request):
+    if request.method == 'POST':
+        form = SensorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Sensor added successfully.')
+            return redirect('technician:sensor_list')
+    else:
+        form = SensorForm()
+    return render(request, 'technician/sensor_form.html', {'form': form, 'title': 'Add Sensor'})
+
+@login_required
+@user_passes_test(is_technician)
+def sensor_edit(request, pk):
+    sensor = get_object_or_404(Sensor, pk=pk)
+    if request.method == 'POST':
+        form = SensorForm(request.POST, instance=sensor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Sensor updated successfully.')
+            return redirect('technician:sensor_list')
+    else:
+        form = SensorForm(instance=sensor)
+    return render(request, 'technician/sensor_form.html', {'form': form, 'title': 'Edit Sensor'})
+
+@login_required
+@user_passes_test(is_technician)
+def sensor_delete(request, pk):
+    sensor = get_object_or_404(Sensor, pk=pk)
+    if request.method == 'POST':
+        sensor.delete()
+        messages.success(request, 'Sensor deleted successfully.')
+        return redirect('technician:sensor_list')
+    return render(request, 'technician/sensor_confirm_delete.html', {'sensor': sensor})
+
 from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS, DEFAULT_ALGORITHMS
 from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
 from apps.farmer.models import PredictionResult
+
 
 
 
@@ -113,6 +168,11 @@ def dashboard(request):
     # Farm filter for dashboard
     selected_farm_id = request.GET.get('farm')
     farms = Farm.objects.all()
+
+     # New sensor info
+    sensors = Sensor.objects.all()  # fetch all sensors
+    active_sensors_count = sensors.filter(is_active=True).count()
+    total_sensors_count = sensors.count()
     
     context = {
         'farm_count': farm_count,
@@ -130,6 +190,9 @@ def dashboard(request):
         'moisture_per_day': moisture_per_day,
         'farms': farms,
         'selected_farm_id': selected_farm_id,
+        'sensors': sensors,
+        'active_sensors_count': active_sensors_count,
+        'total_sensors_count': total_sensors_count,
     }
     return render(request, 'technician/dashboard.html', context)
 
