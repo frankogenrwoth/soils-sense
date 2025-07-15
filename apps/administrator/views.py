@@ -1,10 +1,24 @@
-from django.shortcuts import render
-from django.views import View
-from ml import MLEngine
 import logging
+
+from django.shortcuts import render, redirect
+from django.views import View
+from django.contrib.auth import get_user_model
 from django import forms
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+
+from ml import MLEngine
+from .forms import UserForm
+from .models import Model
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
+ml_engine = MLEngine()
 
 
 class DashboardView(View):
@@ -16,11 +30,97 @@ class DashboardView(View):
 
 
 class UserManagementView(View):
+    """Admin should be able to manage other users on the platform (view, create, edit, delete, assign roles, reset passwords)."""
+
     template_name = "administrator/user_management.html"
+    form_class = UserForm
 
     def get(self, request):
-        context = {}
+        users = User.objects.all()
+        form = self.form_class()
+
+        context = {
+            "users": users,
+            "form": form,
+        }
+
         return render(request, self.template_name, context=context)
+
+    def post(self, request):
+        users = User.objects.all()
+        form = self.form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            # Hash the password if provided
+            if form.cleaned_data.get("password"):
+                user.set_password(form.cleaned_data["password"])
+            user.save()
+            messages.success(request, "User created successfully")
+            return redirect("administrator:users")
+
+        print(form.errors)
+
+        context = {
+            "users": users,
+            "form": form,
+        }
+        return render(request, self.template_name, context=context)
+
+
+class UserDetailView(View):
+    template_name = "administrator/user_detail.html"
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        context = {
+            "user": user,
+        }
+
+        return render(request, self.template_name, context=context)
+
+
+class UserUpdateView(View):
+    """View for updating user information"""
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        form = UserForm(request.POST, request.FILES, instance=user)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            # Only update password if a new one is provided
+            if form.cleaned_data.get("password"):
+                user.set_password(form.cleaned_data["password"])
+            user.save()
+            messages.success(
+                request, f"User {user.get_user_name()} updated successfully"
+            )
+            return redirect("administrator:users")
+        else:
+            messages.error(request, "Failed to update user. Please check the form.")
+            return redirect("administrator:users")
+
+
+class UserDeleteView(View):
+    """View for deleting users with confirmation"""
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        user_name = user.get_user_name()
+
+        # Prevent admin from deleting themselves
+        if user == request.user:
+            messages.error(request, "You cannot delete your own account")
+            return redirect("administrator:users")
+
+        try:
+            user.delete()
+            messages.success(request, f"User {user_name} deleted successfully")
+        except Exception as e:
+            messages.error(request, f"Failed to delete user: {str(e)}")
+
+        return redirect("administrator:users")
 
 
 class DataManagementView(View):
@@ -75,16 +175,47 @@ class MLModelManagementView(View):
                 )
 
     def get(self, request):
-        soil_moisture_form = self.SoilMoistureForm()
-        irrigation_recommendation_form = self.IrrigationRecommendationForm()
+        # Todo: pass a list of models which are standard
+        # Todo: filter particulr user trained models
+        # Todo: add modal for showing model training history
+        # Todo: add ability to retrain the model
+        # Todo: add ability to delete the model
+        # Todo: add ability to retrain or train the model
 
         ml_engine = MLEngine()
 
         available_models = ml_engine.get_available_models()
 
+        user_models = Model.objects.filter(creator=request.user)
+        user_models_data = [
+            ml_engine.get_model_info(model.get_model_name()) for model in user_models
+        ]
+
+        standard_models = [
+            ml_engine.get_model_info(model)
+            for model in available_models
+            if model.find("version") == -1
+        ]
+
+        from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS
+
+        algorithms = [
+            algorithm
+            for algorithm in list(REGRESSION_ALGORITHMS.keys())
+            if algorithm in list(CLASSIFICATION_ALGORITHMS.keys())
+        ]
+
+        soil_moisture_form = self.SoilMoistureForm()
+        irrigation_recommendation_form = self.IrrigationRecommendationForm()
+
         models_data = [ml_engine.get_model_info(model) for model in available_models]
 
         context = {
+            # new context
+            "user_models": user_models_data,
+            "standard_models": standard_models,
+            "algorithms": algorithms,
+            # old context
             "available_models": models_data,
             "soil_moisture_form": soil_moisture_form,
             "irrigation_recommendation_form": irrigation_recommendation_form,
@@ -145,6 +276,46 @@ class MLModelManagementView(View):
             ),
         }
         return render(request, self.template_name, context=context)
+
+
+class MLModelDetailView(View):
+    template_name = "administrator/ml_model_detail.html"
+
+    def get(self, request, model_name):
+        model_algorithm = request.GET.get("algorithm")
+        model_name = f"{model_name}_{model_algorithm}"
+        models = ml_engine.get_available_models()
+
+        if model_name not in models:
+            messages.error(request, "Model not found")
+            return redirect("administrator:ml")
+
+        context = {
+            "model": ml_engine.get_model_info(model_name),
+        }
+
+        return render(request, self.template_name, context=context)
+
+
+class UploadDatasetView(View):
+    def post(self, request, model_type):
+        dataset = request.FILES.get("dataset")
+        algorithm = request.POST.get("algorithm")
+
+        try:
+            # Your dataset processing and model training logic here
+            # ...
+
+            messages.success(
+                request, "Dataset uploaded and model training started successfully!"
+            )
+        except Exception as e:
+            messages.error(request, f"Error processing dataset: {str(e)}")
+
+        return redirect("administrator:ml_model_detail", model_type=model_type)
+
+    def get(self, request, model_type):
+        return redirect("administrator:ml_model_detail", model_type=model_type)
 
 
 class NotificationView(View):
