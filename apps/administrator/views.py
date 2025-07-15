@@ -171,6 +171,14 @@ class MLModelManagementView(View):
                 )
 
     def get(self, request):
+        # Todo: pass a list of models which are standard
+        # Todo: filter particulr user trained models
+        # Todo: add modal for showing model training history
+        # Todo: add ability to retrain the model
+        # Todo: add ability to delete the model
+        # Todo: add ability to retrain or train the model
+
+        
         soil_moisture_form = self.SoilMoistureForm()
         irrigation_recommendation_form = self.IrrigationRecommendationForm()
 
