@@ -117,9 +117,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
-
-USE_I18N = True
+TIME_ZONE = 'Africa/Kampala'
+USE_TZ = True  # Keep this True to store in UTC but convert to local timezone
 
 USE_TZ = True
 
