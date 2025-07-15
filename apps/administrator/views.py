@@ -14,9 +14,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ml import MLEngine
 from .forms import UserForm
+from .models import Model
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
+ml_engine = MLEngine()
 
 
 class DashboardView(View):
@@ -91,7 +93,9 @@ class UserUpdateView(View):
             if form.cleaned_data.get("password"):
                 user.set_password(form.cleaned_data["password"])
             user.save()
-            messages.success(request, f"User {user.get_user_name()} updated successfully")
+            messages.success(
+                request, f"User {user.get_user_name()} updated successfully"
+            )
             return redirect("administrator:users")
         else:
             messages.error(request, "Failed to update user. Please check the form.")
@@ -178,17 +182,31 @@ class MLModelManagementView(View):
         # Todo: add ability to delete the model
         # Todo: add ability to retrain or train the model
 
-        
-        soil_moisture_form = self.SoilMoistureForm()
-        irrigation_recommendation_form = self.IrrigationRecommendationForm()
-
         ml_engine = MLEngine()
 
         available_models = ml_engine.get_available_models()
 
+        user_models = Model.objects.filter(creator=request.user)
+        user_models_data = [
+            ml_engine.get_model_info(model.get_model_name()) for model in user_models
+        ]
+
+        standard_models = [
+            ml_engine.get_model_info(model)
+            for model in available_models
+            if model.find("version") == -1
+        ]
+
+        soil_moisture_form = self.SoilMoistureForm()
+        irrigation_recommendation_form = self.IrrigationRecommendationForm()
+
         models_data = [ml_engine.get_model_info(model) for model in available_models]
 
         context = {
+            # new context
+            "user_models": user_models_data,
+            "standard_models": standard_models,
+            # old context
             "available_models": models_data,
             "soil_moisture_form": soil_moisture_form,
             "irrigation_recommendation_form": irrigation_recommendation_form,
@@ -248,6 +266,25 @@ class MLModelManagementView(View):
                 else None
             ),
         }
+        return render(request, self.template_name, context=context)
+
+
+class MLModelDetailView(View):
+    template_name = "administrator/ml_model_detail.html"
+
+    def get(self, request, model_name):
+        model_algorithm = request.GET.get("algorithm")
+        model_name = f"{model_name}_{model_algorithm}"
+        models = ml_engine.get_available_models()
+
+        if model_name not in models:
+            messages.error(request, "Model not found")
+            return redirect("administrator:ml")
+
+        context = {
+            "model": ml_engine.get_model_info(model_name),
+        }
+
         return render(request, self.template_name, context=context)
 
 

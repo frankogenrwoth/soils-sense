@@ -11,6 +11,7 @@ from apps.administrator.views import (
     NotificationView,
     SensorView,
     DashboardView,
+    MLModelDetailView,
 )
 from apps.administrator.utils import admin_role_required
 
@@ -39,6 +40,11 @@ urlpatterns = [
         "reports/", admin_role_required(ReportManagementView.as_view()), name="reports"
     ),
     path("ml-models/", admin_role_required(MLModelManagementView.as_view()), name="ml"),
+    path(
+        "ml-models/<str:model_name>/",
+        admin_role_required(MLModelDetailView.as_view()),
+        name="ml_model_detail",
+    ),
     path(
         "notifications/",
         admin_role_required(NotificationView.as_view()),

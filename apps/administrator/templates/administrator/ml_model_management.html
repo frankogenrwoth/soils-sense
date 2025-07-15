@@ -28,8 +28,8 @@
 
 {% block content %}
 
-<div class="bg-white shadow rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">Model List</h3>
+<div class="bg-white shadow rounded-lg p-6 mb-4">
+    <h3 class="text-lg font-semibold text-green-700 mb-4">My models</h3>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -38,11 +38,11 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">algorithm</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">n_samples</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">training_time</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                {% for model in available_models %}
+                {% for model in user_models %}
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_type }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm }}</td>
@@ -53,81 +53,112 @@
                             <button class="text-red-600 hover:underline">Delete</button>
                         </td>
                     </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-gray-500">
+                            <div class="flex justify-center items-center h-full">
+                                <div class="flex flex-col items-center gap-4 my-8">
+                                    <svg  xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" viewBox="0 0 24 24" >
+                                        <path d="M17.99 9.18C17.84 6.3 15.22 4 12 4S6.17 6.3 6.01 9.18C3.49 10.3 2 12.06 2 14c0 3.36 4.39 6 10 6s10-2.64 10-6c0-1.94-1.49-3.71-4.01-4.82M12 6c2.21 0 4 1.54 4 3.44 0 .08 0 .16-.03.29C15.77 11.77 13.13 12 12 12h-.23c-1.22-.03-3.56-.35-3.75-2.32C8.01 9.6 8 9.52 8 9.45c0-1.9 1.79-3.44 4-3.44Zm0 12c-4.71 0-8-2.11-8-4 0-1.01.88-2.03 2.37-2.79.04.09.1.17.14.25s.09.17.14.24c.11.17.24.33.37.48.04.05.08.11.13.15.19.2.41.38.64.54.05.04.12.07.17.1q.285.18.6.33l.3.12c.19.08.4.15.61.21.11.03.23.07.35.09.23.05.46.1.71.13.11.02.22.04.34.05.36.04.74.07 1.14.07s.77-.03 1.13-.07c.12-.01.23-.03.35-.05.24-.04.47-.08.69-.13.13-.03.25-.07.38-.1.19-.06.37-.12.55-.19.12-.05.25-.1.36-.15.16-.07.3-.16.44-.24.11-.07.23-.13.34-.2.12-.09.23-.19.34-.28.21-.18.39-.37.56-.58.06-.08.12-.15.18-.23.09-.13.16-.27.23-.41.03-.06.07-.1.09-.16 1.48.76 2.37 1.78 2.37 2.79 0 1.89-3.29 4-8 4Z"></path><path d="M12 15a1 1 0 1 0 0 2 1 1 0 1 0 0-2M16 14a1 1 0 1 0 0 2 1 1 0 1 0 0-2M8 14a1 1 0 1 0 0 2 1 1 0 1 0 0-2"></path>
+                                    </svg>
+                                    <span class="text-gray-500 text-center">No models found. <br> Please upload a dataset to get started.</span>
+                                    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload dataset</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 {% endfor %}
-                <!-- More model rows here -->
             </tbody>
         </table>
     </div>
 </div>
 
-<div class="bg-white shadow rounded-lg p-6 mt-4">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">Soil Moisture Predictor Playground</h3>
+<div class="bg-white shadow rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-green-700 mb-4">Standard Models</h3>
+    <p class="text-gray-500 mb-4">These are the standard models that are available to use. they are trained and managed by the soilsense team and are trained on a large dataset and are available to use for prediction.</p>
     <div class="overflow-x-auto">
-        <form method="post">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">algorithm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">n_samples</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">training accuracy</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">training time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for model in standard_models %}
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">sensor_id</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">location</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">temperature_celsius</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">humidity_percent</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">battery_voltage</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">irrigation_action</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">timestamp</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_type }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.n_samples }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                            {% if model.model_type == "soil_moisture_predictor" %}
+                                {{ model.train_r2 }}
+                            {% else %}
+                                {{ model.train_f1 }}
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.training_time }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{% url 'administrator:ml_model_detail' model.model_type %}?algorithm={{ model.algorithm }}" class="text-white bg-green-600 px-2 py-1 text-xs rounded hover:bg-green-700 transition">View data</a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+
+
+                {% empty %}
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.sensor_id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.location }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.temperature_celsius }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.humidity_percent }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.battery_voltage }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.status }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.irrigation_action }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ soil_moisture_form.timestamp }}</td>
+                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-gray-500">
+                            <span class="text-gray-500 text-center">No standard models found. <br> Please upload a dataset to get started.</span>
+                        </td>
                     </tr>
-                </tbody>
-            </table>
-            {% csrf_token %}
-            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition my-4">Predict</button>
-        </form>
-        <p class="font-semibold">Predicted Soil Moisture: <strong class="text-green-700">{{ predicted_soil_moisture }}</strong></p>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
 
-<div class="bg-white shadow rounded-lg p-6 mt-4">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">Irrigation Recommendation Playground</h3>
-    <div class="overflow-x-auto">
-        <form method="post">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">soil_moisture_percent</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">temperature_celsius</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">humidity_percent</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">battery_voltage</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">timestamp</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.soil_moisture_percent }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.temperature_celsius }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.humidity_percent }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.battery_voltage }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.status }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ irrigation_recommendation_form.timestamp }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            {% csrf_token %}
-            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition my-4">Recommend</button>
-        </form>
-        <p class="font-semibold">Predicted Irrigation Recommendation: <strong class="text-green-700">{{ predicted_irrigation_recommendation }}</strong></p>
+<!-- modal impformation modal -->
+<!-- Model Information Modal -->
+<div id="modelInfoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-all duration-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-0 relative overflow-hidden animate-fade-in">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-8 py-6 border-b">
+            <h2 class="text-2xl font-bold text-green-700">
+                Model Information
+            </h2>
+            <button onclick="closeModelInfoModal()" class="text-gray-400 hover:text-green-600 text-3xl transition-colors duration-150 focus:outline-none">
+                &times;
+            </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="px-8 py-8">
+            <div class="mb-6">
+                <p class="text-gray-500" id="model-info-content">
+                    Model information goes here.
+                </p>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeModelInfoModal()" class="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition font-semibold shadow-sm">Close</button>
+            </div>
+        </div>
     </div>
 </div>
+<!-- end modal impformation modal -->
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function closeModelInfoModal() {
+    document.getElementById('modelInfoModal').classList.add('hidden');
+}
+function openModelInfoModal(infoHtml) {
+    document.getElementById('model-info-content').innerHTML = infoHtml || "Model information goes here.";
+    document.getElementById('modelInfoModal').classList.remove('hidden');
+}
+</script>
 {% endblock %}
