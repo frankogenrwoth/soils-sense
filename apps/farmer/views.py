@@ -580,6 +580,42 @@ def predictions(request):
     return render(request, 'farmer/predictions.html', context)
 
 @login_required
+def download_predictions_csv(request):
+    import csv
+    from django.http import HttpResponse
+    from .models import PredictionResult
+
+    # Get all predictions for the user's farms
+    farms = Farm.objects.filter(user=request.user)
+    predictions = PredictionResult.objects.filter(farm__in=farms).select_related('farm').order_by('-created_at')
+
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="soil_sense_predictions.csv"'
+
+    writer = csv.writer(response)
+    # Write header
+    writer.writerow([
+        'Farm Name', 'Location', 'Date & Time', 'Temperature (°C)', 'Humidity (%)', 'Battery Voltage (V)',
+        'Soil Moisture Prediction (%)', 'Irrigation Recommendation', 'Soil Algorithm', 'Irrigation Algorithm'
+    ])
+    # Write data rows
+    for p in predictions:
+        writer.writerow([
+            p.farm.farm_name,
+            p.location,
+            p.created_at.strftime('%Y-%m-%d %H:%M'),
+            p.temperature,
+            p.humidity,
+            p.battery_voltage,
+            p.soil_moisture_result,
+            p.irrigation_result,
+            p.algorithm,
+            p.algorithm_irr
+        ])
+    return response
+
+@login_required
 def get_latest_readings(request, farm_id):
     try:
         # Get the farm and verify ownership
