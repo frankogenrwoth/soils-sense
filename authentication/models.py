@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser
+from authentication.managers import UserManager
 
 
 class Role(models.TextChoices):
+    ADMINISTRATOR = "administrator"
     FARMER = "farmer"
     TECHNICIAN = "technician"
 
