@@ -2,6 +2,7 @@ from django import forms
 from apps.farmer.models import Farm, SoilMoistureReading
 from .models import SensorThreshold, Report
 from authentication.models import User
+from .models import Sensor
 
 class FarmEditForm(forms.ModelForm):
     class Meta:
@@ -91,3 +92,13 @@ class TechnicianProfileForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         } 
+
+        from django import forms
+
+class SensorForm(forms.ModelForm):
+    class Meta:
+        model = Sensor
+        fields = ['sensor_id', 'farm', 'description', 'is_active']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 2}),
+        }

@@ -199,7 +199,6 @@ def analytics(request):
 def recommendations(request):
     return render(request, 'farmer/recommendations.html')
 
-=======
 #Predictions here
 
 @login_required
