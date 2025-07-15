@@ -386,9 +386,7 @@ def recommendations(request):
     # Get current moisture through prediction
     current_moisture = 0
     moisture_status = 'Unknown'
-    irrigation_recommendation = "No irrigation needed at this time."
-    water_amount = None
-
+    
     if latest_reading:
         try:
             # Get prediction using the ML model
@@ -403,27 +401,31 @@ def recommendations(request):
                 timestamp=latest_reading.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                 algorithm=algorithm
             )
+            
             if prediction_result.get('success'):
                 current_moisture = round(float(prediction_result['predicted_value']), 1)
                 # Determine moisture status based on predicted value
                 if current_moisture < 30:
-                    moisture_status = 'Low'
+                    moisture_status = 'Low Soil Moisture'
                 elif current_moisture > 70:
-                    moisture_status = 'High'
+                    moisture_status = 'High Soil Moisture'
                 else:
-                    moisture_status = 'Optimal'
+                    moisture_status = 'Optimal Soil Moisture'
         except Exception as e:
             print(f"Prediction error: {str(e)}")
             # Fallback to raw reading if prediction fails
             current_moisture = round(float(latest_reading.soil_moisture_percent), 1)
 
     # Get irrigation recommendation based on predicted moisture
-    if moisture_status == 'Low':
+    irrigation_recommendation = "No irrigation needed at this time."
+    water_amount = None
+    if moisture_status == 'Low Soil Moisture':
         irrigation_recommendation = "Immediate irrigation recommended"
+        # Calculate water amount based on area and moisture deficit
         area_size = float(selected_farm.area_size)
         moisture_deficit = 50 - current_moisture  # Assuming 50% is optimal
         water_amount = round(area_size * moisture_deficit * 100)  # Simple calculation, adjust as needed
-    elif moisture_status == 'High':
+    elif moisture_status == 'High Soil Moisture':
         irrigation_recommendation = "Hold irrigation until soil moisture decreases"
 
     # Get farm's crops and prepare recommendations
@@ -432,21 +434,21 @@ def recommendations(request):
         # Use the predicted moisture value for crop recommendations
         moisture_percentage = current_moisture
         if current_moisture < 30:
-            crop_moisture_status = 'Critical'
+            moisture_status = 'Low Soil Moisture'
             status_class = 'text-red-600'
         elif current_moisture < 50:
-            crop_moisture_status = 'Warning'
+            moisture_status = 'Warning Soil Moisture'
             status_class = 'text-yellow-600'
         else:
-            crop_moisture_status = 'Good'
+            moisture_status = 'Good Soil Moisture'
             status_class = 'text-green-600'
 
         # Generate recommended actions based on predicted conditions
         recommended_actions = []
-        if crop_moisture_status == 'Critical':
+        if moisture_status == 'Critical Soil Moisture':
             recommended_actions.append("Implement immediate irrigation")
             recommended_actions.append("Consider mulching to retain moisture")
-        elif crop_moisture_status == 'Warning':
+        elif moisture_status == 'Warning':
             recommended_actions.append("Schedule irrigation within next 24 hours")
             recommended_actions.append("Monitor soil moisture closely")
         else:
@@ -461,38 +463,16 @@ def recommendations(request):
             recommended_actions.append("Focus on root development")
         elif days_to_harvest < 30:  # Near harvest
             recommended_actions.append("Prepare for harvest planning")
-
-        # --- Fertilizer Recommendation Logic ---
-        fertilizer_recommendation = ""
-        fertilizer_composition = ""
-        if crop_moisture_status == 'Critical':
-            fertilizer_recommendation = "Apply organic or slow-release fertilizer after irrigation. Avoid salt-heavy fertilizers."
-            fertilizer_composition = "NPK 5-5-5 or 10-10-10 (low rate), compost, or manure."
-        elif crop_moisture_status == 'Warning':
-            fertilizer_recommendation = "Use balanced fertilizer, but reduce nitrogen. Apply after irrigation if possible."
-            fertilizer_composition = "NPK 10-10-10 or 5-5-10."
-        elif crop_moisture_status == 'Good':
-            fertilizer_recommendation = "Apply balanced NPK fertilizer as per crop stage."
-            fertilizer_composition = "NPK 10-10-10 or 14-14-14."
-        elif crop_moisture_status == 'High':
-            fertilizer_recommendation = "Avoid nitrogen-heavy fertilizers. Use potassium-rich fertilizer. Consider foliar feeding."
-            fertilizer_composition = "NPK 5-5-10 or foliar feed."
-
-        # If irrigation is recommended, add a note
-        if irrigation_recommendation and "irrigation" in irrigation_recommendation.lower():
-            fertilizer_recommendation += " Apply fertilizer after irrigation for best results."
-
+        
         crops.append({
             'crop_name': crop.crop_name,
             'variety': crop.variety,
             'status': crop.status,
             'planting_date': crop.planting_date,
             'expected_harvest_date': crop.expected_harvest_date,
-            'moisture_status': crop_moisture_status,
+            'moisture_status': moisture_status,
             'moisture_percentage': moisture_percentage,
-            'recommended_actions': recommended_actions,
-            'fertilizer_recommendation': fertilizer_recommendation,
-            'fertilizer_composition': fertilizer_composition,
+            'recommended_actions': recommended_actions
         })
 
     context = {
