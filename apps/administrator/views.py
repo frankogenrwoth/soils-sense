@@ -1,10 +1,16 @@
 import logging
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import get_user_model
 from django import forms
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 
 from ml import MLEngine
 from .forms import UserForm
@@ -23,28 +29,94 @@ class DashboardView(View):
 
 class UserManagementView(View):
     """Admin should be able to manage other users on the platform (view, create, edit, delete, assign roles, reset passwords)."""
+
     template_name = "administrator/user_management.html"
     form_class = UserForm
 
     def get(self, request):
         users = User.objects.all()
+        form = self.form_class()
 
         context = {
-            "users": users
+            "users": users,
+            "form": form,
         }
 
         return render(request, self.template_name, context=context)
 
-    class UserDetailView(View):
-        template_name = "administrator/user_detail.html"
+    def post(self, request):
+        users = User.objects.all()
+        form = self.form_class(request.POST, request.FILES)
 
-        def get(self, request, pk):
-            user = get_object_or_404(User, id=pk)
-            context = {
-                "user": user,
-            }
+        if form.is_valid():
+            user = form.save(commit=False)
+            # Hash the password if provided
+            if form.cleaned_data.get("password"):
+                user.set_password(form.cleaned_data["password"])
+            user.save()
+            messages.success(request, "User created successfully")
+            return redirect("administrator:users")
 
-            return render(request, self.template_name, context=context)
+        print(form.errors)
+
+        context = {
+            "users": users,
+            "form": form,
+        }
+        return render(request, self.template_name, context=context)
+
+
+class UserDetailView(View):
+    template_name = "administrator/user_detail.html"
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        context = {
+            "user": user,
+        }
+
+        return render(request, self.template_name, context=context)
+
+
+class UserUpdateView(View):
+    """View for updating user information"""
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        form = UserForm(request.POST, request.FILES, instance=user)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            # Only update password if a new one is provided
+            if form.cleaned_data.get("password"):
+                user.set_password(form.cleaned_data["password"])
+            user.save()
+            messages.success(request, f"User {user.get_user_name()} updated successfully")
+            return redirect("administrator:users")
+        else:
+            messages.error(request, "Failed to update user. Please check the form.")
+            return redirect("administrator:users")
+
+
+class UserDeleteView(View):
+    """View for deleting users with confirmation"""
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        user_name = user.get_user_name()
+
+        # Prevent admin from deleting themselves
+        if user == request.user:
+            messages.error(request, "You cannot delete your own account")
+            return redirect("administrator:users")
+
+        try:
+            user.delete()
+            messages.success(request, f"User {user_name} deleted successfully")
+        except Exception as e:
+            messages.error(request, f"Failed to delete user: {str(e)}")
+
+        return redirect("administrator:users")
 
 
 class DataManagementView(View):

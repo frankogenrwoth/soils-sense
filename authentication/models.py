@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser, UserManager
 
 
 class Role(models.TextChoices):
-    ADMIN = "admin"
     FARMER = "farmer"
     TECHNICIAN = "technician"
 

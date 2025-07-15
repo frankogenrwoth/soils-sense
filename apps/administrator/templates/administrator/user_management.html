@@ -1,4 +1,5 @@
 {% extends 'administrator/base.html' %}
+{% load static %}
 
 {% block header_title %}User Management{% endblock %}
 
@@ -22,18 +23,40 @@
 
 {% block header_tools %}
 <div class="flex justify-end mb-4">
-    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add User</button>
+    <button 
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+        onclick="openAddUserModal()"
+    >Add User</button>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="bg-white shadow rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">User List</h3>
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="{% if message.tags == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} border px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if form.errors %}
+    <div class="mb-4">
+        {% for field, errors in form.errors.items %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ field }}: {{ errors|join:", " }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
@@ -42,15 +65,27 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for user in users %}
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ user.get_user_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0">
+                                <img 
+                                    src="{% if user.image %}{{ user.image.url }}{% else %}{% static 'images/default.webp' %}{% endif %}" 
+                                    alt="User Image" 
+                                    class="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm"
+                                    style="object-position: center;"
+                                >
+                            </div>
+                            <span class="font-medium text-gray-700">{{ user.get_user_name }}</span>
+                        </div>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ user.email }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ user.role }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{% url 'administrator:user_detail' user.id %}">
                             <button class="bg-green-600 text-white px-2 py-1 text-sm rounded hover:bg-green-700 transition mr-2">View</button>
                         </a>
-                        <button class="bg-blue-600 text-white px-2 py-1 text-sm rounded hover:bg-blue-700 transition mr-2">Update</button>
-                        <button class="bg-red-600 text-white px-2 py-1 text-sm rounded hover:bg-red-700 transition text-sm">Delete</button>
+                        <button class="bg-blue-600 text-white px-2 py-1 text-sm rounded hover:bg-blue-700 transition mr-2" onclick="openUpdateUserModal({{ user.id }}, '{{ user.username }}', '{{ user.first_name }}', '{{ user.last_name }}', '{{ user.email }}', '{{ user.role }}', '{{ user.phone_number|default:"" }}', '{% if user.image %}{{ user.image.url }}{% else %}{% static "images/default.webp" %}{% endif %}')">Update</button>
+                        <button class="bg-red-600 text-white px-2 py-1 text-sm rounded hover:bg-red-700 transition text-sm" onclick="openDeleteUserModal({{ user.id }}, '{{ user.get_user_name }}')">Delete</button>
                     </td>
                 </tr>
                 {% empty %}
@@ -62,4 +97,282 @@
         </table>
     </div>
 </div>
+
+<!-- Update User Modal -->
+<div id="updateUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-all duration-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-0 relative overflow-hidden animate-fade-in">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-8 py-6">
+            <h2 class="text-2xl font-bold text-green-700">
+                Update User
+            </h2>
+            <button onclick="closeUpdateUserModal()" class="text-gray-400 hover:text-green-600 text-3xl transition-colors duration-150 focus:outline-none">
+                &times;
+            </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="flex flex-col md:flex-row gap-0 md:gap-8 px-8 py-8">    
+            <!-- Image Section -->
+            <div class="rounded-xl p-6 md:p-0 mt-4">
+                <label class="block text-gray-700 font-medium mb-1">Profile image</label>
+                <div class="w-40 h-40 rounded-lg overflow-hidden shadow-lg mb-4 mt-4 relative">
+                    <img 
+                        src="{% static 'images/default.webp' %}" 
+                        alt="User Image" 
+                        class="w-full h-full object-cover cursor-pointer"
+                        id="update-user-image-preview"
+                        onclick="document.getElementById('update-user-image-input').click();"
+                    >
+                    <!-- Hidden file input, only for this form -->
+                    <input 
+                        type="file" 
+                        id="update-user-image-input" 
+                        name="image" 
+                        accept="image/*" 
+                        class="hidden"
+                        form="updateUserForm"
+                        onchange="previewUpdateUserImage(event)"
+                    >
+                </div>
+                <a href="#" class="text-green-600 hover:text-green-700 transition" onclick="event.preventDefault(); document.getElementById('update-user-image-input').click();">Change Image</a>
+            </div>
+            <!-- Form Section -->
+            <div class="flex-1">
+                <form id="updateUserForm" method="post" action="" class="space-y-4" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="update-user-id" name="user_id">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Username <span class="text-red-500">*</span></label>
+                        <input type="text" id="update-username" name="username" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">First Name</label>
+                            <input type="text" id="update-first-name" name="first_name" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Last Name</label>
+                            <input type="text" id="update-last-name" name="last_name" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="update-email" name="email" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Role <span class="text-red-500">*</span></label>
+                        <select id="update-role" name="role" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200" required>
+                            <option value="farmer">Farmer</option>
+                            <option value="technician">Technician</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Password</label>
+                        <input type="password" id="update-password" name="password" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200" placeholder="Leave blank to keep current password">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Phone Number</label>
+                        <input type="text" id="update-phone-number" name="phone_number" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-200">
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="closeUpdateUserModal()" class="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition font-semibold shadow-sm">Cancel</button>
+                        <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition font-semibold shadow-sm">Update User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div id="addUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-all duration-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-0 relative overflow-hidden animate-fade-in">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-8 py-6">
+            <h2 class="text-2xl font-bold text-green-700">
+                Add New User
+            </h2>
+            <button onclick="closeAddUserModal()" class="text-gray-400 hover:text-green-600 text-3xl transition-colors duration-150 focus:outline-none">
+                &times;
+            </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="flex flex-col md:flex-row gap-0 md:gap-8 px-8 py-8">
+            <!-- Image Section -->
+            <div class="rounded-xl p-6 md:p-0 mt-4">
+                <label class="block text-gray-700 font-medium mb-1">Profile image</label>
+                <div class="w-40 h-40 rounded-lg overflow-hidden shadow-lg mb-4 mt-4 relative">
+                    <img 
+                        src="{% static 'images/default.webp' %}" 
+                        alt="User Image" 
+                        class="w-full h-full object-cover cursor-pointer"
+                        id="add-user-image-preview"
+                        onclick="document.getElementById('add-user-image-input').click();"
+                    >
+                    <!-- Hidden file input, only for this form -->
+                    <input 
+                        type="file" 
+                        id="add-user-image-input" 
+                        name="image" 
+                        accept="image/*" 
+                        class="hidden"
+                        form="addUserForm"
+                        onchange="previewAddUserImage(event)"
+                    >
+                </div>
+                <a href="#" class="text-green-600 hover:text-green-700 transition" onclick="event.preventDefault(); document.getElementById('add-user-image-input').click();">Add Image</a>
+            </div>
+            <!-- Form Section -->
+            <div class="flex-1">
+                <form id="addUserForm" method="post" action="{{ request.build_absolute_uri }}" class="space-y-4" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Username <span class="text-red-500">*</span></label>
+                        {{ form.username }}
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1" for="email">Email <span class="text-red-500">*</span></label>
+                        {{ form.email }}
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1" for="role">Role <span class="text-red-500">*</span></label>
+                        {{ form.role }}
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1" for="password">Password <span class="text-red-500">*</span></label>
+                        {{ form.password }}
+                    </div>
+                    <!-- Hide the default image field, since we use the custom input above -->
+                    <div style="display:none;">
+                        {{ form.image }}
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1" for="phone_number">Phone Number</label>
+                        {{ form.phone_number }}
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="closeAddUserModal()" class="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition font-semibold shadow-sm">Cancel</button>
+                        <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition font-semibold shadow-sm">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Confirmation Modal -->
+<div id="deleteUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-all duration-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+        <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Delete User</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                Are you sure you want to delete <span id="delete-user-name" class="font-semibold"></span>? This action cannot be undone.
+            </p>
+            <div class="flex justify-center gap-3">
+                <button onclick="closeDeleteUserModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
+                    Cancel
+                </button>
+                <form id="deleteUserForm" method="post" action="" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function previewAddUserImage(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('add-user-image-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    function openAddUserModal() {
+        document.getElementById('addUserModal').classList.remove('hidden');
+    }
+    function closeAddUserModal() {
+        document.getElementById('addUserModal').classList.add('hidden');
+    }
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeAddUserModal();
+        }
+    });
+
+    function openUpdateUserModal(userId, username, firstName, lastName, email, role, phoneNumber, imageUrl) {
+        // Set form action
+        document.getElementById('updateUserForm').action = `/administrator/users/${userId}/update/`;
+        
+        // Populate form fields
+        document.getElementById('update-user-id').value = userId;
+        document.getElementById('update-username').value = username;
+        document.getElementById('update-first-name').value = firstName;
+        document.getElementById('update-last-name').value = lastName;
+        document.getElementById('update-email').value = email;
+        document.getElementById('update-role').value = role;
+        document.getElementById('update-phone-number').value = phoneNumber;
+        
+        // Set image preview
+        document.getElementById('update-user-image-preview').src = imageUrl;
+        
+        document.getElementById('updateUserModal').classList.remove('hidden');
+    }
+    
+    function closeUpdateUserModal() {
+        document.getElementById('updateUserModal').classList.add('hidden');
+    }
+    
+    function previewUpdateUserImage(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('update-user-image-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    function openDeleteUserModal(userId, userName) {
+        document.getElementById('deleteUserForm').action = `/administrator/users/${userId}/delete/`;
+        document.getElementById('delete-user-name').textContent = userName;
+        document.getElementById('deleteUserModal').classList.remove('hidden');
+    }
+    
+    function closeDeleteUserModal() {
+        document.getElementById('deleteUserModal').classList.add('hidden');
+    }
+    
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeUpdateUserModal();
+            closeDeleteUserModal();
+        }
+    });
+</script>
 {% endblock %}
