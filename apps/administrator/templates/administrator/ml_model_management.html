@@ -22,7 +22,7 @@
 
 {% block header_tools %}
 <div class="flex justify-end mb-4">
-    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload Model</button>
+    <button onclick="openUploadModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload Dataset</button>
 </div>
 {% endblock %}
 
@@ -62,7 +62,7 @@
                                         <path d="M17.99 9.18C17.84 6.3 15.22 4 12 4S6.17 6.3 6.01 9.18C3.49 10.3 2 12.06 2 14c0 3.36 4.39 6 10 6s10-2.64 10-6c0-1.94-1.49-3.71-4.01-4.82M12 6c2.21 0 4 1.54 4 3.44 0 .08 0 .16-.03.29C15.77 11.77 13.13 12 12 12h-.23c-1.22-.03-3.56-.35-3.75-2.32C8.01 9.6 8 9.52 8 9.45c0-1.9 1.79-3.44 4-3.44Zm0 12c-4.71 0-8-2.11-8-4 0-1.01.88-2.03 2.37-2.79.04.09.1.17.14.25s.09.17.14.24c.11.17.24.33.37.48.04.05.08.11.13.15.19.2.41.38.64.54.05.04.12.07.17.1q.285.18.6.33l.3.12c.19.08.4.15.61.21.11.03.23.07.35.09.23.05.46.1.71.13.11.02.22.04.34.05.36.04.74.07 1.14.07s.77-.03 1.13-.07c.12-.01.23-.03.35-.05.24-.04.47-.08.69-.13.13-.03.25-.07.38-.1.19-.06.37-.12.55-.19.12-.05.25-.1.36-.15.16-.07.3-.16.44-.24.11-.07.23-.13.34-.2.12-.09.23-.19.34-.28.21-.18.39-.37.56-.58.06-.08.12-.15.18-.23.09-.13.16-.27.23-.41.03-.06.07-.1.09-.16 1.48.76 2.37 1.78 2.37 2.79 0 1.89-3.29 4-8 4Z"></path><path d="M12 15a1 1 0 1 0 0 2 1 1 0 1 0 0-2M16 14a1 1 0 1 0 0 2 1 1 0 1 0 0-2M8 14a1 1 0 1 0 0 2 1 1 0 1 0 0-2"></path>
                                     </svg>
                                     <span class="text-gray-500 text-center">No models found. <br> Please upload a dataset to get started.</span>
-                                    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload dataset</button>
+                                    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload Dataset</button>
                                 </div>
                             </div>
                         </td>
@@ -120,45 +120,172 @@
     </div>
 </div>
 
-
-<!-- modal impformation modal -->
-<!-- Model Information Modal -->
-<div id="modelInfoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-all duration-200">
+<!-- Upload Dataset Modal -->
+<div id="uploadDatasetModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-all duration-200">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-0 relative overflow-hidden animate-fade-in">
         <!-- Modal Header -->
         <div class="flex items-center justify-between px-8 py-6 border-b">
             <h2 class="text-2xl font-bold text-green-700">
-                Model Information
+                Upload Dataset for Training
             </h2>
-            <button onclick="closeModelInfoModal()" class="text-gray-400 hover:text-green-600 text-3xl transition-colors duration-150 focus:outline-none">
+            <button onclick="closeUploadModal()" class="text-gray-400 hover:text-green-600 text-3xl transition-colors duration-150 focus:outline-none">
                 &times;
             </button>
         </div>
         <!-- Modal Body -->
-        <div class="px-8 py-8">
-            <div class="mb-6">
-                <p class="text-gray-500" id="model-info-content">
-                    Model information goes here.
-                </p>
+        <form action="{% url 'administrator:upload_dataset' "soil_moisture_predictor" %}" method="POST" enctype="multipart/form-data" class="px-8 py-6">
+            {% csrf_token %}
+            <div class="space-y-6">
+                <!-- File Upload -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Dataset File</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                                    <span>Upload a file</span>
+                                    <input id="file-upload" name="dataset" type="file" class="sr-only" accept=".csv,.xlsx">
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">CSV or Excel files up to 10MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Parameters -->
+                <div>
+                    <div id="algorithm-chips" class="flex flex-wrap gap-2">
+                        {% for algorithm in algorithms %}
+                            <input type="radio" name="algorithm" id="algorithm-{{ forloop.counter }}" value="{{ algorithm }}" class="hidden" {% if forloop.first %}checked{% endif %}>
+                            <label for="algorithm-{{ forloop.counter }}" class="chip cursor-pointer px-4 py-1 rounded-full border border-green-500 text-green-700 bg-white hover:bg-green-100 transition
+                                {% if forloop.first %}chip-selected bg-green-600 text-white border-green-600{% endif %}">
+                                {{ algorithm }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <style>
+                    .chip-selected {
+                        background-color: #16a34a !important;
+                        color: #fff !important;
+                        border-color: #16a34a !important;
+                    }
+                    #algorithm-chips label.chip {
+                        transition: background 0.2s, color 0.2s, border 0.2s;
+                    }
+                </style>
+
             </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="closeModelInfoModal()" class="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition font-semibold shadow-sm">Close</button>
+
+            <!-- Form Actions -->
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeUploadModal()" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Upload and Train
+                </button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
-<!-- end modal impformation modal -->
-
 {% endblock %}
 
 {% block scripts %}
 <script>
-function closeModelInfoModal() {
-    document.getElementById('modelInfoModal').classList.add('hidden');
-}
-function openModelInfoModal(infoHtml) {
-    document.getElementById('model-info-content').innerHTML = infoHtml || "Model information goes here.";
-    document.getElementById('modelInfoModal').classList.remove('hidden');
-}
-</script>
+    function openUploadModal() {
+        document.getElementById('uploadDatasetModal').classList.remove('hidden');
+    }
+
+    function closeUploadModal() {
+        document.getElementById('uploadDatasetModal').classList.add('hidden');
+    }
+
+    function toggleAdvancedOptions() {
+        const advancedOptions = document.getElementById('advancedOptions');
+        const advancedOptionsIcon = document.getElementById('advancedOptionsIcon');
+        const advancedOptionsText = document.getElementById('advancedOptionsText');
+        
+        if (advancedOptions.classList.contains('hidden')) {
+            advancedOptions.classList.remove('hidden');
+            advancedOptionsIcon.classList.add('rotate-180');
+            advancedOptionsText.textContent = 'Hide Advanced Options';
+        } else {
+            advancedOptions.classList.add('hidden');
+            advancedOptionsIcon.classList.remove('rotate-180');
+            advancedOptionsText.textContent = 'Show Advanced Options';
+        }
+    }
+
+    // File upload preview
+    const fileUpload = document.getElementById('file-upload');
+    if (fileUpload) {
+        fileUpload.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            if (fileName) {
+                const fileInfo = this.parentElement.parentElement.querySelector('p.text-xs');
+                fileInfo.textContent = `Selected file: ${fileName}`;
+            }
+        });
+    }
+
+    // Drag and drop functionality
+    const dropZone = document.querySelector('.border-dashed');
+    if (dropZone) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-green-500', 'bg-green-50');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-green-500', 'bg-green-50');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileUpload.files = files;
+            
+            if (files[0]) {
+                const fileInfo = dropZone.querySelector('p.text-xs');
+                fileInfo.textContent = `Selected file: ${files[0].name}`;
+            }
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const chips = document.querySelectorAll('#algorithm-chips label.chip');
+        const radios = document.querySelectorAll('#algorithm-chips input[type="radio"]');
+        chips.forEach((chip, idx) => {
+            chip.addEventListener('click', function() {
+                chips.forEach(c => c.classList.remove('chip-selected', 'bg-green-600', 'text-white', 'border-green-600'));
+                chip.classList.add('chip-selected', 'bg-green-600', 'text-white', 'border-green-600');
+                radios[idx].checked = true;
+            });
+        });
+    });
+    </script>
 {% endblock %}

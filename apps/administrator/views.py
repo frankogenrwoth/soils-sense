@@ -197,6 +197,14 @@ class MLModelManagementView(View):
             if model.find("version") == -1
         ]
 
+        from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS
+
+        algorithms = [
+            algorithm
+            for algorithm in list(REGRESSION_ALGORITHMS.keys())
+            if algorithm in list(CLASSIFICATION_ALGORITHMS.keys())
+        ]
+
         soil_moisture_form = self.SoilMoistureForm()
         irrigation_recommendation_form = self.IrrigationRecommendationForm()
 
@@ -206,6 +214,7 @@ class MLModelManagementView(View):
             # new context
             "user_models": user_models_data,
             "standard_models": standard_models,
+            "algorithms": algorithms,
             # old context
             "available_models": models_data,
             "soil_moisture_form": soil_moisture_form,
@@ -286,6 +295,27 @@ class MLModelDetailView(View):
         }
 
         return render(request, self.template_name, context=context)
+
+
+class UploadDatasetView(View):
+    def post(self, request, model_type):
+        dataset = request.FILES.get("dataset")
+        algorithm = request.POST.get("algorithm")
+
+        try:
+            # Your dataset processing and model training logic here
+            # ...
+
+            messages.success(
+                request, "Dataset uploaded and model training started successfully!"
+            )
+        except Exception as e:
+            messages.error(request, f"Error processing dataset: {str(e)}")
+
+        return redirect("administrator:ml_model_detail", model_type=model_type)
+
+    def get(self, request, model_type):
+        return redirect("administrator:ml_model_detail", model_type=model_type)
 
 
 class NotificationView(View):

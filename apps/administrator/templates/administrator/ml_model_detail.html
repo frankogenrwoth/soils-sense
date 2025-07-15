@@ -29,6 +29,12 @@
 </div>
 {% endblock %}
 
+{% block header_tools %}
+<div class="flex justify-end mb-4">
+    <button onclick="openUploadModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload Dataset</button>
+</div>
+{% endblock %}
+
 {% block content %}
 <!-- Model Overview -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -315,4 +321,8 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
 {% endblock %}

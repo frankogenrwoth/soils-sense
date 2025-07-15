@@ -12,6 +12,7 @@ from apps.administrator.views import (
     SensorView,
     DashboardView,
     MLModelDetailView,
+    UploadDatasetView,
 )
 from apps.administrator.utils import admin_role_required
 
@@ -44,6 +45,11 @@ urlpatterns = [
         "ml-models/<str:model_name>/",
         admin_role_required(MLModelDetailView.as_view()),
         name="ml_model_detail",
+    ),
+    path(
+        "ml-models/<str:model_type>/upload-dataset/",
+        admin_role_required(UploadDatasetView.as_view()),
+        name="upload_dataset",
     ),
     path(
         "notifications/",
