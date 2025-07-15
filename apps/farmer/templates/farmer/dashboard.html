@@ -64,27 +64,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Last Irrigation Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500 hover:shadow-lg transition-shadow">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-clock text-yellow-500 text-xl"></i>
-                    </div>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Last Irrigation</p>
-                    {% if latest_irrigation %}
-                        <p class="text-2xl font-bold text-gray-900">{{ latest_irrigation.start_time|timesince }}</p>
-                        <p class="text-xs text-gray-600">{{ latest_irrigation.water_amount }}L used</p>
-                    {% else %}
-                        <p class="text-lg font-bold text-gray-900">No Data</p>
-                        <p class="text-xs text-gray-600">No irrigation recorded</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Soil Moisture Prediction System Overview -->

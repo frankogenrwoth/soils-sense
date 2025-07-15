@@ -3,112 +3,88 @@
 {% block base_title %}Analytics{% endblock %}
 
 {% block page_title %}Analytics Dashboard{% endblock %}
-{% block page_subtitle %}Detailed insights and trends for your farm{% endblock %}
+{% block page_subtitle %}Soil Moisture Prediction Analysis and Trends{% endblock %}
 
 {% block content %}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-    <!-- Weekly Moisture Analysis -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Moisture Analysis</h3>
-        <canvas id="weeklyChart" width="400" height="300"></canvas>
-    </div>
+<!-- Farm Selection -->
+<div class="bg-white rounded-xl shadow-md p-6 mb-8">
+    <form id="selectionForm" class="flex items-center space-x-4">
+        <div class="flex-grow">
+            <label for="farmSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Farm</label>
+            <select id="farmSelect" name="farm_id" class="form-select w-full rounded-lg border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                {% for farm in farms %}
+                    <option value="{{ farm.id }}" {% if farm.id == selected_farm.id %}selected{% endif %}>
+                        {{ farm.farm_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex-grow">
+            <label for="timeRange" class="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
+            <select id="timeRange" name="time_range" class="form-select w-full rounded-lg border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                <option value="7" {% if time_range == 7 %}selected{% endif %}>Last 7 Days</option>
+                <option value="30" {% if time_range == 30 %}selected{% endif %}>Last 30 Days</option>
+                <option value="90" {% if time_range == 90 %}selected{% endif %}>Last 3 Months</option>
+            </select>
+        </div>
+        <div class="flex-grow">
+            <label for="algorithm" class="block text-sm font-medium text-gray-700 mb-2">Prediction Algorithm</label>
+            <select id="algorithm" name="algorithm" class="form-select w-full rounded-lg border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                {% for algo_name, algo_config in soil_algorithms.items %}
+                    <option value="{{ algo_name }}" {% if algo_name == selected_algorithm %}selected{% endif %}>
+                        {{ algo_name|title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+</div>
 
-    <!-- Monthly Trends -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h3>
-        <canvas id="monthlyChart" width="400" height="300"></canvas>
+<!-- Key Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md p-6 text-center">
+        <h4 class="text-lg font-semibold text-gray-700 mb-2">Predicted Average Soil Moisture</h4>
+        <p class="text-3xl font-bold text-primary">{{ avg_moisture|floatformat:1 }}%</p>
+        <p class="text-sm text-gray-500 mt-2">ML Prediction using {{ selected_algorithm }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 text-center">
+        <h4 class="text-lg font-semibold text-gray-700 mb-2">Predicted Highest Reading</h4>
+        <p class="text-3xl font-bold text-green-600">{{ max_moisture|floatformat:1 }}%</p>
+        <p class="text-sm text-gray-500 mt-2">{{ max_moisture_date|date:"M d, Y" }} ({{ selected_algorithm }})</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-6 text-center">
+        <h4 class="text-lg font-semibold text-gray-700 mb-2">Predicted Lowest Reading</h4>
+        <p class="text-3xl font-bold text-red-600">{{ min_moisture|floatformat:1 }}%</p>
+        <p class="text-sm text-gray-500 mt-2">{{ min_moisture_date|date:"M d, Y" }} ({{ selected_algorithm }})</p>
     </div>
 </div>
 
-<!-- Detailed Statistics -->
-<div class="bg-white rounded-xl shadow-md p-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">Detailed Statistics</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="text-center p-4 bg-gray-50 rounded-lg">
-            <p class="text-3xl font-bold text-primary">85%</p>
-            <p class="text-sm text-gray-600">Average Moisture</p>
-        </div>
-        <div class="text-center p-4 bg-gray-50 rounded-lg">
-            <p class="text-3xl font-bold text-green-500">12</p>
-            <p class="text-sm text-gray-600">Irrigation Events</p>
-        </div>
-        <div class="text-center p-4 bg-gray-50 rounded-lg">
-            <p class="text-3xl font-bold text-blue-500">2.3L</p>
-            <p class="text-sm text-gray-600">Water Saved (per day)</p>
-        </div>
-    </div>
-</div>
-
-<!-- Trend Analysis -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-    <!-- Soil Health Indicators -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Health Indicators</h3>
-        <div class="space-y-4">
-            <div>
-                <div class="flex justify-between mb-1">
-                    <span class="text-sm font-medium text-gray-700">pH Level</span>
-                    <span class="text-sm text-gray-600">6.5/10</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-green-500 h-2 rounded-full" style="width: 65%"></div>
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-between mb-1">
-                    <span class="text-sm font-medium text-gray-700">Nitrogen Content</span>
-                    <span class="text-sm text-gray-600">7.8/10</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-between mb-1">
-                    <span class="text-sm font-medium text-gray-700">Organic Matter</span>
-                    <span class="text-sm text-gray-600">8.2/10</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 82%"></div>
-                </div>
-            </div>
+<!-- Main Graphs -->
+<div class="space-y-6">
+    <!-- Soil Moisture Trends -->
+    <div class="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Moisture Trends</h3>
+        <p class="text-sm text-gray-600 mb-4">Compare actual readings vs ML predictions ({{ selected_algorithm }})</p>
+        <div class="h-64">
+            <canvas id="moistureTrendChart"></canvas>
         </div>
     </div>
 
-    <!-- Weather Impact -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Weather Impact Analysis</h3>
-        <div class="space-y-4">
-            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <div class="flex items-center">
-                    <i class="fas fa-cloud-rain text-blue-500 text-xl mr-3"></i>
-                    <div>
-                        <p class="text-sm font-medium text-blue-900">Rainfall Effect</p>
-                        <p class="text-xs text-blue-700">Positive impact on moisture levels</p>
-                    </div>
-                </div>
-                <span class="text-sm font-medium text-blue-900">+15%</span>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                <div class="flex items-center">
-                    <i class="fas fa-sun text-yellow-500 text-xl mr-3"></i>
-                    <div>
-                        <p class="text-sm font-medium text-yellow-900">Temperature Effect</p>
-                        <p class="text-xs text-yellow-700">Moderate evaporation rate</p>
-                    </div>
-                </div>
-                <span class="text-sm font-medium text-yellow-900">-8%</span>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div class="flex items-center">
-                    <i class="fas fa-wind text-green-500 text-xl mr-3"></i>
-                    <div>
-                        <p class="text-sm font-medium text-green-900">Wind Effect</p>
-                        <p class="text-xs text-green-700">Minimal impact on moisture</p>
-                    </div>
-                </div>
-                <span class="text-sm font-medium text-green-900">-2%</span>
-            </div>
+    <!-- Temperature & Moisture Correlation -->
+    <div class="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Temperature & Moisture Relationship</h3>
+        <p class="text-sm text-gray-600 mb-4">See how temperature affects predicted soil moisture levels</p>
+        <div class="h-64">
+            <canvas id="correlationChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Predicted Moisture Histogram -->
+    <div class="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Predicted Soil Moisture Distribution</h3>
+        <p class="text-sm text-gray-600 mb-4">Histogram of predicted soil moisture values ({{ selected_algorithm }})</p>
+        <div class="h-64">
+            <canvas id="moistureHistogram"></canvas>
         </div>
     </div>
 </div>
@@ -117,80 +93,201 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Weekly Chart
-    const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
-    new Chart(weeklyCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Average Moisture',
-                data: [70, 68, 72, 75, 73, 69, 71],
-                backgroundColor: ['#10B981', '#059669', '#34D399', '#6EE7B7', '#A7F3D0', '#D1FAE5', '#ECFDF5'],
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
+    // Handle form changes
+    const form = document.getElementById('selectionForm');
+    const farmSelect = document.getElementById('farmSelect');
+    const timeRange = document.getElementById('timeRange');
+    const algorithm = document.getElementById('algorithm');
+
+    farmSelect.addEventListener('change', updateView);
+    timeRange.addEventListener('change', updateView);
+    algorithm.addEventListener('change', updateView);
+
+    function updateView() {
+        const params = new URLSearchParams();
+        params.set('farm_id', farmSelect.value);
+        params.set('time_range', timeRange.value);
+        params.set('algorithm', algorithm.value);
+        window.location.href = `?${params.toString()}`;
+    }
+
+    // Common chart options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 12,
+                    padding: 10,
+                    font: {
+                        size: 11
                     }
                 }
             }
         }
-    });
+    };
 
-    // Monthly Chart
-    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-    new Chart(monthlyCtx, {
+    // Soil Moisture Trends Chart
+    const moistureTrendCtx = document.getElementById('moistureTrendChart').getContext('2d');
+    new Chart(moistureTrendCtx, {
         type: 'line',
         data: {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            labels: {{ dates|safe }},
             datasets: [{
-                label: 'Moisture Trend',
-                data: [68, 71, 69, 73],
+                label: 'Actual Moisture (%)',
+                data: {{ actual_values|safe }},
                 borderColor: '#3B82F6',
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                tension: 0.4,
-                fill: true
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                fill: true,
+                tension: 0.4
+            },
+            {
+                label: 'Predicted Moisture (%)',
+                data: {{ predicted_values|safe }},
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                fill: true,
+                tension: 0.4
             }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
+        options: Object.assign({}, commonOptions, {
             scales: {
                 y: {
                     beginAtZero: true,
                     max: 100,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
+                    title: {
+                        display: true,
+                        text: 'Soil Moisture (%)',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
                     }
                 },
                 x: {
-                    grid: {
-                        display: false
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
                     }
                 }
             }
-        }
+        })
+    });
+
+    // Temperature & Moisture Correlation Chart
+    const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+    new Chart(correlationCtx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Temperature vs Predicted Moisture',
+                data: {{ correlation_data|safe }},
+                backgroundColor: '#10B981',
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: Object.assign({}, commonOptions, {
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Predicted Soil Moisture (%)',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    }
+                }
+            }
+        })
+    });
+
+    // Predicted Moisture Histogram
+    const predictedValues = {{ predicted_values|safe }}.filter(v => v !== null && !isNaN(v));
+    // Define histogram bins (e.g., 0-10, 10-20, ..., 90-100)
+    const binSize = 10;
+    const bins = Array.from({length: 10}, (_, i) => i * binSize);
+    const binLabels = bins.map((b, i) => `${b}-${b+binSize}`);
+    const binCounts = bins.map((b, i) => predictedValues.filter(v => v >= b && v < b + binSize).length);
+    // Include 100 in the last bin
+    binCounts[binCounts.length - 1] += predictedValues.filter(v => v === 100).length;
+
+    const histogramCtx = document.getElementById('moistureHistogram').getContext('2d');
+    new Chart(histogramCtx, {
+        type: 'bar',
+        data: {
+            labels: binLabels,
+            datasets: [{
+                label: 'Count',
+                data: binCounts,
+                backgroundColor: '#6366F1',
+                borderRadius: 4
+            }]
+        },
+        options: Object.assign({}, commonOptions, {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Days',
+                        font: { size: 11 }
+                    },
+                    ticks: { font: { size: 10 } }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Predicted Soil Moisture (%)',
+                        font: { size: 11 }
+                    },
+                    ticks: { font: { size: 10 } }
+                }
+            }
+        })
     });
 });
 </script>

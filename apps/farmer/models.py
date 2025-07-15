@@ -50,11 +50,6 @@ class SoilMoistureReading(models.Model):
         ('Critical High', 'Critical High'),
     ], default='Normal')
     battery_voltage = models.DecimalField(max_digits=3, decimal_places=2, default=3.3)
-    irrigation_action = models.CharField(max_length=20, choices=[
-        ('None', 'None'),
-        ('Irrigate', 'Irrigate'),
-        ('Reduce Irrigation', 'Reduce Irrigation'),
-    ], default='None')
     reading_source = models.CharField(max_length=50, choices=[
         ('sensor', 'IoT Sensor'),
         ('manual_input', 'Manual Input'),
@@ -150,3 +145,21 @@ class Alert(models.Model):
 
     def __str__(self):
         return f"{self.farm.farm_name} - {self.alert_type} - {self.timestamp}"
+
+class PredictionResult(models.Model):
+    farm = models.ForeignKey('Farm', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+    location = models.CharField(max_length=255)
+    temperature = models.FloatField()
+    humidity = models.FloatField()
+    battery_voltage = models.FloatField()
+    soil_moisture_result = models.FloatField()
+    irrigation_result = models.TextField()
+    algorithm = models.CharField(max_length=100)
+    algorithm_irr = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Prediction for {self.farm.farm_name} at {self.created_at}"

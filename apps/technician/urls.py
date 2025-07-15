@@ -16,7 +16,7 @@ urlpatterns = [
     path('farm/<int:pk>/', views.farm_detail, name='farm_detail'),
     path('farm/<int:pk>/edit/', views.edit_farm, name='edit_farm'),
     path('farm/<int:pk>/delete/', views.delete_farm, name='delete_farm'),
-    path('sensor-config/', views.sensor_config, name='sensor_config'),
+    path('models/', views.models_view, name='models'),
     path('threshold/<int:pk>/edit/', views.edit_threshold, name='edit_threshold'),
     path('threshold/<int:pk>/delete/', views.delete_threshold, name='delete_threshold'),
     path('analytics/', views.analytics, name='analytics'),
@@ -28,8 +28,13 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('soil-readings/', views.technician_soil_readings, name='soil_readings'),
+
     path('sensors/', views.sensor_list, name='sensor_list'),
     path('sensors/add/', views.sensor_add, name='sensor_add'),
     path('sensors/<int:pk>/edit/', views.sensor_edit, name='sensor_edit'),
     path('sensors/<int:pk>/delete/', views.sensor_delete, name='sensor_delete'),
+
+    path('prediction/<int:pk>/delete/', views.delete_prediction, name='delete_prediction'),
+    path('prediction/<int:pk>/download-pdf/', views.download_predictionresult_pdf, name='download_predictionresult_pdf'),
+
 ]

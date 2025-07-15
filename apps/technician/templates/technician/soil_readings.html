@@ -5,14 +5,7 @@
 {% block page_subtitle %}Monitor soil conditions across all farms{% endblock %}
 
 {% block header_actions %}
-<div class="d-flex gap-2">
-    <button class="btn btn-light">
-        <i class="fas fa-download me-2"></i>Export
-    </button>
-    <button class="btn btn-primary">
-        <i class="fas fa-chart-line me-2"></i>Analytics
-    </button>
-</div>
+{# Removed Export and Analytics buttons #}
 {% endblock %}
 
 {% block content %}
@@ -53,7 +46,6 @@
                 <tr>
                     <th>Farm</th>
                     <th>Date & Time</th>
-                    <th>Moisture (%)</th>
                     <th>Temperature (°C)</th>
                     <th>Humidity (%)</th>
                     <th>Source</th>
@@ -66,7 +58,6 @@
                 <tr>
                     <td>{{ reading.farm.farm_name }}</td>
                     <td>{{ reading.timestamp|date:"M d, Y H:i" }}</td>
-                    <td>{{ reading.soil_moisture_percent|floatformat:1 }}%</td>
                     <td>{{ reading.temperature_celsius|floatformat:1 }}°C</td>
                     <td>{{ reading.humidity_percent|floatformat:1 }}%</td>
                     <td>
@@ -104,7 +95,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center text-muted">No readings available.</td>
+                    <td colspan="7" class="text-center text-muted">No readings available.</td>
                 </tr>
                 {% endfor %}
             </tbody>
