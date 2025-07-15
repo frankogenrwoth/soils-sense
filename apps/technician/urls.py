@@ -28,4 +28,8 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('soil-readings/', views.technician_soil_readings, name='soil_readings'),
+    path('sensors/', views.sensor_list, name='sensor_list'),
+    path('sensors/add/', views.sensor_add, name='sensor_add'),
+    path('sensors/<int:pk>/edit/', views.sensor_edit, name='sensor_edit'),
+    path('sensors/<int:pk>/delete/', views.sensor_delete, name='sensor_delete'),
 ]
