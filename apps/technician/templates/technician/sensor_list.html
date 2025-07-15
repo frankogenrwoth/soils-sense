@@ -1,0 +1,35 @@
+{% extends 'technician/base.html' %}
+{% block content %}
+<h2>Sensors</h2>
+<a href="{% url 'technician:sensor_add' %}" class="btn btn-primary mb-3">Add New Sensor</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Sensor ID</th>
+      <th>Farm</th>
+      <th>Description</th>
+      <th>Active</th>
+      <th>Installed At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sensor in sensors %}
+    <tr>
+      <td>{{ sensor.sensor_id }}</td>
+      <td>{{ sensor.farm.farm_name }}</td>
+      <td>{{ sensor.description|default:"-" }}</td>
+      <td>{{ sensor.is_active|yesno:"Yes,No" }}</td>
+      <td>{{ sensor.installed_at|date:"Y-m-d H:i" }}</td>
+      <td>
+        <a href="{% url 'technician:sensor_edit' sensor.pk %}" class="btn btn-sm btn-warning">Edit</a>
+        <a href="{% url 'technician:sensor_delete' sensor.pk %}" class="btn btn-sm btn-danger">Delete</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No sensors found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
