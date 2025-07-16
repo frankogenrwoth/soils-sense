@@ -24,7 +24,7 @@ class MLEngine:
         self.data_processor = DataProcessor()
 
     def train_soil_moisture_predictor(
-        self, custom_data: pd.DataFrame | None = None
+        self, custom_data: pd.DataFrame | None = None, version: int | None = None
     ) -> dict:
         """Train soil moisture prediction model
 
@@ -35,11 +35,11 @@ class MLEngine:
             dict: Training results
         """
         return self.trainer.train_model(
-            "soil_moisture_predictor", custom_data=custom_data
+            "soil_moisture_predictor", custom_data=custom_data, version=version
         )
 
     def train_irrigation_recommender(
-        self, custom_data: pd.DataFrame | None = None
+        self, custom_data: pd.DataFrame | None = None, version: int | None = None
     ) -> dict:
         """Train irrigation recommendation model
 
@@ -50,7 +50,7 @@ class MLEngine:
             dict: Training results
         """
         return self.trainer.train_model(
-            "irrigation_recommendation", custom_data=custom_data
+            "irrigation_recommendation", custom_data=custom_data, version=version
         )
 
     def train_all_models(self, custom_data: pd.DataFrame | None = None) -> dict:

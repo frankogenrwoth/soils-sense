@@ -42,6 +42,7 @@ class ModelTrainer:
         model_type,
         algorithm=None,
         custom_data=None,
+        version=None,
     ):
         """Train a regression model for the specified type
 
@@ -49,7 +50,7 @@ class ModelTrainer:
             model_type (str): Type of model to train (e.g., 'soil_moisture_predictor')
             algorithm (str, optional): Algorithm to use (e.g., 'random_forest', 'gradient_boosting')
             custom_data (pandas.DataFrame, optional): Custom training data
-
+            version (int, optional): Version of the model to train
         Returns:
             tuple: (dict, dict or None) - Training results and inspection findings
         """
@@ -160,7 +161,7 @@ class ModelTrainer:
         # save training results to training_logs
         self.training_results[model_key]["training_logs"] = self.data_processor.training_logs
 
-        self._save_model(model_key, model, preprocessor)
+        self._save_model(model_key, model, preprocessor, version)
 
         print(f"Training Results for {model_type} ({algorithm}) - {task_type.upper()}:")
         if task_type == "classification":
@@ -214,7 +215,7 @@ class ModelTrainer:
             else:
                 raise ValueError(f"Unknown regression algorithm: {algorithm}")
 
-    def _save_model(self, model_key, model, preprocessor):
+    def _save_model(self, model_key, model, preprocessor, version):
         """Save trained model and preprocessor to file
 
         Args:
@@ -222,13 +223,25 @@ class ModelTrainer:
             model: Trained model instance
             preprocessor: Fitted preprocessor
         """
-        model_path = MODELS_DIR / f"{model_key}.joblib"
+        if version is None:
+            model_path = MODELS_DIR / f"{model_key}.joblib"
+        else:
+            model_path = MODELS_DIR / f"{model_key}_version_{version}.joblib"
+
         joblib.dump(model, model_path)
 
-        preprocessor_path = MODELS_DIR / f"{model_key}_preprocessor.joblib"
+        if version is None:
+            preprocessor_path = MODELS_DIR / f"{model_key}_preprocessor.joblib"
+        else:
+            preprocessor_path = MODELS_DIR / f"{model_key}_version_{version}_preprocessor.joblib"
+
         joblib.dump(preprocessor, preprocessor_path)
 
-        results_path = MODELS_DIR / f"{model_key}_results.json"
+        if version is None:
+            results_path = MODELS_DIR / f"{model_key}_results.json"
+        else:
+            results_path = MODELS_DIR / f"{model_key}_version_{version}_results.json"
+
         with open(results_path, "w") as f:
             json.dump(self.training_results[model_key], f, indent=2, default=str)
 
