@@ -123,7 +123,16 @@
                     <h1 class="text-2xl font-bold text-gray-900">{% block page_title %}{% endblock %}</h1>
                     <p class="text-gray-600">{% block page_subtitle %}{% endblock %}</p>
                 </div>
-                {% block header_actions %}{% endblock %}
+                <div class="flex items-center gap-4">
+                    <!-- Notification Bell -->
+                    <a href="{% url 'farmer:notifications' %}" class="relative inline-flex items-center justify-center">
+                        <i class="fas fa-bell text-2xl text-gray-600 hover:text-primary transition-colors"></i>
+                        <span id="notification-count" 
+                              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 font-bold"
+                              style="display: none;">0</span>
+                    </a>
+                    {% block header_actions %}{% endblock %}
+                </div>
             </div>
         </header>
 
@@ -160,6 +169,26 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {% block extra_js %}{% endblock %}
+<script>
+// Check for new notifications every 30 seconds
+function checkNotifications() {
+    fetch('/farmer/notifications/unread-count/')
+        .then(response => response.json())
+        .then(data => {
+            const countElement = document.getElementById('notification-count');
+            if (countElement) {
+                countElement.textContent = data.count;
+                countElement.style.display = data.count > 0 ? 'block' : 'none';
+            }
+        });
+}
+
+// Initial check
+document.addEventListener('DOMContentLoaded', checkNotifications);
+
+// Check every 30 seconds
+setInterval(checkNotifications, 30000);
+</script>
 </body>
 </html>
 

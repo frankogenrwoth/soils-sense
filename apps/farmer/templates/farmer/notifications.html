@@ -1,0 +1,84 @@
+{% extends 'farmer/base.html' %}
+
+{% block base_title %}Notifications{% endblock %}
+
+{% block page_title %}Notifications{% endblock %}
+{% block page_subtitle %}Your notifications and alerts{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if notifications %}
+        <div class="space-y-4">
+            {% for notification in notifications %}
+                <div class="bg-white p-6 rounded-lg shadow-md 
+                    {% if notification.notification_type == 'warning' %}
+                        border-l-4 border-red-500
+                    {% elif not notification.is_read %}
+                        border-l-4 border-green-500
+                    {% endif %}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <!-- Notification Icon and Type -->
+                            <div class="flex items-center gap-3 mb-3">
+                                {% if notification.notification_type == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                                    <span class="text-red-500 font-semibold">Warning</span>
+                                {% else %}
+                                    <i class="fas fa-chart-line text-green-500 text-xl"></i>
+                                    <span class="text-green-500 font-semibold">Prediction</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Message Content -->
+                            <div class="whitespace-pre-line text-gray-800">{{ notification.message }}</div>
+                            
+                            <!-- Timestamp -->
+                            <div class="mt-3 text-sm text-gray-500">
+                                {{ notification.created_at|date:"M d, Y H:i" }}
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col gap-2">
+                            {% if not notification.is_read %}
+                                <a href="{% url 'farmer:mark_notification_read' notification.id %}" 
+                                   class="text-sm text-green-600 hover:text-green-800 flex items-center gap-2">
+                                    <i class="fas fa-check"></i>
+                                    Mark as read
+                                </a>
+                            {% endif %}
+                            <form method="post" action="{% url 'farmer:delete_notification' notification.id %}" 
+                                  onsubmit="return confirm('Are you sure you want to delete this notification?')" 
+                                  style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" 
+                                        class="text-sm text-red-600 hover:text-red-800 flex items-center gap-2">
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-8">
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <i class="fas fa-bell-slash text-gray-400 text-4xl mb-4"></i>
+                <p class="text-gray-600">No notifications yet.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

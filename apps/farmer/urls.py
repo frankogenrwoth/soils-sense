@@ -27,4 +27,10 @@ urlpatterns = [
     path('soil-data/filter/', views.filter_soil_data, name='filter_soil_data'),
     path('soil-data/delete/<int:reading_id>/', views.delete_reading, name='delete_reading'),
     path('download-csv-template/', views.download_csv_template, name='download_csv_template'),
+
+    # Notification URLs
+    path('notifications/', views.notifications, name='notifications'),
+    path('notifications/mark-read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/unread-count/', views.get_unread_count, name='unread_count'),
+    path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
 ] 
