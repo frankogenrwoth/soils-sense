@@ -21,6 +21,8 @@ from django.utils import timezone
 import os
 from django.conf import settings
 
+from .utils import farmer_role_required
+
 def farmer_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -30,7 +32,7 @@ def farmer_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-@login_required
+@farmer_role_required
 def dashboard(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -136,7 +138,7 @@ def dashboard(request):
     
     return render(request, 'farmer/dashboard.html', context)
 
-@login_required
+@farmer_role_required
 def profile(request):
     if request.method == 'POST':
         if 'update_profile' in request.POST:
@@ -188,7 +190,7 @@ def profile(request):
     }
     return render(request, 'farmer/profile.html', context)
 
-@login_required
+@farmer_role_required
 def farm_management(request):
     farms = Farm.objects.filter(user=request.user)
     crops = Crop.objects.filter(farm__user=request.user)
@@ -200,7 +202,7 @@ def farm_management(request):
     return render(request, 'farmer/farm_management.html', context)
 
 @require_http_methods(["POST"])
-@login_required
+@farmer_role_required
 def add_farm(request):
     try:
         farm = Farm.objects.create(
@@ -220,7 +222,7 @@ def add_farm(request):
         return redirect('farmer:farm_management')
 
 @require_http_methods(["POST"])
-@login_required
+@farmer_role_required
 def add_crop(request):
     try:
         farm = Farm.objects.get(id=request.POST.get('farm'), user=request.user)
@@ -246,7 +248,7 @@ def add_crop(request):
         messages.error(request, str(e))
         return redirect('farmer:farm_management')
 
-@login_required
+@farmer_role_required
 def analytics(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -386,7 +388,7 @@ def analytics(request):
     return render(request, 'farmer/analytics.html', context)
 
 
-@login_required
+@farmer_role_required
 def recommendations(request):
     # Get user's farms
     farms = Farm.objects.filter(user=request.user)
@@ -519,7 +521,7 @@ def recommendations(request):
 
 #Predictions here
 
-@login_required
+@farmer_role_required
 def predictions(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -632,7 +634,7 @@ def predictions(request):
     }
     return render(request, 'farmer/predictions.html', context)
 
-@login_required
+@farmer_role_required
 def download_predictions_csv(request):
     import csv
     from django.http import HttpResponse
@@ -668,7 +670,7 @@ def download_predictions_csv(request):
         ])
     return response
 
-@login_required
+@farmer_role_required
 def get_latest_readings(request, farm_id):
     try:
         # Get the farm and verify ownership
@@ -704,7 +706,7 @@ def get_latest_readings(request, farm_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 def soil_data_management(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -732,7 +734,7 @@ def soil_data_management(request):
     }
     return render(request, 'farmer/soil_data_management.html', context)
 
-@login_required
+@farmer_role_required
 @require_POST
 def add_soil_reading(request):
     try:
@@ -762,7 +764,7 @@ def add_soil_reading(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_reading(request, reading_id):
@@ -791,7 +793,7 @@ def delete_reading(request, reading_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_farm(request, farm_id):
@@ -816,7 +818,7 @@ def delete_farm(request, farm_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_crop(request, crop_id):
@@ -841,7 +843,7 @@ def delete_crop(request, crop_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 def download_csv_template(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="soil_moisture_template.csv"'
@@ -853,7 +855,7 @@ def download_csv_template(request):
     
     return response
 
-@login_required
+@farmer_role_required
 def upload_soil_data(request):
     if request.method == 'POST':
         try:
@@ -943,7 +945,7 @@ def upload_soil_data(request):
     
     return redirect('farmer:soil_data_management')
 
-@login_required
+@farmer_role_required
 def filter_soil_data(request):
     try:
         farm_id = request.GET.get('farm')
@@ -975,7 +977,7 @@ def filter_soil_data(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_prediction(request, prediction_id):
@@ -987,7 +989,7 @@ def delete_prediction(request, prediction_id):
         messages.error(request, f'Error deleting prediction: {str(e)}')
     return redirect('farmer:predictions')
 
-@login_required
+@farmer_role_required
 def download_prediction_pdf(request, prediction_id):
     try:
         from reportlab.lib import colors
@@ -1179,26 +1181,26 @@ def download_prediction_pdf(request, prediction_id):
         messages.error(request, f'Error generating PDF: {str(e)}')
         return redirect('farmer:predictions')
 
-@login_required
+@farmer_role_required
 def notifications(request):
     notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'farmer/notifications.html', {
         'notifications': notifications
     })
 
-@login_required
+@farmer_role_required
 def mark_notification_read(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id, user=request.user)
     notification.is_read = True
     notification.save()
     return redirect('farmer:notifications')
 
-@login_required
+@farmer_role_required
 def get_unread_count(request):
     count = Notification.objects.filter(user=request.user, is_read=False).count()
     return JsonResponse({'count': count})
 
-@login_required
+@farmer_role_required
 @require_http_methods(["POST", "GET"])
 def delete_notification(request, notification_id):
     try:
