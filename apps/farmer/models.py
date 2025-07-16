@@ -129,13 +129,13 @@ class Alert(models.Model):
         ('critical', 'Critical'),
     ]
 
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='alerts')
-    alert_type = models.CharField(max_length=50, choices=ALERT_TYPES)
-    severity = models.CharField(max_length=20, choices=SEVERITY_LEVELS)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
-    is_resolved = models.BooleanField(default=False)
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='alerts', null=True, blank=True)  # Made nullable
+    alert_type = models.CharField(max_length=50, choices=ALERT_TYPES, default='system_error')
+    severity = models.CharField(max_length=20, choices=SEVERITY_LEVELS, default='info')  # Added default
+    message = models.TextField()  # Previously 'description'
+    timestamp = models.DateTimeField(auto_now_add=True)  # Previously 'created_at'
+    is_read = models.BooleanField(default=False)  # Previously 'read'
+    is_resolved = models.BooleanField(default=False)  # New field
     resolved_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
