@@ -1,5 +1,7 @@
 {% extends 'administrator/base.html' %}
 
+{% load administrator %}
+
 {% block header_title %}ML Model Management{% endblock %}
 
 {% block breadcrumb %}
@@ -44,8 +46,8 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for model in user_models %}
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_type }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_type|clean_ml_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm|clean_ml_name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.n_samples }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.training_time }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -91,8 +93,8 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for model in standard_models %}
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_type }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.model_type|clean_ml_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.algorithm|clean_ml_name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.n_samples }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">
                             {% if model.model_type == "soil_moisture_predictor" %}

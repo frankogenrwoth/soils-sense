@@ -48,11 +48,11 @@ def round_number(value, decimal_places=2):
         return value
 
 @register.filter(name="is_inbuilt")
-def is_inbuilt(model_type, algorithm):
+def is_inbuilt(model_type):
     """
     Check if the model is inbuilt. i.e. has version numbers to indicate it is a version of an inbuilt model.
      - inbuilt models don't have a version number.
-    Usage: {{ model_type|isInbuilt:algorithm }}
+    Usage: {{ model_type|is_inbuilt }}
     """
     if model_type.find("version") != -1:
         return True
