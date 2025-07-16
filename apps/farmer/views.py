@@ -8,7 +8,7 @@ from authentication.models import Role
 from django.core.exceptions import PermissionDenied
 from .models import (
     Farm, Crop, SoilMoistureReading, 
-    WeatherData, IrrigationEvent, Alert, PredictionResult
+    WeatherData, IrrigationEvent, Alert, PredictionResult, Notification
 )
 from django.db.models import Avg
 from datetime import datetime, timedelta
@@ -1178,3 +1178,33 @@ def download_prediction_pdf(request, prediction_id):
     except Exception as e:
         messages.error(request, f'Error generating PDF: {str(e)}')
         return redirect('farmer:predictions')
+
+@login_required
+def notifications(request):
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'farmer/notifications.html', {
+        'notifications': notifications
+    })
+
+@login_required
+def mark_notification_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.is_read = True
+    notification.save()
+    return redirect('farmer:notifications')
+
+@login_required
+def get_unread_count(request):
+    count = Notification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({'count': count})
+
+@login_required
+@require_http_methods(["POST", "GET"])
+def delete_notification(request, notification_id):
+    try:
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.delete()
+        messages.success(request, 'Notification deleted successfully')
+    except Exception as e:
+        messages.error(request, f'Error deleting notification: {str(e)}')
+    return redirect('farmer:notifications')
