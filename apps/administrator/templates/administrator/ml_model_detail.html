@@ -24,15 +24,17 @@
 
 {% block header_content %}
 <div class="mb-8">
-    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type }} - {{ model.algorithm }}</h2>
-    <p class="text-gray-500">Detailed information about {{ model.model_type }} performance and characteristics. <br> This model was trained on {{ model.n_samples }} samples and took {{ model.training_time|floatformat:2 }} seconds to train.</p>
+    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} - {{ model.algorithm|clean_ml_name }}</h2>
+    <p class="text-gray-500">Detailed information about {{ model.model_type }} performance and characteristics. This model was trained on {{ model.n_samples }} samples and took {{ model.training_time|floatformat:2 }} seconds to train.</p>
 </div>
 {% endblock %}
 
 {% block header_tools %}
+{% if model.model_type|is_inbuilt:model.algorithm %}
 <div class="flex justify-end mb-4">
     <button onclick="openUploadModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload Dataset</button>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block content %}
