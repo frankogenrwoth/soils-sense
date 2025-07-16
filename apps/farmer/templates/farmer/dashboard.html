@@ -66,6 +66,25 @@
         </div>
     </div>
 
+    <!-- Moisture Alerts Card -->
+    {% if unread_moisture_alerts and unread_moisture_alerts.count > 0 %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-6">
+        <div class="flex items-center mb-2">
+            <i class="fas fa-exclamation-circle text-yellow-500 text-2xl mr-3"></i>
+            <span class="font-semibold">Soil Moisture Alerts</span>
+        </div>
+        <ul class="list-disc list-inside ml-6">
+            {% for alert in unread_moisture_alerts %}
+            <li class="mb-1">
+                <span class="font-bold">{% if alert.alert_type == 'low_moisture' %}Low Moisture{% elif alert.alert_type == 'high_moisture' %}High Moisture{% endif %}:</span>
+                {{ alert.message }}
+                <span class="text-xs text-gray-500">({{ alert.timestamp|date:'M d, Y H:i' }})</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     <!-- Soil Moisture Prediction System Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- About the System -->

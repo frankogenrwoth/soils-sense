@@ -145,7 +145,7 @@ class Alert(models.Model):
 
     def __str__(self):
         return f"{self.farm.farm_name} - {self.alert_type} - {self.timestamp}"
-
+    
 class PredictionResult(models.Model):
     farm = models.ForeignKey('Farm', on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)

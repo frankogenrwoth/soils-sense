@@ -105,6 +105,15 @@ def dashboard(request):
         temperature = 0
         humidity = 0
 
+    # New: Get all unread/critical alerts for the selected farm
+    critical_alerts = Alert.objects.filter(farm=selected_farm, is_read=False, severity='critical')
+    # New: Get unread soil moisture alerts for the selected farm
+    unread_moisture_alerts = Alert.objects.filter(
+        farm=selected_farm,
+        is_read=False,
+        alert_type__in=['low_moisture', 'high_moisture']
+    ).order_by('-timestamp')
+
     context = {
         'farms': farms,
         'selected_farm': selected_farm,
@@ -121,6 +130,8 @@ def dashboard(request):
         'prediction_available': False,
         'moisture_predictions': [],
         'recommendation': None,
+        'critical_alerts': critical_alerts,
+        'unread_moisture_alerts': unread_moisture_alerts,
     }
     
     return render(request, 'farmer/dashboard.html', context)
@@ -239,6 +250,11 @@ def add_crop(request):
 def analytics(request):
     farms = Farm.objects.filter(user=request.user)
     
+    # Ensure these are always defined
+    current_predicted_moisture = None
+    current_actual_moisture = None
+    latest_reading = None
+    
     # Get selected farm and time range
     farm_id = request.GET.get('farm_id')
     time_range = int(request.GET.get('time_range', 7))  # Default to 7 days
@@ -271,8 +287,10 @@ def analytics(request):
     actual_values = []
     predicted_values = []
     correlation_data = []
+    temperature_values = []  # New
+    humidity_values = []     # New
     
-    # Process readings and generate predictions
+    # Process readings and generate predictions (historical)
     for reading in readings:
         try:
             # Get actual reading
@@ -303,6 +321,9 @@ def analytics(request):
                 
             # Add date
             dates.append(reading.timestamp.strftime('%Y-%m-%d'))
+            # Add temp/humidity
+            temperature_values.append(float(reading.temperature_celsius))
+            humidity_values.append(float(reading.humidity_percent))
             
             # Add correlation data point if both values exist
             if reading.temperature_celsius is not None and prediction_result.get('success'):
@@ -353,7 +374,13 @@ def analytics(request):
         'dates': json.dumps(dates),
         'actual_values': json.dumps(actual_values),
         'predicted_values': json.dumps(predicted_values),
-        'correlation_data': json.dumps(correlation_data)
+        'correlation_data': json.dumps(correlation_data),
+        'temperature_values': json.dumps(temperature_values),  # New
+        'humidity_values': json.dumps(humidity_values),        # New
+        # Hybrid: current prediction
+        'current_predicted_moisture': current_predicted_moisture,
+        'current_actual_moisture': current_actual_moisture,
+        'latest_reading': latest_reading,
     }
     
     return render(request, 'farmer/analytics.html', context)
@@ -561,8 +588,32 @@ def predictions(request):
                 soil_moisture_result=soil_moisture_value,
                 irrigation_result=irrigation_recommendation,
                 algorithm=algorithm,
-                algorithm_irr=algorithm_irr
+                algorithm_irr=algorithm_irr,
             )
+
+            # --- ALERT LOGIC ---
+            from apps.farmer.models import Alert
+            alert_type = None
+            severity = None
+            alert_message = None
+            if soil_moisture_value < 30:
+                alert_type = 'low_moisture'
+                severity = 'warning'
+                alert_message = f"Predicted soil moisture is low ({soil_moisture_value:.1f}%) on {prediction.created_at.strftime('%Y-%m-%d %H:%M')}. Immediate attention recommended."
+            elif soil_moisture_value > 70:
+                alert_type = 'high_moisture'
+                severity = 'warning'
+                alert_message = f"Predicted soil moisture is high ({soil_moisture_value:.1f}%) on {prediction.created_at.strftime('%Y-%m-%d %H:%M')}. Monitor for possible overwatering."
+            # Only create alert if needed and not already present for this farm/date/type
+            if alert_type and not Alert.objects.filter(farm=farm, alert_type=alert_type, timestamp__date=prediction.created_at.date()).exists():
+                Alert.objects.create(
+                    farm=farm,
+                    alert_type=alert_type,
+                    severity=severity,
+                    message=alert_message,
+                    is_read=False,
+                    is_resolved=False
+                )
             
             messages.success(request, 'Prediction created successfully!')
             return redirect('farmer:predictions')
