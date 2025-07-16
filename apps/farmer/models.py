@@ -56,6 +56,7 @@ class SoilMoistureReading(models.Model):
         ('csv_upload', 'CSV Upload'),
         ('prediction', 'ML Prediction')
     ], default='manual_input')
+    irrigation_action = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ['-timestamp']
