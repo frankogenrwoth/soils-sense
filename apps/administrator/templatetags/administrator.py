@@ -46,3 +46,23 @@ def round_number(value, decimal_places=2):
         return round(float(value), decimal_places)
     except (ValueError, TypeError):
         return value
+
+@register.filter(name="is_inbuilt")
+def is_inbuilt(model_type):
+    """
+    Check if the model is inbuilt. i.e. has version numbers to indicate it is a version of an inbuilt model.
+     - inbuilt models don't have a version number.
+    Usage: {{ model_type|is_inbuilt }}
+    """
+    if model_type.find("version") != -1:
+        return True
+    else:
+        return False
+
+@register.filter(name="clean_ml_name")
+def clean_ml_name(value):
+    """
+    Clean the model name to remove underscores and capitalize the first letter.
+    Usage: {{ model_type|clean_ml_name }}
+    """
+    return value.replace("_", " ").title()
