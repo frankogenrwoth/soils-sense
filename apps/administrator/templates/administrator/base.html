@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,14 +24,17 @@
     </script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-100 min-h-screen flex">
+<body class="bg-gray-100 h-screen flex">
     <!-- Sidebar -->
     <aside class="w-64 bg-gray-50 text-gray-900 flex flex-col min-h-screen shadow-lg">
         <div class="flex items-center px-6 py-6 space-x-3">
-            {% comment %} <div class="bg-white rounded-full p-2 shadow">
-                <i class="fas fa-solid fa-user_tie text-green-600 text-2xl hidden"></i>
-            </div> {% endcomment %}
-            <span class="font-extrabold text-xl text-green-700 tracking-wide">SoilSense Admin</span>
+            <div class="bg-white rounded-full p-2 shadow">
+                <img src="{% static 'images/logo.png' %}" alt="SoilSense Logo" class="w-10 h-10">
+            </div>
+            <div class="">
+                <span class="font-extrabold text-xl text-green-700 tracking-wide">SoilSense</span>
+                <span class="font-extrabold text-sm tracking-wide">Admin</span>
+            </div>
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
             <a href="{% url 'administrator:dashboard' %}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition">
@@ -63,10 +67,9 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-h-screen">
-        <!-- Optional: Top Navbar -->
+    <div class="flex-1 flex flex-col min-h-screen overflow-auto">
         <main class="flex-1 p-8">
-            <!-- Breadcrumb Navigation -->
+            <!-- Breadcrumb Navigation -->  
             <nav class="flex mb-6 text-sm text-gray-600" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
                     <li class="inline-flex items-center">

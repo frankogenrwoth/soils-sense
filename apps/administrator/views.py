@@ -15,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from ml import MLEngine
 from .forms import UserForm
 from .models import Model
+from authentication.models import Role
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -36,7 +37,7 @@ class UserManagementView(View):
     form_class = UserForm
 
     def get(self, request):
-        users = User.objects.all()
+        users = User.objects.all().exclude(role=Role.ADMINISTRATOR)
         form = self.form_class()
 
         context = {

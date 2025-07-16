@@ -40,6 +40,7 @@ class LoginView(View):
             user = authenticate(request, username=username, password=password)
 
             next_url = request.GET.get("next")
+            
             if next_url and next_url != "/authentication/login/":
                 return redirect(next_url)
 

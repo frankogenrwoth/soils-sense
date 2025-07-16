@@ -5,14 +5,22 @@
 
 {% block content %}
 <!-- ✅ HERO SECTION -->
-<section class="relative h-screen">
-    <img id="bg-slider-img" src="{% static 'images/slide1.jpg' %}" alt="Slider"
-         class="w-full h-full object-cover absolute top-0 left-0 z-0 opacity-100" />
-    <div class="absolute inset-0 bg-black bg-opacity-50 z-10 flex flex-col items-center justify-center text-white text-center">
-        <h1 class="text-5xl font-bold drop-shadow">Monitor Your Soil in Real Time</h1>
-        <p class="text-xl mt-4 drop-shadow">Smart farming starts with smart data</p>
-        <a href="{% url 'authentication:signup' %}" class="mt-6 bg-white text-gray-800 font-semibold px-6 py-2 rounded shadow hover:bg-green-100">Get Started</a>
-    </div>
+<section class="relative h-screen flex items-center justify-center">
+  <img id="bg-slider-img" src="{% static 'images/slide1.jpg' %}" class="absolute w-full h-full object-cover z-0 transition-opacity duration-700" />
+  <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-green-900/40 z-10 flex flex-col items-center justify-center text-white text-center">
+    <h1 class="text-5xl md:text-6xl font-extrabold drop-shadow animate-fade-in">
+      Grow Smarter. <span class="text-green-300">Harvest Better.</span>
+    </h1>
+    <p class="text-2xl mt-4 font-semibold animate-fade-in delay-200">
+      Real-time soil insights for thriving farms and a greener future.
+    </p>
+    <p class="text-lg mt-2 animate-fade-in delay-400">
+      Empowering farmers, researchers, and agencies with data-driven decisions.
+    </p>
+    <a href="{% url 'authentication:signup' %}" class="mt-6 bg-green-500 text-white font-semibold px-8 py-3 rounded shadow-lg hover:bg-green-600 transition transform hover:scale-105 animate-bounce">
+      Get Started Free
+    </a>
+  </div>
 </section>
 <!-- ✅ FEATURES SECTION -->
 <section id="features" class="py-20 bg-white">
@@ -126,5 +134,30 @@
         </form>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const images = [
+      "{% static 'images/slide1.jpg' %}", // general
+      "{% static 'images/wheat.jpg' %}", // general
+      "{% static 'images/lady.jpg' %}", // lady
+      "{% static 'images/lady3.jpg' %}", // lady
+      "{% static 'images/ladyone.jpg' %}" // lady
+    ];
+    let current = 0;
+    const imgEl = document.getElementById('bg-slider-img');
+
+    setInterval(() => {
+      imgEl.classList.add('opacity-0');
+      setTimeout(() => {
+        current = (current + 1) % images.length;
+        imgEl.src = images[current];
+        imgEl.classList.remove('opacity-0');
+      }, 700);
+    }, 4000);
+  });
+</script>
 {% endblock %}
 
