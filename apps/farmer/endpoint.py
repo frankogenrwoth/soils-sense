@@ -32,6 +32,16 @@ def get_soil_data(request):
     data = request.data
 
     missing_fields = [field for field in required_fields if field not in data]
+
+    farm = get_object_or_404(Farm, id=data["farm_id"])
+    sensor = get_object_or_404(Sensor, id=data["sensor_id"])
+
+    if sensor.farm_id != farm.id:
+        return Response(
+            {"error": "Sensor does not belong to farm"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     if missing_fields:
         return Response(
             {"error": f"Missing required fields: {', '.join(missing_fields)}"},

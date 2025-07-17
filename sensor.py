@@ -36,7 +36,6 @@ def validate_payload(payload: Dict[str, Any]) -> tuple[bool, str]:
     required_fields = [
         "temperature",
         "humidity",
-        "moisture",
         "battery_voltage",
         "farm_id",
         "sensor_id",
@@ -52,7 +51,6 @@ def validate_payload(payload: Dict[str, Any]) -> tuple[bool, str]:
     validations = [
         ("Temperature", payload["temperature"], ranges.temperature),
         ("Humidity", payload["humidity"], ranges.humidity),
-        ("Moisture", payload["moisture"], ranges.moisture),
         ("Battery voltage", payload["battery_voltage"], ranges.battery),
     ]
 
@@ -87,7 +85,6 @@ class SensorState:
         # Start with mid-range values
         self.temperature = (ranges.temperature[0] + ranges.temperature[1]) / 2
         self.humidity = (ranges.humidity[0] + ranges.humidity[1]) / 2
-        self.moisture = (ranges.moisture[0] + ranges.moisture[1]) / 2
         self.battery_voltage = ranges.battery[1]  # Start fully charged
 
     def update(self):
@@ -96,7 +93,6 @@ class SensorState:
         # Small random offset for each value
         self.temperature = self._offset(self.temperature, ranges.temperature, 0.2)
         self.humidity = self._offset(self.humidity, ranges.humidity, 0.5)
-        self.moisture = self._offset(self.moisture, ranges.moisture, 0.5)
         # Simulate battery drain
         self.battery_voltage = self._offset(
             self.battery_voltage, ranges.battery, -0.01, 0.0
@@ -114,22 +110,12 @@ class SensorState:
 
     def get_status(self):
         """Determine status based on moisture (example logic)."""
-        if self.moisture < 20:
-            return "Critical Low"
-        elif self.moisture < 40:
-            return "Dry"
-        elif self.moisture > 80:
-            return "Critical High"
-        elif self.moisture > 60:
-            return "Wet"
-        else:
-            return "Normal"
+        return random.choice(SOIL_STATUS)
 
     def to_payload(self):
         return {
             "temperature": self.temperature,
             "humidity": self.humidity,
-            "moisture": self.moisture,
             "battery_voltage": self.battery_voltage,
             "farm_id": FARM_ID,
             "sensor_id": SENSOR_ID,
