@@ -19,10 +19,10 @@
                         'poppins': ['Poppins', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#10B981',
-                        secondary: '#059669',
-                        accent: '#34D399',
-                        dark: '#1F2937'
+                        primary: '#3B82F6',    // Changed to blue-500
+                        secondary: '#2563EB',   // Changed to blue-600
+                        accent: '#60A5FA',      // Changed to blue-400
+                        dark: '#1E40AF'         // Changed to blue-800
                     }
                 }
             }
@@ -33,11 +33,11 @@
             font-family: 'Poppins', sans-serif;
         }
         .nav-link.active {
-            background-color: #10B981;
+            background-color: #3B82F6;
             color: white;
         }
         .nav-link:hover:not(.active) {
-            background-color: #F3F4F6;
+            background-color: #EFF6FF;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -47,19 +47,19 @@
     <!-- Left Sidebar Navigation -->
     <div class="w-72 bg-white shadow-xl border-r border-gray-100 flex flex-col">
         <!-- Logo Section -->
-        <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-blue-50">
-            <div class="flex items-center space-x-3">
+        <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-sky-50">
+            <a href="{% url 'home' %}" class="flex items-center space-x-3 hover:opacity-90 transition-opacity">
                 <div class="p-2 bg-white rounded-lg shadow-sm">
-                    <i class="fas fa-seedling text-primary text-2xl"></i>
+                    <i class="fas fa-seedling text-blue-500 text-2xl"></i>
                 </div>
-                <span class="text-xl font-bold text-blue-900">Soil Sense</span>
-            </div>
+                <span class="text-xl font-bold text-blue-700">Soil Sense</span>
+            </a>
         </div>
 
         <!-- Navigation Menu -->
         <nav class="flex-1 overflow-y-auto py-6">
             <div class="px-4">
-                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-3">Main Menu</h3>
+                <h3 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-4 px-3">Main Menu</h3>
                 <ul class="space-y-3">
                     <li>
                         <a href="{% url 'farmer:dashboard' %}" 
@@ -138,7 +138,7 @@
         <header class="bg-white shadow-sm border-b border-gray-100 px-8 py-5">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">{% block page_title %}{% endblock %}</h1>
+                    <h1 class="text-2xl font-bold text-blue-800">{% block page_title %}{% endblock %}</h1>
                     <p class="text-gray-600 mt-1">{% block page_subtitle %}{% endblock %}</p>
                 </div>
                 <div class="flex items-center gap-6">
@@ -146,17 +146,17 @@
                     <!-- User Profile -->
                     <div class="flex items-center gap-3 border-l pl-6">
                         <div class="p-2 bg-blue-100 rounded-full">
-                            <i class="fas fa-user text-blue-600"></i>
+                            <i class="fas fa-user text-blue-500"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800">{{ user.get_full_name|default:user.username|default:"Farmer" }}</p>
+                            <p class="text-sm font-semibold text-blue-700">{{ user.get_full_name|default:user.username|default:"Farmer" }}</p>
                         </div>
                     </div>
                     <!-- Notification Bell -->
                     <a href="{% url 'farmer:notifications' %}" class="relative inline-flex items-center justify-center">
-                        <i class="fas fa-bell text-2xl text-gray-600 hover:text-primary transition-colors"></i>
+                        <i class="fas fa-bell text-2xl text-gray-600 hover:text-blue-500 transition-colors"></i>
                         <span id="notification-count" 
-                              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 font-bold"
+                              class="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 font-bold"
                               style="display: none;">0</span>
                     </a>
                     {% block header_actions %}{% endblock %}
