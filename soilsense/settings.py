@@ -87,23 +87,21 @@ WSGI_APPLICATION = "soilsense.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     },
-#     "opt": {
-#         "ENGINE": "django.db.backends"
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.parse(
-        'postgresql://postgres.drdazezbpttffpfiuteh:qa8KR7yMQJNxx35E@aws-0-eu-west-2.pooler.supabase.com:6543/postgres', 
-        conn_max_age=600, 
-        ssl_require=True,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
+    "opt": {"ENGINE": "django.db.backends"},
 }
+
+# DATABASES = {
+#     'default': dj_database_url.parse(
+#         'postgresql://postgres.drdazezbpttffpfiuteh:qa8KR7yMQJNxx35E@aws-0-eu-west-2.pooler.supabase.com:6543/postgres',
+#         conn_max_age=600,
+#         ssl_require=True,
+#     )
+# }
 
 
 # Password validation
@@ -130,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Africa/Kampala'
+TIME_ZONE = "Africa/Kampala"
 USE_TZ = True  # Keep this True to store in UTC but convert to local timezone
 
 USE_TZ = True
