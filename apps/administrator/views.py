@@ -2,6 +2,7 @@ import logging
 import traceback
 import pandas as pd
 from ml.config import MODEL_CONFIGS
+from typing import Literal
 
 from django.shortcuts import render, redirect
 from django.views import View
@@ -18,7 +19,17 @@ from django.views.decorators.csrf import csrf_exempt
 from ml import MLEngine
 from ml.config import MODEL_CONFIGS
 from .forms import UserForm
-from .models import Model
+from .models import Model, Training
+from apps.farmer.models import (
+    Farm,
+    Crop,
+    SoilMoistureReading,
+    WeatherData,
+    IrrigationEvent,
+    PredictionResult,
+    Alert,
+    Notification,
+)
 from authentication.models import Role
 
 logger = logging.getLogger(__name__)
@@ -132,7 +143,61 @@ class DataManagementView(View):
     template_name = "administrator/data_management.html"
 
     def get(self, request):
-        context = {}
+        # Get search parameters
+        search_query = request.GET.get("search", "")
+        data_type = request.GET.get("data_type", "all")
+
+        # Base querysets
+        models = Model.objects.all()
+        datasets = Training.objects.all()
+        farms = Farm.objects.all()
+        crops = Crop.objects.all()
+        soil_moisture_readings = SoilMoistureReading.objects.all()
+        weather_data = WeatherData.objects.all()
+        irrigation_events = IrrigationEvent.objects.all()
+        prediction_results = PredictionResult.objects.all()
+        alerts = Alert.objects.all()
+        notifications = Notification.objects.all()
+
+        # Apply search filters if search query exists
+        if search_query:
+            if data_type == "farms":
+                farms = farms.filter(farm_name__icontains=search_query)
+            elif data_type == "crops":
+                crops = crops.filter(name__icontains=search_query)
+            elif data_type == "soil_moisture":
+                soil_moisture_readings = soil_moisture_readings.filter(
+                    sensor_id__icontains=search_query
+                )
+            elif data_type == "weather":
+                weather_data = weather_data.filter(location__icontains=search_query)
+            elif data_type == "irrigation":
+                irrigation_events = irrigation_events.filter(
+                    farm__farm_name__icontains=search_query
+                )
+            elif data_type == "predictions":
+                prediction_results = prediction_results.filter(
+                    farm__farm_name__icontains=search_query
+                )
+            elif data_type == "alerts":
+                alerts = alerts.filter(message__icontains=search_query)
+            elif data_type == "notifications":
+                notifications = notifications.filter(message__icontains=search_query)
+
+        context = {
+            "models": models,
+            "datasets": datasets,
+            "farms": farms,
+            "crops": crops,
+            "soil_moisture_readings": soil_moisture_readings,
+            "weather_data": weather_data,
+            "irrigation_events": irrigation_events,
+            "prediction_results": prediction_results,
+            "alerts": alerts,
+            "notifications": notifications,
+            "search_query": search_query,
+            "data_type": data_type,
+        }
         return render(request, self.template_name, context=context)
 
 

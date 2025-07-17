@@ -1,4 +1,5 @@
 {% extends 'administrator/base.html' %}
+{% load static %}
 
 {% block header_title %}Data Management{% endblock %}
 
@@ -18,44 +19,377 @@
     <h2 class="text-xl font-semibold text-green-700">Manage Data</h2>
     <p class="text-gray-500">View, add, edit, or remove soil moisture and sensor data.</p>
 </div>
-{% endblock %}
 
-{% block header_tools %}
-<div class="flex justify-end mb-4">
-    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Data</button>
+<!-- Search and Filter Section -->
+<div class="mb-6">
+    <form method="get" class="flex gap-4">
+        <div class="flex-1">
+            <input type="text" name="search" value="{{ search_query }}" 
+                   placeholder="Search..." 
+                   class="w-full px-4 py-2 border rounded-lg">
+        </div>
+        <div class="w-48">
+            <select name="data_type" 
+                    class="w-full px-4 py-2 border rounded-lg rounded-r-none border-none focus:outline-none focus:ring-0">
+                <option value="all" {% if data_type == 'all' %}selected{% endif %}>All Data</option>
+                <option value="farms" {% if data_type == 'farms' %}selected{% endif %}>Farms</option>
+                <option value="soil_moisture" {% if data_type == 'soil_moisture' %}selected{% endif %}>Soil Moisture</option>
+                <option value="weather" {% if data_type == 'weather' %}selected{% endif %}>Weather</option>
+                <option value="irrigation" {% if data_type == 'irrigation' %}selected{% endif %}>Irrigation</option>
+                <option value="predictions" {% if data_type == 'predictions' %}selected{% endif %}>Predictions</option>
+                <option value="alerts" {% if data_type == 'alerts' %}selected{% endif %}>Alerts</option>
+                <option value="notifications" {% if data_type == 'notifications' %}selected{% endif %}>Notifications</option>
+            </select>
+        </div>
+        <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+            Search
+        </button>
+    </form>
 </div>
 {% endblock %}
 
 {% block content %}
+<!-- Farms Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Farms</h3>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Farm</button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="ps-3 pe-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                    <th class="ps-3 pe-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area Size</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Soil Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for farm in farms %}
+                <tr>
+                    <td class="flex items-center gap-2 ps-3 pe-6 py-4 whitespace-nowrap text-gray-500">
+                        <span class="avatar-sm">
+                            <img src="{% if farm.user.image %}{{ farm.user.image.url }}{% else %}{% static 'images/default.webp' %}{% endif %}" 
+                                 alt="Avatar" class="w-8 h-8 rounded-full">
+                        </span>
+                        {{ farm.user.username }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ farm.location }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ farm.area_size }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ farm.soil_type }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:farm_detail' farm.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <span class="font-semibold">No farms found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no farms to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
+<!-- Soil Moisture Readings Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Soil Moisture Readings</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sensor ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reading</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for reading in soil_moisture_readings %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ reading.sensor_id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ reading.farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ reading.moisture_value }}%</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ reading.timestamp }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:soil_moisture_detail' reading.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <span class="font-semibold">No soil moisture readings found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no soil moisture readings to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-
-<div class="bg-white shadow rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">Data List</h3>
+<!-- Weather Data Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Weather Data</h3>
+    </div>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moisture</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Humidity</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rainfall</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                {% for data in weather_data %}
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Field 1</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">2024-05-01</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">23%</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ data.location }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ data.temperature }}°C</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ data.humidity }}%</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ data.rainfall }}mm</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ data.timestamp }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button class="text-blue-600 hover:underline mr-2">Edit</button>
-                        <button class="text-red-600 hover:underline">Delete</button>
+                        <a href="{% url 'administrator:weather_detail' data.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
                     </td>
                 </tr>
-                <!-- More data rows here -->
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <span class="font-semibold">No weather data found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no weather records to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-    <p class="text-gray-400 mt-4">(Data list placeholder)</p>
 </div>
+
+<!-- Irrigation Events Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Irrigation Events</h3>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Irrigation Event</button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Water Amount</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for event in irrigation_events %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ event.farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ event.duration }} minutes</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ event.water_amount }} liters</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ event.start_time }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ event.end_time }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:irrigation_detail' event.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-semibold">No irrigation events found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no irrigation events to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Predictions Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Predictions</h3>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Prediction</button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prediction</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Confidence</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for prediction in prediction_results %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ prediction.farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ prediction.model_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ prediction.prediction_value }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ prediction.confidence }}%</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ prediction.timestamp }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:prediction_detail' prediction.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-semibold">No predictions found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no prediction results to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Alerts Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Alerts</h3>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Alert</button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for alert in alerts %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ alert.alert_type }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ alert.message }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ alert.farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {% if alert.status == 'active' %}bg-red-100 text-red-800
+                            {% elif alert.status == 'resolved' %}bg-green-100 text-green-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ alert.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ alert.created_at }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:alert_detail' alert.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-semibold">No alerts found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no alerts to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Notifications Section -->
+<div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700 uppercase">Notifications</h3>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Notification</button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Read Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for notification in notifications %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ notification.notification_type }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ notification.message }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ notification.user.username }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {% if notification.is_read %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ notification.is_read|yesno:"Read,Unread" }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ notification.created_at }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:notification_detail' notification.id %}" class="text-blue-600 hover:text-blue-800 uppercase">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-gray-400">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-semibold">No notifications found</span>
+                            <span class="text-xs text-gray-400 mt-1">There are currently no notifications to display.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
 {% endblock %}
