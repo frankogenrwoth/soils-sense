@@ -44,7 +44,7 @@ class ModelTrainer:
         custom_data=None,
         version=None,
     ):
-        """Train a regression model for the specified type
+        """Train a regression model for the specified type algorithm and save it with a version number
 
         Args:
             model_type (str): Type of model to train (e.g., 'soil_moisture_predictor')
@@ -63,15 +63,16 @@ class ModelTrainer:
             data = custom_data
 
         # save data inspection findings to training_logs
-        self.data_processor.training_logs["data_inspection"] = self.data_processor.inspect_dataframe(data)
-
+        self.data_processor.training_logs["data_inspection"] = (
+            self.data_processor.inspect_dataframe(data)
+        )
 
         try:
             X_train, X_test, y_train, y_test, feature_names, preprocessor = (
                 self.data_processor.prepare_data(data=data, model_type=model_type)
             )
         except Exception as e:
-            raise
+            raise Exception(f"Error preparing data: {e}")
 
         start_time = time.time()
 
@@ -159,7 +160,9 @@ class ModelTrainer:
             )
 
         # save training results to training_logs
-        self.training_results[model_key]["training_logs"] = self.data_processor.training_logs
+        self.training_results[model_key][
+            "training_logs"
+        ] = self.data_processor.training_logs
 
         self._save_model(model_key, model, preprocessor, version)
 
@@ -233,7 +236,9 @@ class ModelTrainer:
         if version is None:
             preprocessor_path = MODELS_DIR / f"{model_key}_preprocessor.joblib"
         else:
-            preprocessor_path = MODELS_DIR / f"{model_key}_version_{version}_preprocessor.joblib"
+            preprocessor_path = (
+                MODELS_DIR / f"{model_key}_version_{version}_preprocessor.joblib"
+            )
 
         joblib.dump(preprocessor, preprocessor_path)
 
@@ -319,7 +324,9 @@ class ModelTrainer:
         elif MODEL_CONFIGS[model_type]["task_type"] == "classification":
             return list(CLASSIFICATION_ALGORITHMS.keys())
         else:
-            raise ValueError(f"Unknown task type: {MODEL_CONFIGS[model_type]['task_type']}")
+            raise ValueError(
+                f"Unknown task type: {MODEL_CONFIGS[model_type]['task_type']}"
+            )
 
     def get_best_model(self, model_type):
         """Get the best performing model for a specific type

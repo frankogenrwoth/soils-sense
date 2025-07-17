@@ -59,7 +59,7 @@ def clean_ml_name(value):
 def is_inbuilt(value):
     """
     Check if the model is inbuilt. i.e. has version numbers to indicate it is a version of an inbuilt model.
-     - inbuilt models don't have a version number.
+     - inbuilt models have a version number.
     Usage: {{ model_type|is_inbuilt }}  
     """
-    return str(value).find("version") != -1
+    return str(value).find("v0.") != -1

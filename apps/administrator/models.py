@@ -8,14 +8,17 @@ User = get_user_model()
 class Model(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    dataset = models.FileField(upload_to="datasets/")
+    dataset = models.FileField(upload_to="datasets/", null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
     def get_model_name(self):
-        return str(self.name) + "_version_" + str(self.id)
+        return str(self.name) + "_" + str(self.id)
+
+    def get_model_version(self):
+        return f"v0.{self.creator.id}.{self.id}"
 
     def __str__(self):
         return self.get_model_name()

@@ -50,6 +50,17 @@ class MLEngine:
         assert model_type in ["soil_moisture_predictor", "irrigation_recommendation"], "Invalid model type"
         return self.trainer.train_model(model_type, custom_data=custom_data, version=version)
 
+    def predict(self, model_type: Literal["soil_moisture_predictor", "irrigation_recommendation"], data: dict, version: int | None = None) -> dict:
+        """Predict a model
+        
+        Args:
+            model_type (Literal["soil_moisture_predictor", "irrigation_recommendation"]): Type of model to predict
+            data (dict): Data to predict
+            version (int, optional): Version of the model
+        """
+        assert model_type in ["soil_moisture_predictor", "irrigation_recommendation"], "Invalid model type"
+        return self.predictor.predict(model_type, data, version)
+
     def train_irrigation_recommender(
         self, custom_data: pd.DataFrame | None = None, version: int | None = None
     ) -> dict:

@@ -210,14 +210,19 @@ class UploadDatasetView(View):
     def post(self, request):
         dataset = request.FILES.get("dataset")
         model_type = request.POST.get("model_type")
+        algorithm = request.POST.get("algorithm", "random_forest")
 
         try:
             df = self._clean_dataset(request, dataset, model_type)
 
+
+
             if df is None:
                 return redirect("administrator:ml")
 
-            result = ml_engine.train_model(model_type, custom_data=df)
+            model_object = Model.objects.create(creator=request.user, name=f"{model_type}_{algorithm}", dataset=dataset)
+
+            result = ml_engine.train_model(model_type, algorithm=algorithm, custom_data=df, version=model_object.get_model_version())
 
             model_name = result.get("model_name")
             model_version = result.get("version")
