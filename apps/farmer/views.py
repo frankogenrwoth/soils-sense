@@ -518,89 +518,164 @@ def predictions(request):
             farm_id = request.POST.get('farm')
             farm = get_object_or_404(Farm, id=farm_id, user=request.user)
             
-            # Get form data
-            location = request.POST.get('location')
-            temperature = float(request.POST.get('temperature'))
-            humidity = float(request.POST.get('humidity'))
-            battery_voltage = float(request.POST.get('battery_voltage'))
-            algorithm = request.POST.get('algorithm')
-            algorithm_irr = request.POST.get('algorithm_irr')
+            # Check if this is a CSV upload
+            if request.POST.get('upload_type') == 'csv':
+                if 'file' not in request.FILES:
+                    messages.error(request, 'No file was uploaded.')
+                    return redirect('farmer:predictions')
+                
+                csv_file = request.FILES['file']
+                if not csv_file.name.endswith('.csv'):
+                    messages.error(request, 'Please upload a CSV file.')
+                    return redirect('farmer:predictions')
+                
+                try:
+                    # Read CSV file
+                    df = pd.read_csv(csv_file)
+                    required_columns = ['temperature_celsius', 'humidity_percent', 'battery_voltage', 'status']
+                    
+                    # Check for required columns
+                    missing_columns = [col for col in required_columns if col not in df.columns]
+                    if missing_columns:
+                        messages.error(request, f'Missing required columns: {", ".join(missing_columns)}. Please use our template.')
+                        return redirect('farmer:predictions')
+                    
+                    # Initialize predictors
+                    soil_predictor = SoilMoisturePredictor()
+                    irrigation_recommender = IrrigationRecommender()
+                    
+                    # Get algorithms from form
+                    algorithm = request.POST.get('algorithm')
+                    algorithm_irr = request.POST.get('algorithm_irr')
+                    
+                    # Process each row
+                    predictions_created = 0
+                    for _, row in df.iterrows():
+                        try:
+                            # Make soil moisture prediction
+                            soil_moisture_result = soil_predictor.predict_moisture(
+                                sensor_id=str(row.get('sensor_id', 1)),
+                                location=farm.location,
+                                temperature_celsius=float(row['temperature_celsius']),
+                                humidity_percent=float(row['humidity_percent']),
+                                battery_voltage=float(row['battery_voltage']),
+                                status=str(row.get('status', 'Normal')),
+                                irrigation_action=str(row.get('irrigation_action', 'None')),
+                                timestamp=row.get('timestamp', timezone.now().strftime('%Y-%m-%d %H:%M:%S')),
+                                algorithm=algorithm
+                            )
+                            
+                            # Get the predicted soil moisture value
+                            soil_moisture_value = soil_moisture_result['predicted_value'] if isinstance(soil_moisture_result, dict) else soil_moisture_result
+                            
+                            # Get irrigation recommendation
+                            irrigation_result = irrigation_recommender.recommend_irrigation(
+                                soil_moisture_percent=soil_moisture_value,
+                                temperature_celsius=float(row['temperature_celsius']),
+                                humidity_percent=float(row['humidity_percent']),
+                                battery_voltage=float(row['battery_voltage']),
+                                status=str(row.get('status', 'Normal')),
+                                timestamp=row.get('timestamp', timezone.now().strftime('%Y-%m-%d %H:%M:%S')),
+                                algorithm=algorithm_irr
+                            )
+                            
+                            # Get the recommendation value
+                            irrigation_recommendation = irrigation_result['predicted_value'] if isinstance(irrigation_result, dict) else irrigation_result
+                            
+                            # Save prediction
+                            PredictionResult.objects.create(
+                                farm=farm,
+                                location=farm.location,
+                                temperature=float(row['temperature_celsius']),
+                                humidity=float(row['humidity_percent']),
+                                battery_voltage=float(row['battery_voltage']),
+                                soil_moisture_result=soil_moisture_value,
+                                irrigation_result=irrigation_recommendation,
+                                algorithm=algorithm,
+                                algorithm_irr=algorithm_irr,
+                            )
+                            predictions_created += 1
+                            
+                        except Exception as e:
+                            print(f"Error processing row: {str(e)}")
+                            continue
+                    
+                    if predictions_created > 0:
+                        messages.success(request, f'Successfully created {predictions_created} predictions from CSV data!')
+                    else:
+                        messages.warning(request, 'No valid predictions could be created from the CSV data.')
+                    
+                except pd.errors.EmptyDataError:
+                    messages.error(request, 'The uploaded CSV file is empty.')
+                except pd.errors.ParserError:
+                    messages.error(request, 'Error parsing CSV file. Please make sure it is properly formatted.')
+                except Exception as e:
+                    messages.error(request, f'Error processing CSV file: {str(e)}')
+                
+                return redirect('farmer:predictions')
             
-            # Make predictions
-            soil_predictor = SoilMoisturePredictor()
-            irrigation_recommender = IrrigationRecommender()
-            
-            # Get current timestamp
-            current_time = timezone.now()
-            
-            # Predict soil moisture
-            soil_moisture_result = soil_predictor.predict_moisture(
-                sensor_id=1,  # Default sensor ID
-                location=location,
-                temperature_celsius=temperature,
-                humidity_percent=humidity,
-                battery_voltage=battery_voltage,
-                status="Normal",  # Default status
-                irrigation_action="None",  # Default - no irrigation
-                timestamp=current_time,
-                algorithm=algorithm
-            )
-            
-            # Get the predicted value
-            soil_moisture_value = soil_moisture_result['predicted_value'] if isinstance(soil_moisture_result, dict) else soil_moisture_result
-            
-            # Get irrigation recommendation
-            irrigation_result = irrigation_recommender.recommend_irrigation(
-                soil_moisture_percent=soil_moisture_value,
-                temperature_celsius=temperature,
-                humidity_percent=humidity,
-                battery_voltage=battery_voltage,
-                status="Normal",
-                timestamp=current_time,
-                algorithm=algorithm_irr
-            )
-            
-            # Get the recommendation value
-            irrigation_recommendation = irrigation_result['predicted_value'] if isinstance(irrigation_result, dict) else irrigation_result
-            
-            # Save the prediction result
-            prediction = PredictionResult.objects.create(
-                farm=farm,
-                location=location,
-                temperature=temperature,
-                humidity=humidity,
-                battery_voltage=battery_voltage,
-                soil_moisture_result=soil_moisture_value,
-                irrigation_result=irrigation_recommendation,
-                algorithm=algorithm,
-                algorithm_irr=algorithm_irr,
-            )
-
-            # --- ALERT LOGIC ---
-            from apps.farmer.models import Alert
-            alert_type = None
-            severity = None
-            alert_message = None
-            if soil_moisture_value < 30:
-                alert_type = 'low_moisture'
-                severity = 'warning'
-                alert_message = f"Predicted soil moisture is low ({soil_moisture_value:.1f}%) on {prediction.created_at.strftime('%Y-%m-%d %H:%M')}. Immediate attention recommended."
-            elif soil_moisture_value > 70:
-                alert_type = 'high_moisture'
-                severity = 'warning'
-                alert_message = f"Predicted soil moisture is high ({soil_moisture_value:.1f}%) on {prediction.created_at.strftime('%Y-%m-%d %H:%M')}. Monitor for possible overwatering."
-            # Only create alert if needed and not already present for this farm/date/type
-            if alert_type and not Alert.objects.filter(farm=farm, alert_type=alert_type, timestamp__date=prediction.created_at.date()).exists():
-                Alert.objects.create(
-                    farm=farm,
-                    alert_type=alert_type,
-                    severity=severity,
-                    message=alert_message,
-                    is_read=False,
-                    is_resolved=False
+            # Handle manual input
+            else:
+                # Get form data
+                location = request.POST.get('location')
+                temperature = float(request.POST.get('temperature'))
+                humidity = float(request.POST.get('humidity'))
+                battery_voltage = float(request.POST.get('battery_voltage'))
+                algorithm = request.POST.get('algorithm')
+                algorithm_irr = request.POST.get('algorithm_irr')
+                
+                # Make predictions
+                soil_predictor = SoilMoisturePredictor()
+                irrigation_recommender = IrrigationRecommender()
+                
+                # Get current timestamp
+                current_time = timezone.now()
+                
+                # Predict soil moisture
+                soil_moisture_result = soil_predictor.predict_moisture(
+                    sensor_id=1,  # Default sensor ID
+                    location=location,
+                    temperature_celsius=temperature,
+                    humidity_percent=humidity,
+                    battery_voltage=battery_voltage,
+                    status="Normal",  # Default status
+                    irrigation_action="None",  # Default - no irrigation
+                    timestamp=current_time,
+                    algorithm=algorithm
                 )
+                
+                # Get the predicted value
+                soil_moisture_value = soil_moisture_result['predicted_value'] if isinstance(soil_moisture_result, dict) else soil_moisture_result
+                
+                # Get irrigation recommendation
+                irrigation_result = irrigation_recommender.recommend_irrigation(
+                    soil_moisture_percent=soil_moisture_value,
+                    temperature_celsius=temperature,
+                    humidity_percent=humidity,
+                    battery_voltage=battery_voltage,
+                    status="Normal",
+                    timestamp=current_time,
+                    algorithm=algorithm_irr
+                )
+                
+                # Get the recommendation value
+                irrigation_recommendation = irrigation_result['predicted_value'] if isinstance(irrigation_result, dict) else irrigation_result
+                
+                # Save the prediction result
+                prediction = PredictionResult.objects.create(
+                    farm=farm,
+                    location=location,
+                    temperature=temperature,
+                    humidity=humidity,
+                    battery_voltage=battery_voltage,
+                    soil_moisture_result=soil_moisture_value,
+                    irrigation_result=irrigation_recommendation,
+                    algorithm=algorithm,
+                    algorithm_irr=algorithm_irr,
+                )
+
+                messages.success(request, 'Prediction created successfully!')
             
-            messages.success(request, 'Prediction created successfully!')
             return redirect('farmer:predictions')
             
         except Exception as e:
@@ -828,15 +903,81 @@ def delete_crop(request, crop_id):
 
 @farmer_role_required
 def download_csv_template(request):
+    """Download empty CSV template for data upload"""
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="soil_moisture_template.csv"'
     
     writer = csv.writer(response)
     writer.writerow(['sensor_id', 'location', 'temperature_celsius', 'humidity_percent', 'timestamp', 'status', 'battery_voltage'])
-    
     writer.writerow(['SENSOR_1', 'Farm A', '25.3', '65.2', '2024-03-21 14:30:00', 'Normal', '3.62'])
     
     return response
+
+@farmer_role_required
+def download_sensor_data(request):
+    """Download sensor readings as CSV"""
+    try:
+        # Get farm_id from query parameters
+        farm_id = request.GET.get('farm_id')
+        if not farm_id:
+            messages.error(request, 'Please select a farm first')
+            return redirect('farmer:soil_data_management')
+
+        # Verify farm ownership
+        farm = get_object_or_404(Farm, id=farm_id, user=request.user)
+        
+        # Get timeframe from query params (default to last 24 hours)
+        hours = int(request.GET.get('hours', 24))
+        end_time = timezone.now()
+        start_time = end_time - timedelta(hours=hours)
+        
+        # Get readings for the specified farm within the time range
+        readings = SoilMoistureReading.objects.filter(
+            farm=farm,
+            timestamp__gte=start_time,
+            timestamp__lte=end_time
+        ).order_by('timestamp')
+
+        # Create the HttpResponse object with CSV header
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{farm.farm_name}_sensor_data_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+
+        # Create CSV writer
+        writer = csv.writer(response)
+        
+        # Write header
+        writer.writerow([
+            'Timestamp',
+            'Location', 
+            'Temperature (°C)', 
+            'Humidity (%)', 
+            'Soil Moisture (%)',
+            'Battery Voltage (V)',
+            'Status',
+            'Current Action'
+        ])
+
+        # Write data
+        for reading in readings:
+            writer.writerow([
+                reading.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                farm.location,
+                reading.temperature_celsius,
+                reading.humidity_percent,
+                reading.soil_moisture_percent,
+                reading.battery_voltage,
+                reading.status,
+                reading.irrigation_action
+            ])
+
+        return response
+        
+    except ValueError as e:
+        messages.error(request, f'Invalid parameters: {str(e)}')
+        return redirect('farmer:soil_data_management')
+    except Exception as e:
+        messages.error(request, f'Error generating CSV: {str(e)}')
+        return redirect('farmer:soil_data_management')
 
 @farmer_role_required
 def upload_soil_data(request):
@@ -1056,8 +1197,13 @@ def download_prediction_pdf(request, prediction_id):
         # Farmer Information Section
         elements.append(Paragraph('Farmer Information', styles['SubTitle']))
         
+        # Get farmer name or fallback to username
+        farmer_name = farmer.username
+        if farmer.first_name and farmer.last_name:
+            farmer_name = f"{farmer.first_name} {farmer.last_name}"
+        
         farmer_info = [
-            ['Name:', f"{farmer.first_name} {farmer.last_name}"],
+            ['Name:', farmer_name],
             ['Email:', farmer.email],
             ['Farm Name:', prediction.farm.farm_name],
             ['Farm Location:', prediction.farm.location],

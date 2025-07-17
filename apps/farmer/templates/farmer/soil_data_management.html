@@ -168,6 +168,15 @@
         <div class="chart-container">
             <canvas id="sensorChart"></canvas>
         </div>
+        <!-- Download CSV Button -->
+        <div class="flex justify-end mt-4">
+            <a href="#" id="download-csv" 
+               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors opacity-50 cursor-not-allowed"
+               onclick="return false;">
+                <i class="fas fa-file-csv mr-2"></i>
+                Download Sensor Data
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -183,10 +192,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const sensorDataSection = document.getElementById('sensor-data-section');
     const farmLocation = document.getElementById('farm-location');
     const sensorStatus = document.getElementById('sensor-status');
+    const downloadCsvBtn = document.getElementById('download-csv');
     let chart;
     let chartPaused = false;
     let updateInterval;
     let lastReadingTime = null;
+
+    // Update download CSV link based on farm selection
+    function updateDownloadLink() {
+        const farmId = farmSelect.value;
+        if (farmId) {
+            downloadCsvBtn.href = `{% url 'farmer:download_sensor_data' %}?farm_id=${farmId}`;
+            downloadCsvBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            downloadCsvBtn.onclick = null;
+        } else {
+            downloadCsvBtn.href = '#';
+            downloadCsvBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            downloadCsvBtn.onclick = () => false;
+        }
+    }
 
     // Initialize Chart.js
     function initializeChart() {
@@ -372,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Stopped data polling');
             }
         }
+        updateDownloadLink(); // Update download link after farm selection changes
     });
 
     // Handle chart timeframe changes

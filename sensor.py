@@ -79,6 +79,8 @@ def validate_payload(payload: Dict[str, Any]) -> tuple[bool, str]:
 
 class SensorState:
     """Keeps track of the previous sensor values for smooth, uniform changes."""
+    sensor_id: str
+    farm_id: int
 
     def __init__(self):
         ranges = SensorRanges()
@@ -117,8 +119,8 @@ class SensorState:
             "temperature": self.temperature,
             "humidity": self.humidity,
             "battery_voltage": self.battery_voltage,
-            "farm_id": FARM_ID,
-            "sensor_id": SENSOR_ID,
+            "farm_id": self.farm_id,
+            "sensor_id": self.sensor_id,
             "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             "status": self.get_status(),
         }
@@ -131,7 +133,12 @@ def main():
     print("Press Ctrl+C to stop...")
     print("--------------------------------")
 
+    sensor_id = input("Enter sensor ID (default SENSOR_40): ") or SENSOR_ID
+    farm_id = input("Enter farm ID (default 2): ") or FARM_ID
+
     sensor = SensorState()
+    sensor.sensor_id = sensor_id
+    sensor.farm_id = int(farm_id)
 
     try:
         while True:

@@ -235,13 +235,14 @@
                             </a>
                         </div>
 
-                        <form id="csv-upload-form" method="POST" action="{% url 'farmer:upload_soil_data' %}" enctype="multipart/form-data">
+                        <form id="csv-upload-form" method="POST" action="{% url 'farmer:predictions' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="hidden" name="farm" id="csvFarmId">
+                            <input type="hidden" name="upload_type" value="csv">
                             <div class="mb-3">
                                 <label for="file-upload" class="form-label">Choose CSV File</label>
                                 <div class="input-group">
-                                    <input type="file" class="form-control" id="file-upload" name="csv_file" accept=".csv" required>
+                                    <input type="file" class="form-control" id="file-upload" name="file" accept=".csv" required>
                                 </div>
                                 <div class="form-text" id="file-name">No file chosen</div>
                             </div>

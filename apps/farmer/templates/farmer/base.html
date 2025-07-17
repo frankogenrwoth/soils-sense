@@ -72,14 +72,14 @@
                         <a href="{% url 'farmer:farm_management' %}" 
                            class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'farm_management' %}active{% endif %}">
                             <i class="fas fa-tractor w-5 h-5 mr-3 group-hover:text-primary"></i>
-                            <span>Farm Management</span>
+                            <span>Farm Data</span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'farmer:soil_data_management' %}" 
                            class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'soil_data_management' %}active{% endif %}">
                             <i class="fas fa-water w-5 h-5 mr-3 group-hover:text-primary"></i>
-                            <span>Soil Data</span>
+                            <span>Live Data</span>
                         </a>
                     </li>
                 </ul>
@@ -156,7 +156,7 @@
                     <a href="{% url 'farmer:notifications' %}" class="relative inline-flex items-center justify-center">
                         <i class="fas fa-bell text-2xl text-gray-600 hover:text-blue-500 transition-colors"></i>
                         <span id="notification-count" 
-                              class="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 font-bold"
+                              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 font-bold"
                               style="display: none;">0</span>
                     </a>
                     {% block header_actions %}{% endblock %}
