@@ -97,9 +97,17 @@ WSGI_APPLICATION = "soilsense.wsgi.application"
 #     }
 # }
 
+db_host = os.getenv("db_host")
+db_port = os.getenv("db_port")
+db_name = os.getenv("db_name")
+db_user = os.getenv("db_user")
+db_password = os.getenv("db_password")
+
+url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+
 DATABASES = {
     'default': dj_database_url.parse(
-        'postgresql://postgres.drdazezbpttffpfiuteh:qa8KR7yMQJNxx35E@aws-0-eu-west-2.pooler.supabase.com:6543/postgres', 
+        url, 
         conn_max_age=600, 
         ssl_require=True,
     )
