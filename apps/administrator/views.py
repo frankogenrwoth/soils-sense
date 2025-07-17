@@ -152,7 +152,7 @@ class DataManagementView(View):
         datasets = Training.objects.all()
         farms = Farm.objects.all()
         crops = Crop.objects.all()
-        soil_moisture_readings = SoilMoistureReading.objects.all()
+        soil_moisture_readings = SoilMoistureReading.objects.all()[:5]
         weather_data = WeatherData.objects.all()
         irrigation_events = IrrigationEvent.objects.all()
         prediction_results = PredictionResult.objects.all()
