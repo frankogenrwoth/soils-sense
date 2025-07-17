@@ -207,11 +207,17 @@ class DataManagementView(View):
         return render(request, self.template_name, context=context)
 
 
-class ReportManagementView(View):
-    template_name = "administrator/report_management.html"
+class ServerLogView(View):
+    template_name = "administrator/server_log.html"
 
     def get(self, request):
         context = {}
+
+        with open("logs/soilsense.log", "r") as file:
+            log_content = file.read()
+
+        context["log_content"] = "\n".join(log_content.splitlines()[-200:])
+
         return render(request, self.template_name, context=context)
 
 

@@ -6,7 +6,6 @@ from apps.administrator.views import (
     UserUpdateView,
     UserDeleteView,
     DataManagementView,
-    ReportManagementView,
     MLModelManagementView,
     NotificationView,
     SensorView,
@@ -14,6 +13,7 @@ from apps.administrator.views import (
     MLModelDetailView,
     UploadDatasetView,
     PrintReportView,
+    ServerLogView,
 )
 from apps.administrator.data_views import (
     FarmDetailView,
@@ -132,7 +132,9 @@ urlpatterns = [
         name="notification_delete",
     ),
     path(
-        "reports/", admin_role_required(ReportManagementView.as_view()), name="reports"
+        "server-logs/",
+        admin_role_required(ServerLogView.as_view()),
+        name="server_logs",
     ),
     path("ml-models/", admin_role_required(MLModelManagementView.as_view()), name="ml"),
     path(
