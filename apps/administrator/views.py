@@ -3,6 +3,12 @@ import traceback
 import pandas as pd
 from ml.config import MODEL_CONFIGS
 from typing import Literal
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+
 
 from django.shortcuts import render, redirect
 from django.views import View
@@ -278,7 +284,6 @@ class MLModelDetailView(View):
         features = MODEL_CONFIGS.get(model_info.get("model_type"), {}).get(
             "features", []
         )
-        print(features)
         engineered_fields = [
             "hour_of_day",
             "month",
@@ -289,9 +294,7 @@ class MLModelDetailView(View):
         ]
         input_fields = [field for field in features if field not in engineered_fields]
 
-        print(input_fields)
-
-        version_number = model_name.split("_")[-1]
+        version_number = model_name.split("_")[-1] if "v0." in model_name else ""
 
         context = {
             "model": ml_engine.get_model_info(model_name),
@@ -420,3 +423,528 @@ class SensorView(View):
     def get(self, request):
         context = {}
         return render(request, self.template_name, context=context)
+
+
+class PrintReportView(View):
+    def get(self, request, model_name):
+        algorithm = request.GET.get("algorithm", None)
+        version = request.GET.get("version", None)
+
+        if version is None:
+            model_name = f"{model_name}_{algorithm}"
+        else:
+            model_name = f"{model_name}_{algorithm}_version_{version}"
+
+        model_info = ml_engine.get_model_info(model_name)
+
+        buffer = self._generate_pdf(model_info)
+
+        response = HttpResponse(buffer, content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="model_report.pdf"'
+        return response
+
+    def _generate_pdf(self, model_info):
+        """
+        Generate a visually appealing, greyscale PDF report for the given model_info dictionary.
+        Uses PyPDF2 and reportlab for page creation. All content is left-aligned and uses only greyscale.
+        Returns a BytesIO object containing the PDF.
+        """
+        from io import BytesIO
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib.units import inch
+        from reportlab.lib.colors import black, grey, lightgrey, white, HexColor
+        from PyPDF2 import PdfReader, PdfWriter
+
+        # Define a palette of greys for visual appeal
+        GREY_DARK = HexColor("#222222")
+        GREY_MED = HexColor("#888888")
+        GREY_LIGHT = HexColor("#DDDDDD")
+        GREY_TABLE_ALT = HexColor("#F5F5F5")
+
+        buffer = BytesIO()
+        c = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+
+        # Margins and layout
+        left_margin = 0.7 * inch
+        right_margin = 0.7 * inch
+        top_margin = 0.8 * inch
+        bottom_margin = 0.8 * inch
+        usable_width = width - left_margin - right_margin
+
+        y = height - top_margin
+
+        def check_page_break(row_height=0.22 * inch):
+            nonlocal y
+            if y < bottom_margin + row_height:
+                c.showPage()
+                y = height - top_margin
+
+        def add_table_spacing():
+            nonlocal y
+            y -= 0.18 * inch  # Increased spacing between tables
+
+        def draw_title(text):
+            nonlocal y
+            c.setFont("Helvetica-Bold", 20)
+            c.setFillColor(GREY_DARK)
+            c.drawString(left_margin, y, text)
+            y -= 0.45 * inch
+            c.setStrokeColor(GREY_DARK)
+            c.setLineWidth(1.2)
+            c.line(
+                left_margin,
+                y + 0.18 * inch,
+                left_margin + usable_width,
+                y + 0.18 * inch,
+            )
+            y -= 0.08 * inch
+
+        def draw_section_header(text):
+            nonlocal y
+            add_table_spacing()
+            check_page_break(0.3 * inch)
+            c.setFont("Helvetica-Bold", 14)
+            c.setFillColor(GREY_MED)
+            c.drawString(left_margin, y, text)
+            y -= 0.22 * inch
+            c.setStrokeColor(GREY_LIGHT)
+            c.setLineWidth(0.7)
+            c.line(
+                left_margin,
+                y + 0.13 * inch,
+                left_margin + usable_width,
+                y + 0.13 * inch,
+            )
+            y -= 0.06 * inch
+
+        def draw_subheader(text):
+            nonlocal y
+            add_table_spacing()
+            check_page_break(0.18 * inch)
+            c.setFont("Helvetica-Bold", 11)
+            c.setFillColor(GREY_DARK)
+            c.drawString(left_margin, y, text)
+            y -= 0.16 * inch
+
+        def draw_text(text, font="Helvetica", size=10, color=GREY_DARK, spacing=0.18):
+            nonlocal y
+            add_table_spacing()
+            check_page_break(spacing * inch)
+            c.setFont(font, size)
+            c.setFillColor(color)
+            c.drawString(left_margin, y, text)
+            y -= spacing * inch
+
+        def draw_table(data, col_widths, header_grey=True, alt_rows=True, font_size=10):
+            nonlocal y
+            add_table_spacing()
+            row_height = 0.20 * inch
+            table_top = y
+            n_cols = len(col_widths)
+            c.setFont("Helvetica", font_size)
+            for i, row in enumerate(data):
+                check_page_break(row_height)
+                x = left_margin
+                # Header row
+                if i == 0 and header_grey:
+                    c.setFillColor(GREY_LIGHT)
+                    c.rect(
+                        left_margin,
+                        y - 2,
+                        sum(col_widths),
+                        row_height,
+                        fill=1,
+                        stroke=0,
+                    )
+                    c.setFillColor(GREY_DARK)
+                    c.setFont("Helvetica-Bold", font_size)
+                else:
+                    # Alternate row shading for readability
+                    if alt_rows and i % 2 == 1:
+                        c.setFillColor(GREY_TABLE_ALT)
+                        c.rect(
+                            left_margin,
+                            y - 2,
+                            sum(col_widths),
+                            row_height,
+                            fill=1,
+                            stroke=0,
+                        )
+                    c.setFillColor(GREY_DARK)
+                    c.setFont("Helvetica", font_size)
+                for j, cell in enumerate(row):
+                    cell_str = str(cell)
+                    # Truncate if too long
+                    max_chars = int(col_widths[j] // (font_size * 0.5))
+                    if len(cell_str) > max_chars:
+                        cell_str = cell_str[: max_chars - 3] + "..."
+                    c.drawString(x + 4, y, cell_str)
+                    x += col_widths[j]
+                y -= row_height
+                # Draw horizontal line
+                c.setStrokeColor(GREY_LIGHT)
+                c.setLineWidth(0.5)
+                c.line(
+                    left_margin,
+                    y + row_height - 2,
+                    left_margin + sum(col_widths),
+                    y + row_height - 2,
+                )
+            # Draw vertical lines
+            x = left_margin
+            for w in col_widths:
+                c.setStrokeColor(GREY_LIGHT)
+                c.setLineWidth(0.5)
+                c.line(x, table_top, x, y + row_height)
+                x += w
+            c.line(
+                left_margin + sum(col_widths),
+                table_top,
+                left_margin + sum(col_widths),
+                y + row_height,
+            )
+            y -= 0.10 * inch
+
+        # Title
+        title = f"ML Model Report: {model_info.get('model_name', 'Unknown')}"
+        draw_title(title)
+
+        # Section: Model Overview
+        draw_section_header("Model Overview")
+        overview_data = [
+            ["Model Type", model_info.get("model_type", "")],
+            ["Algorithm", model_info.get("algorithm", "")],
+            ["Task Type", model_info.get("task_type", "")],
+            ["Training Time (s)", f"{model_info.get('training_time', 0):.3f}"],
+            ["# Samples", model_info.get("n_samples", "")],
+            ["# Features", model_info.get("n_features", "")],
+        ]
+        draw_table(
+            overview_data,
+            [1.8 * inch, 3.7 * inch],
+            header_grey=True,
+            alt_rows=True,
+            font_size=10,
+        )
+
+        # Section: Feature Names
+        draw_section_header("Feature Names")
+        feature_names = model_info.get("feature_names", [])
+        if feature_names:
+            draw_table(
+                [[f] for f in feature_names],
+                [5.5 * inch],
+                header_grey=False,
+                alt_rows=True,
+                font_size=10,
+            )
+        else:
+            draw_text(
+                "No feature names available.", font="Helvetica-Oblique", color=GREY_MED
+            )
+
+        # Section: Feature Columns
+        draw_section_header("Feature Columns Used")
+        feature_columns = model_info.get("feature_columns", [])
+        if feature_columns:
+            draw_table(
+                [[f] for f in feature_columns],
+                [5.5 * inch],
+                header_grey=False,
+                alt_rows=True,
+                font_size=10,
+            )
+        else:
+            draw_text(
+                "No feature columns available.",
+                font="Helvetica-Oblique",
+                color=GREY_MED,
+            )
+
+        # Section: Model Performance
+        draw_section_header("Model Performance")
+        perf_data = [
+            ["Metric", "Train", "Test"],
+            [
+                "R2",
+                (
+                    f"{model_info.get('train_r2', 'N/A'):.4f}"
+                    if model_info.get("train_r2") is not None
+                    else "N/A"
+                ),
+                (
+                    f"{model_info.get('test_r2', 'N/A'):.4f}"
+                    if model_info.get("test_r2") is not None
+                    else "N/A"
+                ),
+            ],
+            [
+                "RMSE",
+                (
+                    f"{model_info.get('train_rmse', 'N/A'):.4f}"
+                    if model_info.get("train_rmse") is not None
+                    else "N/A"
+                ),
+                (
+                    f"{model_info.get('test_rmse', 'N/A'):.4f}"
+                    if model_info.get("test_rmse") is not None
+                    else "N/A"
+                ),
+            ],
+            [
+                "MAE",
+                (
+                    f"{model_info.get('train_mae', 'N/A'):.4f}"
+                    if model_info.get("train_mae") is not None
+                    else "N/A"
+                ),
+                (
+                    f"{model_info.get('test_mae', 'N/A'):.4f}"
+                    if model_info.get("test_mae") is not None
+                    else "N/A"
+                ),
+            ],
+            [
+                "CV Mean",
+                (
+                    f"{model_info.get('cv_mean', 'N/A'):.4f}"
+                    if model_info.get("cv_mean") is not None
+                    else "N/A"
+                ),
+                "",
+            ],
+            [
+                "CV Std",
+                (
+                    f"{model_info.get('cv_std', 'N/A'):.4f}"
+                    if model_info.get("cv_std") is not None
+                    else "N/A"
+                ),
+                "",
+            ],
+        ]
+        draw_table(
+            perf_data,
+            [1.2 * inch, 1.2 * inch, 1.2 * inch],
+            header_grey=True,
+            alt_rows=True,
+            font_size=10,
+        )
+
+        # Section: Training Logs - Data Inspection
+        training_logs = model_info.get("training_logs", {})
+        data_inspection = training_logs.get("data_inspection", {})
+        if data_inspection:
+            draw_section_header("Training Data Inspection")
+            # Basic info
+            di_data = [
+                ["Rows", data_inspection.get("num_rows", "")],
+                ["Columns", data_inspection.get("num_columns", "")],
+                ["Column Names", ", ".join(data_inspection.get("columns", []))],
+            ]
+            draw_table(
+                di_data,
+                [1.8 * inch, 3.7 * inch],
+                header_grey=True,
+                alt_rows=True,
+                font_size=10,
+            )
+
+            # Dtypes
+            dtypes = data_inspection.get("dtypes", {})
+            if dtypes:
+                draw_subheader("Column Data Types")
+                dtype_table = [["Column", "Type"]] + [[k, v] for k, v in dtypes.items()]
+                draw_table(
+                    dtype_table,
+                    [2.7 * inch, 2.7 * inch],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=10,
+                )
+
+            # Missing values
+            missing = data_inspection.get("missing_values", {})
+            if missing:
+                draw_subheader("Missing Values")
+                missing_table = [["Column", "Missing"]] + [
+                    [k, v] for k, v in missing.items()
+                ]
+                draw_table(
+                    missing_table,
+                    [2.7 * inch, 2.7 * inch],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=10,
+                )
+
+            # Unique values
+            unique = data_inspection.get("unique_values", {})
+            if unique:
+                draw_subheader("Unique Values")
+                unique_table = [["Column", "Unique"]] + [
+                    [k, v] for k, v in unique.items()
+                ]
+                draw_table(
+                    unique_table,
+                    [2.7 * inch, 2.7 * inch],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=10,
+                )
+
+            # Numeric summary
+            numeric_summary = data_inspection.get("numeric_summary", {})
+            if numeric_summary:
+                draw_subheader("Numeric Summary")
+                header = [
+                    "Column",
+                    "Count",
+                    "Mean",
+                    "Std",
+                    "Min",
+                    "25%",
+                    "50%",
+                    "75%",
+                    "Max",
+                ]
+                rows = []
+                for col, stats in numeric_summary.items():
+                    row = [
+                        col,
+                        (
+                            f"{stats.get('count', ''):.2f}"
+                            if stats.get("count") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('mean', ''):.2f}"
+                            if stats.get("mean") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('std', ''):.2f}"
+                            if stats.get("std") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('min', ''):.2f}"
+                            if stats.get("min") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('25%', ''):.2f}"
+                            if stats.get("25%") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('50%', ''):.2f}"
+                            if stats.get("50%") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('75%', ''):.2f}"
+                            if stats.get("75%") is not None
+                            else ""
+                        ),
+                        (
+                            f"{stats.get('max', ''):.2f}"
+                            if stats.get("max") is not None
+                            else ""
+                        ),
+                    ]
+                    rows.append(row)
+                draw_table(
+                    [header] + rows,
+                    [
+                        0.9 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                        0.6 * inch,
+                    ],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=9,
+                )
+
+            # Outliers
+            outliers = data_inspection.get("outliers", {})
+            if outliers:
+                draw_subheader("Outliers Detected")
+                outlier_table = [["Column", "Outliers"]] + [
+                    [k, v] for k, v in outliers.items()
+                ]
+                draw_table(
+                    outlier_table,
+                    [2.7 * inch, 2.7 * inch],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=10,
+                )
+
+            # Duplicates
+            num_duplicates = data_inspection.get("num_duplicates", None)
+            if num_duplicates is not None:
+                draw_text(
+                    f"Number of duplicate rows: {num_duplicates}",
+                    font="Helvetica",
+                    color=GREY_DARK,
+                )
+
+        # Section: Cleaning Report
+        cleaning_report = training_logs.get("cleaning_report", {})
+        if cleaning_report:
+            draw_section_header("Data Cleaning Report")
+            # Duplicates removed
+            if "duplicates_removed" in cleaning_report:
+                draw_text(
+                    f"Duplicates removed: {cleaning_report['duplicates_removed']}",
+                    font="Helvetica",
+                    color=GREY_DARK,
+                )
+            # Outliers capped
+            outliers_capped = cleaning_report.get("outliers_capped", {})
+            if outliers_capped:
+                draw_subheader("Outliers Capped")
+                outcap_table = [["Column", "Capped"]] + [
+                    [k, v] for k, v in outliers_capped.items()
+                ]
+                draw_table(
+                    outcap_table,
+                    [2.7 * inch, 2.7 * inch],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=10,
+                )
+            # Invalid value corrections
+            invalids = cleaning_report.get("invalid_value_corrections", {})
+            if invalids:
+                draw_subheader("Invalid Value Corrections")
+                inv_table = [["Type", "Count"]] + [[k, v] for k, v in invalids.items()]
+                draw_table(
+                    inv_table,
+                    [3.7 * inch, 1.7 * inch],
+                    header_grey=True,
+                    alt_rows=True,
+                    font_size=10,
+                )
+
+        c.save()
+        buffer.seek(0)
+
+        # Use PyPDF2 to read and write the PDF (for demonstration, just pass through)
+        reader = PdfReader(buffer)
+        output_buffer = BytesIO()
+        writer = PdfWriter()
+        for page in reader.pages:
+            writer.add_page(page)
+        writer.write(output_buffer)
+        output_buffer.seek(0)
+        return output_buffer

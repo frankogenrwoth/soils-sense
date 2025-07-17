@@ -13,6 +13,7 @@ from apps.administrator.views import (
     DashboardView,
     MLModelDetailView,
     UploadDatasetView,
+    PrintReportView,
 )
 from apps.administrator.data_views import (
     FarmDetailView,
@@ -150,4 +151,9 @@ urlpatterns = [
         name="notifications",
     ),
     path("sensors/", admin_role_required(SensorView.as_view()), name="sensors"),
+    path(
+        "ml-models/<str:model_name>/print-report/",
+        admin_role_required(PrintReportView.as_view()),
+        name="print_report",
+    ),
 ]
