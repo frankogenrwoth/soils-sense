@@ -228,9 +228,12 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="logo-section">
-                <h5 class="text-white mt-3 mb-1">SoilSense</h5>
-                <p class="text-white-50 small mb-0">Technician Portal</p>
+            <div class="logo-section" style="display: flex; align-items: center; justify-content: flex-start; padding: 20px;">
+                <img src="/static/images/logo.webp" alt="SoilSense Logo" style="width: 40px; height: 40px; margin-right: 12px;">
+                <div>
+                    <h5 class="text-white mb-0">SoilSense</h5>
+                    <p class="text-white-50 small mb-0">Technician Portal</p>
+                </div>
             </div>
             <nav class="nav flex-column flex-grow-1">
                 <a class="nav-link {% if request.path == '/technician/dashboard/' %}active{% endif %}" href="{% url 'technician:dashboard' %}">
