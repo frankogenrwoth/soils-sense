@@ -93,12 +93,18 @@ class TechnicianProfileForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         } 
 
-        from django import forms
-
 class SensorForm(forms.ModelForm):
+    farm = forms.ModelChoiceField(
+        queryset=Farm.objects.filter(user__isnull=False),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Farm'
+    )
+
     class Meta:
         model = Sensor
         fields = ['sensor_id', 'farm', 'description', 'is_active']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 2}),
+            'sensor_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., SOIL_001'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'e.g., North field sensor near irrigation point'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

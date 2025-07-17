@@ -1,0 +1,23 @@
+{
+  "name": "soils-sense",
+  "version": "1.0.0",
+  "description": "**Soil Sense** is an intelligent soil moisture monitoring web application designed to help farmers optimize irrigation practices through real-time data analysis and machine learning predictions. This project serves as the Artificial Intelligence research project for Year 3 students at Makerere University College of Computing and Information Sciences (COCIS).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frankogenrwoth/soils-sense.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/frankogenrwoth/soils-sense/issues"
+  },
+  "homepage": "https://github.com/frankogenrwoth/soils-sense#readme"
+}
