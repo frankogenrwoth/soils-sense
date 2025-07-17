@@ -31,6 +31,38 @@
 {% block content %}
 
 <div class="bg-white shadow rounded-lg p-6 mb-4">
+
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="
+                    px-4 py-3 rounded 
+                    {% if message.tags == 'success' %}
+                        bg-green-100 text-green-800 border border-green-300
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        bg-red-100 text-red-800 border border-red-300
+                    {% elif message.tags == 'warning' %}
+                        bg-yellow-100 text-yellow-800 border border-yellow-300
+                    {% else %}
+                        bg-blue-100 text-blue-800 border border-blue-300
+                    {% endif %}
+                    mb-2 flex items-center gap-2
+                ">
+                    {% if message.tags == 'success' %}
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    {% elif message.tags == 'warning' %}
+                        <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M12 5a7 7 0 100 14 7 7 0 000-14z"/></svg>
+                    {% else %}
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01"/></svg>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <h3 class="text-lg font-semibold text-green-700 mb-4">My models</h3>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -135,7 +167,7 @@
             </button>
         </div>
         <!-- Modal Body -->
-        <form action="{% url 'administrator:upload_dataset' "soil_moisture_predictor" %}" method="POST" enctype="multipart/form-data" class="px-8 py-6">
+        <form action="{% url 'administrator:upload_dataset' %}" method="POST" enctype="multipart/form-data" class="px-8 py-6">
             {% csrf_token %}
             <div class="space-y-6">
                 <!-- File Upload -->
@@ -161,9 +193,9 @@
                                 <path d="M14 14H16V18H14z" fill="#16a34a"/>
                             </svg>
                             <div class="flex text-sm text-gray-600">
-                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600">
                                     <span>Upload a file</span>
-                                    <input id="file-upload" name="dataset" type="file" class="sr-only" accept=".csv,.xlsx">
+                                    <input id="file-upload" name="dataset" type="file" class="sr-only" accept=".csv,.xlsx" required>
                                 </label>
                                 <p class="pl-1">or drag and drop</p>
                             </div>
@@ -172,16 +204,18 @@
                     </div>
                 </div>
 
-                <!-- Training Parameters -->
-                <div>
-                    <div id="algorithm-chips" class="flex flex-wrap gap-2">
-                        {% for algorithm in algorithms %}
-                            <input type="radio" name="algorithm" id="algorithm-{{ forloop.counter }}" value="{{ algorithm }}" class="hidden" {% if forloop.first %}checked{% endif %}>
-                            <label for="algorithm-{{ forloop.counter }}" class="chip cursor-pointer px-4 py-1 rounded-full border border-green-500 text-green-700 bg-white hover:bg-green-100 transition
-                                {% if forloop.first %}chip-selected bg-green-600 text-white border-green-600{% endif %}">
-                                {{ algorithm }}
-                            </label>
-                        {% endfor %}
+                <!-- Model Type Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Model Type</label>
+                    <div id="model-type-chips" class="flex flex-wrap gap-2">
+                        <input type="radio" name="model_type" id="model-type-soil" value="soil_moisture_predictor" class="hidden" checked>
+                        <label id="model-type-chips" for="model-type-soil" class="chip cursor-pointer px-4 py-1 rounded-md border border-green-500 text-green-700 bg-white hover:bg-green-100 transition chip-selected bg-green-600 text-white border-green-600">
+                            Soil Moisture Prediction
+                        </label>
+                        <input type="radio" name="model_type" id="model-type-irrigation" value="irrigation_recommendation" class="hidden">
+                        <label id="model-type-chips" class="chip cursor-pointer px-4 py-1 rounded-md border border-green-500 text-green-700 bg-white hover:bg-green-100 transition">
+                            Irrigation Recommendation
+                        </label>
                     </div>
                 </div>
                 <style>
@@ -190,7 +224,7 @@
                         color: #fff !important;
                         border-color: #16a34a !important;
                     }
-                    #algorithm-chips label.chip {
+                    #model-type-chips label.chip {
                         transition: background 0.2s, color 0.2s, border 0.2s;
                     }
                 </style>
@@ -293,8 +327,8 @@
         }
     }
     document.addEventListener('DOMContentLoaded', function() {
-        const chips = document.querySelectorAll('#algorithm-chips label.chip');
-        const radios = document.querySelectorAll('#algorithm-chips input[type="radio"]');
+        const chips = document.querySelectorAll('#model-type-chips label.chip');
+        const radios = document.querySelectorAll('#model-type-chips input[type="radio"]');
         chips.forEach((chip, idx) => {
             chip.addEventListener('click', function() {
                 chips.forEach(c => c.classList.remove('chip-selected', 'bg-green-600', 'text-white', 'border-green-600'));
