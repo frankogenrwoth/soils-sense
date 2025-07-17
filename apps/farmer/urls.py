@@ -58,6 +58,7 @@ urlpatterns = [
         views.download_csv_template,
         name="download_csv_template",
     ),
+    path('download-sensor-data/', views.download_sensor_data, name='download_sensor_data'),
     # Notification URLs
     path("notifications/", views.notifications, name="notifications"),
     path(
