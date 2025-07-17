@@ -13,6 +13,7 @@ from apps.farmer.models import (
     Alert,
     Notification,
 )
+from apps.technician.models import Sensor
 
 from .data_forms import (
     FarmForm,
@@ -22,6 +23,7 @@ from .data_forms import (
     PredictionResultForm,
     AlertForm,
     NotificationForm,
+    SensorForm,
 )
 
 
@@ -152,3 +154,14 @@ class NotificationDetailView(DataDetailView):
 
 class NotificationDeleteView(DataDeleteView):
     model = Notification
+
+
+class SensorDetailView(DataDetailView):
+    model = Sensor
+    form_class = SensorForm
+    context_name = "sensor"
+    template_name = "administrator/data/sensor_detail.html"
+
+
+class SensorDeleteView(DataDeleteView):
+    model = Sensor

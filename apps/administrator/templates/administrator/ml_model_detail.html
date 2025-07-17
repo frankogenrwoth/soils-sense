@@ -24,20 +24,26 @@
 
 {% block header_content %}
 <div class="mb-8">
+    <div class="flex items-center justify-between gap-5">
     {% if version_number %}
     <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} ({{ version_number}}) - {{ model.algorithm|clean_ml_name }}</h2>
     {% else %}
-    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} ({{ version_number}}) - {{ model.algorithm|clean_ml_name }}</h2>
+    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} - {{ model.algorithm|clean_ml_name }}</h2>
     {% endif %}
+
+    {% if version_number %}
+    <a href="{% url 'administrator:print_report' model.model_type %}?version={{ version_number }}&algorithm={{ model.algorithm }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">Print Report</a>
+    {% else %}
+    <a href="{% url 'administrator:print_report' model.model_type %}?algorithm={{ model.algorithm }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">Print Report</a>
+    {% endif %}
+    </div>
+    
+
 </div>
 {% endblock %}
 
 {% block header_tools %}
-{% if model.model_type|is_inbuilt %}
-<div class="flex justify-end mb-4">
-    <button onclick="openUploadModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Upload Dataset</button>
-</div>
-{% endif %}
+
 {% endblock %}
 
 {% block content %}

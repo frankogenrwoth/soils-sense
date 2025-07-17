@@ -8,6 +8,7 @@ from apps.farmer.models import (
     Alert,
     Notification,
 )
+from apps.technician.models import Sensor
 
 
 class BaseDataForm(forms.ModelForm):
@@ -67,4 +68,10 @@ class AlertForm(BaseDataForm):
 class NotificationForm(BaseDataForm):
     class Meta:
         model = Notification
+        fields = "__all__"
+
+
+class SensorForm(BaseDataForm):
+    class Meta:
+        model = Sensor
         fields = "__all__"

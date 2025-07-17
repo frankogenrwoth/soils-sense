@@ -1,10 +1,143 @@
 {% extends 'technician/base.html' %}
+
+{% block page_title %}Add New Sensor{% endblock %}
+
 {% block content %}
-<h2>{{ title }}</h2>
-<form method="post" novalidate>
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Save</button>
-  <a href="{% url 'technician:sensor_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="container-fluid px-4">
+    <!-- Breadcrumb -->
+    <div class="mb-5">
+        <nav class="breadcrumb-nav">
+            <a href="{% url 'technician:dashboard' %}" class="text-primary">Home</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'technician:sensor_list' %}" class="text-primary">1. Sensors</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-600">2. Add Sensor</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="bg-white rounded-lg shadow-sm p-4 p-md-5 max-w-3xl">
+        <h1 class="h3 mb-3 text-navy">Add New Sensor</h1>
+        <p class="text-muted mb-4">Configure a new soil moisture sensor for deployment in your farm.</p>
+
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <!-- Sensor ID Field -->
+            <div class="mb-4">
+                <label for="{{ form.sensor_id.id_for_label }}" class="form-label fw-medium mb-2">
+                    Sensor ID <span class="text-danger">*</span>
+                </label>
+                {{ form.sensor_id }}
+                <div class="form-text mt-1">
+                    Enter a unique identifier for this sensor. Use a combination of letters, numbers, and underscores.
+                </div>
+            </div>
+
+            <!-- Farm Location Field -->
+            <div class="mb-4">
+                <label for="{{ form.farm.id_for_label }}" class="form-label fw-medium mb-2">
+                    Farm Location <span class="text-danger">*</span>
+                </label>
+                {{ form.farm }}
+                <div class="form-text mt-1">
+                    Choose the farm where this sensor will be deployed.
+                </div>
+            </div>
+
+            <!-- Description Field -->
+            <div class="mb-4">
+                <label for="{{ form.description.id_for_label }}" class="form-label fw-medium mb-2">
+                    Description
+                </label>
+                {{ form.description }}
+                <div class="form-text mt-1">
+                    Add any relevant details about the sensor's location or purpose.
+                </div>
+            </div>
+
+            <!-- Active Status Field -->
+            <div class="mb-4">
+                <div class="form-check">
+                    {{ form.is_active }}
+                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                        Activate sensor immediately
+                    </label>
+                </div>
+                <div class="form-text mt-1">
+                    Uncheck if you want to configure the sensor but activate it later.
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="mt-5">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save me-2"></i>Save Sensor
+                </button>
+                <a href="{% url 'technician:sensor_list' %}" class="btn btn-light">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+    .text-navy {
+        color: #2c3e50;
+    }
+    .breadcrumb-nav {
+        font-size: 0.9rem;
+    }
+    .breadcrumb-nav a {
+        text-decoration: none;
+    }
+    .breadcrumb-nav a:hover {
+        text-decoration: underline;
+    }
+    .form-label {
+        color: #2c3e50;
+    }
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+    .form-control, .form-select {
+        border-color: #dee2e6;
+        padding: 0.5rem 0.75rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    .btn-light {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+    .btn-light:hover {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}
 {% endblock %}

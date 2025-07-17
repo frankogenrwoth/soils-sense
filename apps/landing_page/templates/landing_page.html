@@ -130,9 +130,13 @@
 <!-- ✅ SCREENSHOTS -->
 <section class="py-16 bg-gray-100 text-center">
     <h2 class="text-3xl font-extrabold mb-8 text-green-800 drop-shadow">App Preview</h2>
-    <div class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto px-6">
-        <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="rounded-2xl shadow-xl hover:scale-105 transition duration-200 border-4 border-green-100">
-        <img src="{% static 'images/chart-preview.png' %}" alt="Chart" class="rounded-2xl shadow-xl hover:scale-105 transition duration-200 border-4 border-green-100">
+    <div class="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto px-6">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 flex items-center justify-center min-h-[340px] md:min-h-[420px] hover:scale-105 transition duration-200 border-4 border-green-100">
+            <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="w-full h-auto max-w-[480px] max-h-[320px] md:max-h-[380px] object-contain rounded-2xl">
+        </div>
+        <div class="bg-white rounded-3xl shadow-2xl p-6 flex items-center justify-center min-h-[340px] md:min-h-[420px] hover:scale-105 transition duration-200 border-4 border-green-100">
+            <img src="{% static 'images/chart.png' %}" alt="Chart" class="w-full h-auto max-w-[480px] max-h-[320px] md:max-h-[380px] object-contain rounded-2xl">
+        </div>
     </div>
 </section>
 
