@@ -1,4 +1,5 @@
 from django import template
+from datetime import datetime
 
 register = template.Library()
 
@@ -47,17 +48,6 @@ def round_number(value, decimal_places=2):
     except (ValueError, TypeError):
         return value
 
-@register.filter(name="is_inbuilt")
-def is_inbuilt(model_type):
-    """
-    Check if the model is inbuilt. i.e. has version numbers to indicate it is a version of an inbuilt model.
-     - inbuilt models don't have a version number.
-    Usage: {{ model_type|is_inbuilt }}
-    """
-    if model_type.find("version") != -1:
-        return True
-    else:
-        return False
 
 @register.filter(name="clean_ml_name")
 def clean_ml_name(value):
@@ -66,3 +56,38 @@ def clean_ml_name(value):
     Usage: {{ model_type|clean_ml_name }}
     """
     return value.replace("_", " ").title()
+
+
+@register.filter(name="is_inbuilt")
+def is_inbuilt(value):
+    """
+    Check if the model is inbuilt. i.e. has version numbers to indicate it is a version of an inbuilt model.
+     - inbuilt models have a version number.
+    Usage: {{ model_type|is_inbuilt }}
+    """
+    return str(value).find("v0.") != -1
+
+
+@register.filter(name="strftime")
+def strftime(value, format="%H:%M:%S"):
+    """
+    Format a time string to a given format. for example 2 seconds or 2.5 seconds or 2.5 minutes or 2.5 hours.
+    Usage: {{ value|strftime:"%H:%M:%S" }}
+    """
+    if value < 60:
+        return f"{value:.2f} s"
+    elif value < 3600:
+        return f"{value/60:.2f} min"
+    elif value < 86400:
+        return f"{value/3600:.2f} hr"
+    else:
+        return f"{value/86400:.2f} d"
+
+
+@register.filter(name="round")
+def round_number(value, decimal_places=4):
+    """
+    Round a number to specified decimal places.
+    Usage: {{ value|round:2 }}
+    """
+    return round(float(value), decimal_places)

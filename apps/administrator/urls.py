@@ -47,7 +47,7 @@ urlpatterns = [
         name="ml_model_detail",
     ),
     path(
-        "ml-models/<str:model_type>/upload-dataset/",
+        "ml-models/upload/dataset/",
         admin_role_required(UploadDatasetView.as_view()),
         name="upload_dataset",
     ),
