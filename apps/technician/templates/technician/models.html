@@ -3,48 +3,181 @@
 {% block page_title %}Prediction Models{% endblock %}
 {% block breadcrumb %}Models{% endblock %}
 
+{% block extra_css %}
+<style>
+    .metrics-card {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .metrics-title {
+        color: #0C853C;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+    }
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    .metric-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .metric-label {
+        color: #666;
+        font-weight: 500;
+    }
+    .metric-value {
+        color: #333;
+        font-weight: 600;
+    }
+    .features-list {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+    .features-title {
+        font-size: 1rem;
+        color: #495057;
+        margin-bottom: 10px;
+    }
+    .feature-tag {
+        display: inline-block;
+        padding: 4px 8px;
+        margin: 2px;
+        background: #e9ecef;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard-card mb-4">
-    <h5 class="mb-4">All Prediction Models</h5>
-    {% if models %}
-        <div class="table-responsive">
-            <table class="table table-striped align-middle">
-                <thead>
-                    <tr>
-                        <th>Model Type</th>
-                        <th>Algorithm</th>
-                        <th>Last Trained</th>
-                        <th>Metrics</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for model in models %}
-                        <tr>
-                            <td class="fw-bold">{{ model.model_type|default:'-' }}</td>
-                            <td>{{ model.algorithm|default:'-' }}</td>
-                            <td>{{ model.trained_at|default:'-' }}</td>
-                            <td>
-                                {% if model.task_type == 'regression' %}
-                                    <div>R²: <span class="text-success">{{ model.test_r2|default:'-' }}</span></div>
-                                    <div>RMSE: <span class="text-info">{{ model.test_rmse|default:'-' }}</span></div>
-                                    <div>MAE: <span class="text-warning">{{ model.test_mae|default:'-' }}</span></div>
-                                {% elif model.task_type == 'classification' %}
-                                    <div>Accuracy: <span class="text-success">{{ model.test_accuracy|default:'-' }}</span></div>
-                                    <div>F1: <span class="text-info">{{ model.test_f1|default:'-' }}</span></div>
+{% if models %}
+    {% for model in models %}
+    <div class="row mb-4">
+        <!-- Model Overview Card -->
+        <div class="col-md-6">
+            <div class="metrics-card">
+                <h2 class="metrics-title">Model Overview</h2>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-label">Model Type</span>
+                        <span class="metric-value">{{ model.model_type|default:'-'|title }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Algorithm</span>
+                        <span class="metric-value">{{ model.algorithm|default:'-'|title }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Task Type</span>
+                        <span class="metric-value">{{ model.task_type|default:'-'|title }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Last Updated</span>
+                        <span class="metric-value">{{ model.trained_at|date:"M d, Y H:i"|default:'-' }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Samples</span>
+                        <span class="metric-value">{{ model.n_samples|default:'-' }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Status</span>
+                        <span class="metric-value">
+                            {% if model.task_type == 'regression' %}
+                                {% if model.test_r2 > 0.8 %}
+                                    <span class="badge bg-success">Excellent</span>
+                                {% elif model.test_r2 > 0.6 %}
+                                    <span class="badge bg-warning">Good</span>
                                 {% else %}
-                                    <span>-</span>
+                                    <span class="badge bg-danger">Needs Improvement</span>
                                 {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            {% else %}
+                                {% if model.test_accuracy > 0.8 %}
+                                    <span class="badge bg-success">Excellent</span>
+                                {% elif model.test_accuracy > 0.6 %}
+                                    <span class="badge bg-warning">Good</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Needs Improvement</span>
+                                {% endif %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+               
+            </div>
         </div>
-    {% else %}
-        <div class="text-muted text-center py-4">
-            <i class="fas fa-cubes fa-2x mb-2"></i>
-            <p>No models found.</p>
+
+        <!-- Performance Metrics Card -->
+        <div class="col-md-6">
+            <div class="metrics-card">
+                <h2 class="metrics-title">Performance Metrics</h2>
+                <div class="metrics-grid">
+                    {% if model.task_type == 'regression' %}
+                        <div class="metric-item">
+                            <span class="metric-label">Training R²</span>
+                            <span class="metric-value">{{ model.train_r2|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Test R²</span>
+                            <span class="metric-value">{{ model.test_r2|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Training RMSE</span>
+                            <span class="metric-value">{{ model.train_rmse|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Test RMSE</span>
+                            <span class="metric-value">{{ model.test_rmse|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">MAE</span>
+                            <span class="metric-value">{{ model.test_mae|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">CV Score</span>
+                            <span class="metric-value">{{ model.cv_mean|floatformat:4|default:'-' }}</span>
+                        </div>
+                    {% else %}
+                        <div class="metric-item">
+                            <span class="metric-label">Training Accuracy</span>
+                            <span class="metric-value">{{ model.train_accuracy|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Test Accuracy</span>
+                            <span class="metric-value">{{ model.test_accuracy|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Training F1</span>
+                            <span class="metric-value">{{ model.train_f1|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Test F1</span>
+                            <span class="metric-value">{{ model.test_f1|floatformat:4|default:'-' }}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">CV Score</span>
+                            <span class="metric-value">{{ model.cv_mean|floatformat:4|default:'-' }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    {% endif %}
-</div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="metrics-card text-center">
+        <i class="fas fa-cubes fa-3x mb-3 text-muted"></i>
+        <p class="text-muted">No models found.</p>
+    </div>
+{% endif %}
 {% endblock %} 
