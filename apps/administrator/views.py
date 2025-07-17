@@ -207,8 +207,31 @@ class MLModelDetailView(View):
             messages.error(request, "Model not found")
             return redirect("administrator:ml")
 
+        model_info = ml_engine.get_model_info(model_name)
+
+        required_fields = model_info.get("features", [])
+        features = MODEL_CONFIGS.get(model_info.get("model_type"), {}).get(
+            "features", []
+        )
+        print(features)
+        engineered_fields = [
+            "hour_of_day",
+            "month",
+            "is_growing_season",
+            "temp_humidity_interaction",
+            "low_battery",
+            "irrigation_action",
+        ]
+        input_fields = [field for field in features if field not in engineered_fields]
+
+        print(input_fields)
+
+        version_number = model_name.split("_")[-1]
+
         context = {
             "model": ml_engine.get_model_info(model_name),
+            "version_number": version_number,
+            "input_fields": input_fields,
         }
 
         return render(request, self.template_name, context=context)
