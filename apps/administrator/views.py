@@ -1,4 +1,5 @@
 import logging
+import traceback
 import pandas as pd
 from ml.config import MODEL_CONFIGS
 
@@ -8,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -159,8 +160,14 @@ class MLModelManagementView(View):
         available_models = ml_engine.get_available_models()
 
         user_models = Model.objects.filter(creator=request.user)
+
         user_models_data = [
-            ml_engine.get_model_info(model.get_model_name()) for model in user_models
+            {
+                **ml_engine.get_model_info(model.get_model_name()),
+                "version": model.get_model_version(),
+                "model_name": model.get_model_name(),
+            }
+            for model in user_models
         ]
 
         standard_models = [
@@ -186,13 +193,14 @@ class MLModelManagementView(View):
         return render(request, self.template_name, context=context)
 
 
-
 class MLModelDetailView(View):
     template_name = "administrator/ml_model_detail.html"
 
     def get(self, request, model_name):
-        model_algorithm = request.GET.get("algorithm")
-        model_name = f"{model_name}_{model_algorithm}"
+        model_algorithm = request.GET.get("algorithm", None)
+        if model_algorithm is not None:
+            model_name = f"{model_name}_{model_algorithm}"
+
         models = ml_engine.get_available_models()
 
         if model_name not in models:
@@ -209,36 +217,50 @@ class MLModelDetailView(View):
 class UploadDatasetView(View):
     def post(self, request):
         dataset = request.FILES.get("dataset")
-        model_type = request.POST.get("model_type")
+        model_type: Literal["soil_moisture_predictor", "irrigation_recommendation"] = (
+            request.POST.get("model_type")
+        )
         algorithm = request.POST.get("algorithm", "random_forest")
+
+        assert model_type in [
+            "soil_moisture_predictor",
+            "irrigation_recommendation",
+        ], "Invalid model type"
 
         try:
             df = self._clean_dataset(request, dataset, model_type)
 
-
-
             if df is None:
                 return redirect("administrator:ml")
 
-            model_object = Model.objects.create(creator=request.user, name=f"{model_type}_{algorithm}", dataset=dataset)
+            model_object = Model.objects.create(
+                creator=request.user, name=f"{model_type}_{algorithm}", dataset=dataset
+            )
 
-            result = ml_engine.train_model(model_type, algorithm=algorithm, custom_data=df, version=model_object.get_model_version())
-
-            model_name = result.get("model_name")
-            model_version = result.get("version")
+            ml_engine.train_model(
+                model_type,
+                algorithm=algorithm,
+                custom_data=df,
+                version=model_object.get_model_version(),
+            )
 
             messages.success(
                 request, "Dataset uploaded and model training started successfully!"
             )
 
+            return redirect(
+                "administrator:ml_model_detail",
+                model_name=model_object.get_model_name(),
+            )
+
         except Exception as e:
             messages.error(request, f"Error processing dataset: {str(e)}")
-
-        return redirect("administrator:ml_model_detail", model_type=model_type)
+            print(traceback.format_exc())
+            return HttpResponse({"error": str(e)}, status=400)
 
     def get(self, request, model_type):
         return redirect("administrator:ml_model_detail", model_type=model_type)
-    
+
     def _clean_dataset(self, request, file, model_type="soil_moisture_predictor"):
         """
         Clean the dataset and return a dataframe
@@ -255,7 +277,10 @@ class UploadDatasetView(View):
             except Exception:
                 messages.error(request, "Invalid CSV file")
                 return None
-        elif file.content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        elif (
+            file.content_type
+            == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ):
             try:
                 df = pd.read_excel(file)
             except Exception:
@@ -272,10 +297,18 @@ class UploadDatasetView(View):
         # Check for required columns
         required_columns = MODEL_CONFIGS.get(model_type, {}).get("features", [])
 
-        engineered_columns = ['hour_of_day', 'month', 'is_growing_season', 'temp_humidity_interaction', 'low_battery']
+        engineered_columns = [
+            "hour_of_day",
+            "month",
+            "is_growing_season",
+            "temp_humidity_interaction",
+            "low_battery",
+        ]
 
         # remove engineered columns from required columns
-        required_columns = [col for col in required_columns if col not in engineered_columns] + ["timestamp"]
+        required_columns = [
+            col for col in required_columns if col not in engineered_columns
+        ] + ["timestamp"]
 
         if required_columns and not all(col in df.columns for col in required_columns):
             messages.error(request, "Required columns are missing")
@@ -283,7 +316,6 @@ class UploadDatasetView(View):
 
         # Return the dataframe for further processing
         return df
-        
 
 
 class NotificationView(View):

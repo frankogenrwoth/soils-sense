@@ -14,10 +14,10 @@ class Model(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
-    def get_model_name(self):
-        return str(self.name) + "_" + str(self.id)
+    def get_model_name(self) -> str:
+        return str(self.name) + "_version_" + self.get_model_version()
 
-    def get_model_version(self):
+    def get_model_version(self) -> str:
         return f"v0.{self.creator.id}.{self.id}"
 
     def __str__(self):
