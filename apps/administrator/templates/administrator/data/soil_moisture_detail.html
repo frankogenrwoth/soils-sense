@@ -1,0 +1,58 @@
+{% extends 'administrator/data/base_detail.html' %}
+{% load static %}
+
+{% block delete_url %}{% url 'administrator:soil_moisture_delete' reading.id %}{% endblock %}
+
+{% block detail_content %}
+<div class="space-y-4">
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Sensor ID</h3>
+        <p class="mt-1 text-lg text-gray-900">{{ reading.sensor_id }}</p>
+    </div>
+
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Farm</h3>
+        <div class="mt-1 flex items-center">
+            <img src="{% if reading.farm.user.image %}{{ reading.farm.user.image.url }}{% else %}{% static 'images/default.webp' %}{% endif %}" 
+                 alt="Farm Owner Avatar" 
+                 class="w-10 h-10 rounded-full mr-3">
+            <div>
+                <p class="text-lg text-gray-900">{{ reading.farm.farm_name }}</p>
+                <p class="text-sm text-gray-500">{{ reading.farm.location }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Moisture Value</h3>
+        <p class="mt-1 text-lg text-gray-900">{{ reading.moisture_value }}%</p>
+    </div>
+
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Battery Level</h3>
+        <p class="mt-1 text-lg text-gray-900">{{ reading.battery_level }}%</p>
+    </div>
+</div>
+
+<div class="space-y-4">
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Timestamp</h3>
+        <p class="mt-1 text-lg text-gray-900">{{ reading.timestamp|date:"F j, Y H:i:s" }}</p>
+    </div>
+
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Status</h3>
+        <span class="mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+            {% if reading.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+            {{ reading.is_active|yesno:"Active,Inactive" }}
+        </span>
+    </div>
+
+    {% if reading.notes %}
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-sm font-medium text-gray-500">Notes</h3>
+        <p class="mt-1 text-lg text-gray-900">{{ reading.notes }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
