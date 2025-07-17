@@ -62,4 +62,4 @@ def is_inbuilt(value):
      - inbuilt models don't have a version number.
     Usage: {{ model_type|is_inbuilt }}  
     """
-    return "version" not in str(value)
+    return str(value).find("version") != -1

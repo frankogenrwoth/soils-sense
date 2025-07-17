@@ -1,4 +1,6 @@
 import logging
+import pandas as pd
+from ml.config import MODEL_CONFIGS
 
 from django.shortcuts import render, redirect
 from django.views import View
@@ -13,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 from ml import MLEngine
+from ml.config import MODEL_CONFIGS
 from .forms import UserForm
 from .models import Model
 from authentication.models import Role
@@ -143,38 +146,6 @@ class ReportManagementView(View):
 class MLModelManagementView(View):
     template_name = "administrator/ml_model_management.html"
 
-    class SoilMoistureForm(forms.Form):
-        sensor_id = forms.CharField()
-        location = forms.CharField()
-        temperature_celsius = forms.FloatField()
-        humidity_percent = forms.FloatField()
-        battery_voltage = forms.FloatField()
-        status = forms.CharField()
-        irrigation_action = forms.CharField()
-        timestamp = forms.DateTimeField()
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            for field in self.fields.values():
-                field.widget.attrs["class"] = (
-                    "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                )
-
-    class IrrigationRecommendationForm(forms.Form):
-        soil_moisture_percent = forms.FloatField()
-        temperature_celsius = forms.FloatField()
-        humidity_percent = forms.FloatField()
-        battery_voltage = forms.FloatField()
-        status = forms.CharField()
-        timestamp = forms.DateTimeField()
-
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            for field in self.fields.values():
-                field.widget.attrs["class"] = (
-                    "block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                )
-
     def get(self, request):
         # Todo: pass a list of models which are standard
         # Todo: filter particulr user trained models
@@ -206,77 +177,14 @@ class MLModelManagementView(View):
             if algorithm in list(CLASSIFICATION_ALGORITHMS.keys())
         ]
 
-        soil_moisture_form = self.SoilMoistureForm()
-        irrigation_recommendation_form = self.IrrigationRecommendationForm()
-
-        models_data = [ml_engine.get_model_info(model) for model in available_models]
-
         context = {
             # new context
             "user_models": user_models_data,
             "standard_models": standard_models,
             "algorithms": algorithms,
-            # old context
-            "available_models": models_data,
-            "soil_moisture_form": soil_moisture_form,
-            "irrigation_recommendation_form": irrigation_recommendation_form,
-            "predicted_soil_moisture": None,
-            "predicted_irrigation_recommendation": None,
         }
         return render(request, self.template_name, context=context)
 
-    def post(self, request):
-        data = request.POST
-
-        ml_engine = MLEngine()
-
-        if "sensor_id" in data:
-            soil_moisture_form = self.SoilMoistureForm(data)
-            irrigation_recommendation_form = self.IrrigationRecommendationForm()
-            if soil_moisture_form.is_valid():
-
-                predicted_soil_moisture = ml_engine.predict_soil_moisture(
-                    **soil_moisture_form.cleaned_data
-                )
-
-            else:
-                predicted_soil_moisture = None
-
-            predicted_irrigation_recommendation = None
-        else:
-            soil_moisture_form = self.SoilMoistureForm()
-            irrigation_recommendation_form = self.IrrigationRecommendationForm(data)
-
-            if irrigation_recommendation_form.is_valid():
-                predicted_irrigation_recommendation = ml_engine.recommend_irrigation(
-                    **irrigation_recommendation_form.cleaned_data
-                )
-
-            else:
-                predicted_irrigation_recommendation = None
-
-            predicted_soil_moisture = None
-
-        available_models = ml_engine.get_available_models()
-
-        models_data = [ml_engine.get_model_info(model) for model in available_models]
-
-        context = {
-            "available_models": models_data,
-            "soil_moisture_form": soil_moisture_form,
-            "irrigation_recommendation_form": irrigation_recommendation_form,
-            "predicted_soil_moisture": (
-                predicted_soil_moisture["predicted_value"]
-                if predicted_soil_moisture
-                else None
-            ),
-            "predicted_irrigation_recommendation": (
-                predicted_irrigation_recommendation["predicted_value"]
-                if predicted_irrigation_recommendation
-                else None
-            ),
-        }
-        return render(request, self.template_name, context=context)
 
 
 class MLModelDetailView(View):
@@ -299,17 +207,25 @@ class MLModelDetailView(View):
 
 
 class UploadDatasetView(View):
-    def post(self, request, model_type):
+    def post(self, request):
         dataset = request.FILES.get("dataset")
-        algorithm = request.POST.get("algorithm")
+        model_type = request.POST.get("model_type")
 
         try:
-            # Your dataset processing and model training logic here
-            # ...
+            df = self._clean_dataset(request, dataset, model_type)
+
+            if df is None:
+                return redirect("administrator:ml")
+
+            result = ml_engine.train_model(model_type, custom_data=df)
+
+            model_name = result.get("model_name")
+            model_version = result.get("version")
 
             messages.success(
                 request, "Dataset uploaded and model training started successfully!"
             )
+
         except Exception as e:
             messages.error(request, f"Error processing dataset: {str(e)}")
 
@@ -317,6 +233,52 @@ class UploadDatasetView(View):
 
     def get(self, request, model_type):
         return redirect("administrator:ml_model_detail", model_type=model_type)
+    
+    def _clean_dataset(self, request, file, model_type="soil_moisture_predictor"):
+        """
+        Clean the dataset and return a dataframe
+        """
+        if file.size > 10 * 1024 * 1024:
+            messages.error(request, "File size exceeds 10MB limit")
+            return None
+
+        # Try to read the file as CSV or Excel
+        df = None
+        if file.content_type == "text/csv":
+            try:
+                df = pd.read_csv(file)
+            except Exception:
+                messages.error(request, "Invalid CSV file")
+                return None
+        elif file.content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            try:
+                df = pd.read_excel(file)
+            except Exception:
+                messages.error(request, "Invalid Excel file")
+                return None
+        else:
+            messages.error(request, "Invalid file type")
+            return None
+
+        if df is None or df.empty:
+            messages.error(request, "Empty or unreadable file")
+            return None
+
+        # Check for required columns
+        required_columns = MODEL_CONFIGS.get(model_type, {}).get("features", [])
+
+        engineered_columns = ['hour_of_day', 'month', 'is_growing_season', 'temp_humidity_interaction', 'low_battery']
+
+        # remove engineered columns from required columns
+        required_columns = [col for col in required_columns if col not in engineered_columns] + ["timestamp"]
+
+        if required_columns and not all(col in df.columns for col in required_columns):
+            messages.error(request, "Required columns are missing")
+            return None
+
+        # Return the dataframe for further processing
+        return df
+        
 
 
 class NotificationView(View):
