@@ -1,8 +1,9 @@
 from rest_framework.decorators import api_view
-
-from apps.farmer.models import SoilMoistureReading
-
+from django.shortcuts import get_object_or_404
+from apps.farmer.models import SoilMoistureReading, Farm
+from apps.technician.models import Sensor
 from rest_framework.response import Response
+
 from rest_framework import status
 
 
@@ -23,7 +24,6 @@ def get_soil_data(request):
     required_fields = [
         "temperature",
         "humidity",
-        "moisture",
         "status",
         "farm_id",
         "sensor_id",
@@ -34,7 +34,7 @@ def get_soil_data(request):
     missing_fields = [field for field in required_fields if field not in data]
 
     farm = get_object_or_404(Farm, id=data["farm_id"])
-    sensor = get_object_or_404(Sensor, id=data["sensor_id"])
+    sensor = get_object_or_404(Sensor, sensor_id=data["sensor_id"])
 
     if sensor.farm_id != farm.id:
         return Response(
@@ -49,7 +49,7 @@ def get_soil_data(request):
         )
 
     # Optionally, you could validate types here, but the prompt only asks for existence
-    SoilMoistureReading.objects.create(
+    sr_o = SoilMoistureReading.objects.create(
         timestamp=data["timestamp"],
         temperature_celsius=data["temperature"],
         humidity_percent=data["humidity"],
@@ -59,6 +59,23 @@ def get_soil_data(request):
         reading_source="sensor",
         sensor_id=data["sensor_id"],
     )
+
+    from ml import MLEngine
+
+    ml_engine = MLEngine()
+
+    sr_o.soil_moisture_percent = ml_engine.predict_soil_moisture(
+        sensor_id=data["sensor_id"],
+        location=farm.location,
+        temperature_celsius=data["temperature"],
+        humidity_percent=data["humidity"],
+        battery_voltage=data["battery_voltage"],
+        status=data["status"],
+        irrigation_action=None,
+        timestamp=data["timestamp"],
+    ).get("predicted_value")
+
+    sr_o.save()
 
     # Print the data on the page (return in response)
     return Response(

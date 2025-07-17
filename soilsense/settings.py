@@ -113,6 +113,14 @@ DATABASES = {
     )
 }
 
+# DATABASES = {
+#     'default': dj_database_url.parse(
+#         'postgresql://postgres.drdazezbpttffpfiuteh:qa8KR7yMQJNxx35E@aws-0-eu-west-2.pooler.supabase.com:6543/postgres',
+#         conn_max_age=600,
+#         ssl_require=True,
+#     )
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -138,7 +146,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Africa/Kampala'
+TIME_ZONE = "Africa/Kampala"
 USE_TZ = True  # Keep this True to store in UTC but convert to local timezone
 
 USE_TZ = True
