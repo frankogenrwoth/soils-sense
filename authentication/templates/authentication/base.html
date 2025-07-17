@@ -1,7 +1,5 @@
 {% load static %}
 
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,45 +9,20 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-gray-800 text-white shadow mb-6">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-          <div class="flex-shrink-0 flex items-center">
-            <img class="h-8 w-auto" src="{% static 'images/logo.webp' %}" alt="Soils Sense" />
-            <span class="ml-2 font-bold text-2xl">SoilSense</span>
-          </div>
-          <div class="flex space-x-4 items-center">
-            <a href="/" class="hover:text-green-400 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-            <a href="{% url 'authentication:login' %}" class="hover:text-green-400 px-3 py-2 rounded-md text-sm font-medium">Login</a>
-            <a href="{% url 'authentication:signup' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded text-sm font-medium ml-2">Sign Up</a>
-          </div>
-        </div>
-      </div>
-    </nav>
-   
     <main>
-        <!--
-  This example requires updating your template:
+        <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+            <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+                <a href="{% url 'home' %}" class="block hover:opacity-90 transition-opacity">
+                    <img class="mx-auto h-16 w-auto" src="{% static 'images/logo.webp' %}" alt="SoilSense" />
+                </a>
+                <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">{% block sub_title %}{% endblock %}</h2>
+            </div>
 
-  ```
-  <html class="h-full bg-white">
-  <body class="h-full">
-  ```
--->
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <img class="mx-auto h-10 w-auto" src="{% static 'images/logo.webp' %}" alt="Soils Sense" />
-      <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">{% block sub_title %}{% endblock %}</h2>
-    </div>
-  
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm bg-white rounded-xl shadow-lg p-6">
-      {% block form %}{% endblock %}
-
-      {% block form_footer %}{% endblock %}
-    </div>
-</div>
-
+            <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm bg-white rounded-xl shadow-lg p-6">
+                {% block form %}{% endblock %}
+                {% block form_footer %}{% endblock %}
+            </div>
+        </div>
     </main>
 </body>
 </html> 
