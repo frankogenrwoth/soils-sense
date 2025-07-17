@@ -36,6 +36,7 @@ from apps.farmer.models import (
     Alert,
     Notification,
 )
+from apps.technician.models import Sensor
 from authentication.models import Role
 
 logger = logging.getLogger(__name__)
@@ -164,7 +165,7 @@ class DataManagementView(View):
         prediction_results = PredictionResult.objects.all()
         alerts = Alert.objects.all()
         notifications = Notification.objects.all()
-
+        sensors = Sensor.objects.all()
         # Apply search filters if search query exists
         if search_query:
             if data_type == "farms":
@@ -203,6 +204,7 @@ class DataManagementView(View):
             "notifications": notifications,
             "search_query": search_query,
             "data_type": data_type,
+            "sensors": sensors,
         }
         return render(request, self.template_name, context=context)
 

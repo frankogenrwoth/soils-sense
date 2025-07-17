@@ -1,0 +1,4 @@
+{% extends 'administrator/data/base_detail.html' %}
+{% load static %}
+
+{% block delete_url %}{% url 'administrator:sensor_delete' sensor.id %}{% endblock %}

@@ -30,6 +30,8 @@ from apps.administrator.data_views import (
     AlertDeleteView,
     NotificationDetailView,
     NotificationDeleteView,
+    SensorDetailView,
+    SensorDeleteView,
 )
 from apps.administrator.utils import admin_role_required
 
@@ -153,6 +155,16 @@ urlpatterns = [
         name="notifications",
     ),
     path("sensors/", admin_role_required(SensorView.as_view()), name="sensors"),
+    path(
+        "sensors/<int:pk>/",
+        admin_role_required(SensorDetailView.as_view()),
+        name="sensor_detail",
+    ),
+    path(
+        "sensors/<int:pk>/delete/",
+        admin_role_required(SensorDeleteView.as_view()),
+        name="sensor_delete",
+    ),
     path(
         "ml-models/<str:model_name>/print-report/",
         admin_role_required(PrintReportView.as_view()),
