@@ -53,7 +53,15 @@ def sensor_add(request):
             return redirect('technician:sensor_list')
     else:
         form = SensorForm()
-    return render(request, 'technician/sensor_form.html', {'form': form, 'title': 'Add Sensor'})
+    
+    # Get list of farms that have users associated with them
+    farms = Farm.objects.filter(user__isnull=False)
+    
+    return render(request, 'technician/sensor_form.html', {
+        'form': form,
+        'title': 'Add Sensor',
+        'farms': farms
+    })
 
 @technician_required
 def sensor_edit(request, pk):
