@@ -92,9 +92,6 @@ WSGI_APPLICATION = "soilsense.wsgi.application"
 #         "ENGINE": "django.db.backends.sqlite3",
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     },
-#     "opt": {
-#         "ENGINE": "django.db.backends"
-#     }
 # }
 
 db_host = os.getenv("db_host")
@@ -106,20 +103,12 @@ db_password = os.getenv("db_password")
 url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 DATABASES = {
-    'default': dj_database_url.parse(
-        url, 
-        conn_max_age=600, 
+    "default": dj_database_url.parse(
+        url,
+        conn_max_age=600,
         ssl_require=True,
     )
 }
-
-# DATABASES = {
-#     'default': dj_database_url.parse(
-#         'postgresql://postgres.drdazezbpttffpfiuteh:qa8KR7yMQJNxx35E@aws-0-eu-west-2.pooler.supabase.com:6543/postgres',
-#         conn_max_age=600,
-#         ssl_require=True,
-#     )
-# }
 
 
 # Password validation
