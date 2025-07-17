@@ -34,7 +34,7 @@
     <!-- Quick Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Temperature Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-shadow">
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4  hover:shadow-lg transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Humidity Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow">
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4  hover:shadow-lg transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
@@ -65,25 +65,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Moisture Alerts Card -->
-    {% if unread_moisture_alerts and unread_moisture_alerts.count > 0 %}
-    <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-6">
-        <div class="flex items-center mb-2">
-            <i class="fas fa-exclamation-circle text-yellow-500 text-2xl mr-3"></i>
-            <span class="font-semibold">Soil Moisture Alerts</span>
-        </div>
-        <ul class="list-disc list-inside ml-6">
-            {% for alert in unread_moisture_alerts %}
-            <li class="mb-1">
-                <span class="font-bold">{% if alert.alert_type == 'low_moisture' %}Low Moisture{% elif alert.alert_type == 'high_moisture' %}High Moisture{% endif %}:</span>
-                {{ alert.message }}
-                <span class="text-xs text-gray-500">({{ alert.timestamp|date:'M d, Y H:i' }})</span>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
 
     <!-- Soil Moisture Prediction System Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
