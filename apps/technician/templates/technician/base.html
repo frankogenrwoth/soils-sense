@@ -32,14 +32,18 @@
 
         /* Sidebar Styling */
         .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), #2c3e50);
-            min-height: 100vh;
-            padding-top: 2rem;
-            position: fixed;
-            width: 250px;
-            display: flex;
-            flex-direction: column;
+           background: linear-gradient(135deg, var(--primary-color), #2c3e50);
+           height: 100vh;                     /* Full viewport height */
+           overflow-y: auto;                  /* Enables scrolling */
+           padding-top: 2rem;
+           position: fixed;
+           width: 250px;
+           display: flex;
+           flex-direction: column;
+           scrollbar-width: none;         /* Firefox */
+           -ms-overflow-style: none;      /* IE and Edge */
         }
+
 
         .sidebar .nav-link {
             color: rgba(255, 255, 255, 0.85);
