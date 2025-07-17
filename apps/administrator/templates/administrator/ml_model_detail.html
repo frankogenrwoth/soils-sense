@@ -24,8 +24,11 @@
 
 {% block header_content %}
 <div class="mb-8">
-    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} - {{ model.algorithm|clean_ml_name }}</h2>
-    <p class="text-gray-500">Detailed information about {{ model.model_type }} performance and characteristics. This model was trained on {{ model.n_samples }} samples and took {{ model.training_time|floatformat:2 }} seconds to train.</p>
+    {% if version_number %}
+    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} ({{ version_number}}) - {{ model.algorithm|clean_ml_name }}</h2>
+    {% else %}
+    <h2 class="text-xl font-semibold text-green-700">{{ model.model_type|clean_ml_name }} ({{ version_number}}) - {{ model.algorithm|clean_ml_name }}</h2>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -43,29 +46,29 @@
 <div class="bg-white shadow rounded-lg p-6 mb-4">
     <h3 class="text-lg font-semibold text-green-700 mb-4">Model Overview</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Model Type</p>
-            <p class="text-base text-gray-900">{{ model.model_type }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Model Type</p>
+            <p class="text-base text-gray-400">{{ model.model_type|clean_ml_name }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Algorithm</p>
-            <p class="text-base text-gray-900">{{ model.algorithm }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Algorithm</p>
+            <p class="text-base text-gray-400">{{ model.algorithm|clean_ml_name }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Task Type</p>
-            <p class="text-base text-gray-900">{{ model.task_type }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Task Type</p>
+            <p class="text-base text-gray-400">{{ model.task_type }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Training Time</p>
-            <p class="text-base text-gray-900">{{ model.training_time|floatformat:2 }}s</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Training Time</p>
+            <p class="text-base text-gray-400">{{ model.training_time|floatformat:2 }}s</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Samples</p>
-            <p class="text-base text-gray-900">{{ model.n_samples }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Samples</p>
+            <p class="text-base text-gray-400">{{ model.n_samples }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Features</p>
-            <p class="text-base text-gray-900">{{ model.n_features }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Features</p>
+            <p class="text-base text-gray-400">{{ model.n_features }}</p>
         </div>
     </div>
 </div>
@@ -76,95 +79,166 @@
     {% if model.train_r2 is not None and model.test_r2 is not None %}
     <!-- Regression metrics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Train R²</p>
-            <p class="text-base text-gray-900">{{ model.train_r2|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Train R²</p>
+            <p class="text-base text-gray-400">{{ model.train_r2|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Test R²</p>
-            <p class="text-base text-gray-900">{{ model.test_r2|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Test R²</p>
+            <p class="text-base text-gray-400">{{ model.test_r2|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Train RMSE</p>
-            <p class="text-base text-gray-900">{{ model.train_rmse|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Train RMSE</p>
+            <p class="text-base text-gray-400">{{ model.train_rmse|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Test RMSE</p>
-            <p class="text-base text-gray-900">{{ model.test_rmse|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Test RMSE</p>
+            <p class="text-base text-gray-400">{{ model.test_rmse|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Train MAE</p>
-            <p class="text-base text-gray-900">{{ model.train_mae|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Train MAE</p>
+            <p class="text-base text-gray-400">{{ model.train_mae|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Test MAE</p>
-            <p class="text-base text-gray-900">{{ model.test_mae|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Test MAE</p>
+            <p class="text-base text-gray-400">{{ model.test_mae|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">CV Mean</p>
-            <p class="text-base text-gray-900">{{ model.cv_mean|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">CV Mean</p>
+            <p class="text-base text-gray-400">{{ model.cv_mean|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">CV Std</p>
-            <p class="text-base text-gray-900">{{ model.cv_std|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">CV Std</p>
+            <p class="text-base text-gray-400">{{ model.cv_std|floatformat:4 }}</p>
         </div>
     </div>
     {% elif model.train_accuracy is not None and model.test_accuracy is not None %}
     <!-- Classification metrics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Training Accuracy</p>
-            <p class="text-base text-gray-900">{{ model.train_accuracy|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Training Accuracy</p>
+            <p class="text-base text-gray-400">{{ model.train_accuracy|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Test Accuracy</p>
-            <p class="text-base text-gray-900">{{ model.test_accuracy|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Test Accuracy</p>
+            <p class="text-base text-gray-400">{{ model.test_accuracy|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Training F1</p>
-            <p class="text-base text-gray-900">{{ model.train_f1|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Training F1</p>
+            <p class="text-base text-gray-400">{{ model.train_f1|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">Test F1</p>
-            <p class="text-base text-gray-900">{{ model.test_f1|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">Test F1</p>
+            <p class="text-base text-gray-400">{{ model.test_f1|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">CV Mean</p>
-            <p class="text-base text-gray-900">{{ model.cv_mean|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">CV Mean</p>
+            <p class="text-base text-gray-400">{{ model.cv_mean|floatformat:4 }}</p>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-            <p class="text-sm font-medium text-gray-600">CV Std</p>
-            <p class="text-base text-gray-900">{{ model.cv_std|floatformat:4 }}</p>
+        <div class="py-4 px-2 rounded-lg">
+            <p class="text-sm font-bold">CV Std</p>
+            <p class="text-base text-gray-400">{{ model.cv_std|floatformat:4 }}</p>
         </div>
     </div>
     {% else %}
-    <div class="p-4 bg-yellow-50 rounded-lg">
-        <p class="text-sm font-medium text-yellow-700">No performance metrics available for this model.</p>
+    <div class="py-4 px-2 rounded-lg">
+        <p class="text-sm font-bold text-yellow-700">No performance metrics available for this model.</p>
     </div>
     {% endif %}
 </div>
-</div>
+
 <!-- Features -->
-<div class="bg-white shadow rounded-lg p-6 mb-4">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">Model Features</h3>
-    <div class="overflow-x-auto">
-        <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2">Feature Name</th>
-                    <th class="px-4 py-2">Column</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for feature, column in model.feature_names|zip:model.feature_columns %}
-                <tr class="border-b">
-                    <td class="px-4 py-2">{{ feature }}</td>
-                    <td class="px-4 py-2">{{ column }}</td>
-                </tr>
-                {% endfor %} 
-                
-            </tbody>
-        </table>
+<div class="mb-4">
+    <div class="p-6 bg-gradient-to-br from-green-50 to-white rounded-2xl shadow-lg border border-green-100">
+        <div class="flex items-center mb-4">
+            <i class="fas fa-robot mr-3 text-green-600"></i>
+            <h3 class="text-xl font-bold text-green-700">Model Playground</h3>
+        </div>
+        <p class="text-gray-600 mb-6">Test this model with your own data below. Enter values for each feature and click <span class="font-semibold text-green-700">Predict</span> to see the result.</p>
+        <form action="" method="post" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for field in input_fields %}
+                <div>
+                    <label for="{{ field }}" class="block text-sm font-semibold text-gray-700 mb-1">{{ field|clean_ml_name }}</label>
+                    <input type="text" name="{{ field }}" id="{{ field }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg transition" placeholder="Enter {{ field|clean_ml_name|lower }}">
+                </div>
+                {% endfor %}
+            </div>
+            <div class="flex justify-end pt-2">
+                <button type="submit" class="bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:from-green-600 hover:to-green-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-400">
+                    Predict
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="p-4 bg-white rounded-lg shadow mt-4">
+        <h3 class="text-lg font-semibold text-green-700 mb-4">Model Retraining</h3>
+        <p class="text-gray-600 mb-6">Upload a new dataset to retrain the model with. This will overwrite the current training data.</p>
+        <form action="" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div 
+                id="dropzone"
+                class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-green-400 rounded-lg bg-green-50 hover:bg-green-100 transition cursor-pointer mb-4"
+                onclick="document.getElementById('file').click();"
+                ondragover="event.preventDefault(); this.classList.add('bg-green-100');"
+                ondragleave="event.preventDefault(); this.classList.remove('bg-green-100');"
+                ondrop="handleDrop(event);"
+            >
+                <svg class="w-10 h-10 text-green-400 mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="m19.94,7.68s-.02-.06-.03-.09c-.05-.11-.11-.21-.2-.29l-5-5c-.09-.09-.19-.15-.3-.2-.03-.01-.06-.02-.09-.03-.09-.03-.18-.05-.27-.05-.02,0-.04-.01-.05-.01H6c-1.1,0-2,.9-2,2v16c0,1.1.9,2,2,2h12c1.1,0,2-.9,2-2v-12s-.01-.04-.01-.06c0-.09-.02-.17-.05-.26Zm-13.94,12.32V4h7v4c0,.55.45,1,1,1h4v11H6Z"></path><path d="M8 12H10V18H8z"></path><path d="M11 10H13V18H11z"></path><path d="M14 14H16V18H14z"></path>
+                </svg>
+                <p class="text-green-700 font-semibold">Drag & drop your dataset here, or <span class="underline">click to upload</span></p>
+                <input type="file" name="file" id="file" class="hidden" onchange="updateFileName()" />
+                <span id="file-name" class="mt-2 text-sm text-gray-500"></span>
+            </div>
+            <button type="submit" class="bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold px-6 py-2 rounded-lg shadow hover:from-green-600 hover:to-green-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-green-400">
+                Upload & Retrain
+            </button>
+            <script>
+                function updateFileName() {
+                    const input = document.getElementById('file');
+                    const fileNameSpan = document.getElementById('file-name');
+                    if (input.files.length > 0) {
+                        fileNameSpan.textContent = input.files[0].name;
+                    } else {
+                        fileNameSpan.textContent = '';
+                    }
+                }
+                function handleDrop(event) {
+                    event.preventDefault();
+                    document.getElementById('dropzone').classList.remove('bg-green-100');
+                    const files = event.dataTransfer.files;
+                    if (files.length > 0) {
+                        document.getElementById('file').files = files;
+                        updateFileName();
+                    }
+                }
+            </script>
+        </form>
+        
+    </div>
+
+    <div class="p-4 bg-white rounded-lg shadow mt-4">
+        <h3 class="text-lg font-semibold text-green-700 mb-4">Model Features</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2">Feature Name</th>
+                        <th class="px-4 py-2">Column</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature, column in model.feature_names|zip:model.feature_columns %}
+                    <tr class="border-b">
+                        <td class="px-4 py-2">{{ feature }}</td>
+                        <td class="px-4 py-2">{{ column }}</td>
+                    </tr>
+                    {% endfor %} 
+                    
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -175,54 +249,52 @@
     
     <!-- Dataset Overview -->
     <div class="mb-6">
-        <h4 class="text-md font-semibold text-gray-700 mb-2">Dataset Overview</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <p class="text-sm font-medium text-gray-600">Number of Rows</p>
-                <p class="text-base text-gray-900">{{ model.training_logs.data_inspection.num_rows }}</p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <p class="text-sm font-medium text-gray-600">Number of Columns</p>
-                <p class="text-base text-gray-900">{{ model.training_logs.data_inspection.num_columns }}</p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <p class="text-sm font-medium text-gray-600">Duplicates</p>
-                <p class="text-base text-gray-900">{{ model.training_logs.data_inspection.num_duplicates }}</p>
-            </div>
+        <p class="text-sm font-bold text-gray-600 text-lg mb-2 uppercase">Dataset Overview</p>
+        <div class="overflow-x-auto mb-4">
+            <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2">Number of Rows</th>
+                        <th class="px-4 py-2">Number of Columns</th>
+                        <th class="px-4 py-2">Duplicates</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="px-4 py-2 text-gray-400">{{ model.training_logs.data_inspection.num_rows }}</td>
+                        <td class="px-4 py-2 text-gray-400">{{ model.training_logs.data_inspection.num_columns }}</td>
+                        <td class="px-4 py-2 text-gray-400">{{ model.training_logs.data_inspection.num_duplicates }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- Numeric Statistics -->
     {% if model.training_logs.data_inspection.numeric_summary %}
     <div class="mb-6">
-        <h4 class="text-md font-semibold text-gray-700 mb-2">Numeric Features Statistics</h4>
+        <p class="text-sm font-bold text-gray-600 text-lg mb-2 uppercase">Numeric Features Statistics</p>
         <div class="overflow-x-auto">
             <table class="min-w-full text-xs text-left text-gray-500 border rounded-lg">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-2 py-1">Feature</th>
-                        <th class="px-2 py-1">Count</th>
                         <th class="px-2 py-1">Mean</th>
                         <th class="px-2 py-1">Std</th>
-                        <th class="px-2 py-1">Min</th>
                         <th class="px-2 py-1">25%</th>
                         <th class="px-2 py-1">50%</th>
                         <th class="px-2 py-1">75%</th>
-                        <th class="px-2 py-1">Max</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for feature, stats in model.training_logs.data_inspection.numeric_summary.items %}
                     <tr class="border-b">
-                        <td class="px-2 py-1">{{ feature }}</td>
-                        <td class="px-2 py-1">{{ stats.count|floatformat:0 }}</td>
+                        <td class="px-2 py-1">{{ feature|clean_ml_name }}</td>
                         <td class="px-2 py-1">{{ stats.mean|floatformat:2 }}</td>
                         <td class="px-2 py-1">{{ stats.std|floatformat:2 }}</td>
-                        <td class="px-2 py-1">{{ stats.min|floatformat:2 }}</td>
                         <td class="px-2 py-1">{{ stats|get_dict_item:'25%'|floatformat:2 }}</td>
                         <td class="px-2 py-1">{{ stats|get_dict_item:'50%'|floatformat:2 }}</td>
                         <td class="px-2 py-1">{{ stats|get_dict_item:'75%'|floatformat:2 }}</td>
-                        <td class="px-2 py-1">{{ stats.max|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -234,7 +306,7 @@
     <!-- Missing Values -->
     {% if model.training_logs.data_inspection.missing_values %}
     <div class="mb-6">
-        <h4 class="text-md font-semibold text-gray-700 mb-2">Missing Values</h4>
+        <p class="text-sm font-bold text-gray-600 text-lg mb-2 uppercase">Missing Values</p>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg">
                 <thead class="bg-gray-100">
@@ -247,7 +319,7 @@
                     {% for column, count in model.training_logs.data_inspection.missing_values.items %}
                     {% if count > 0 %}
                     <tr class="border-b">
-                        <td class="px-4 py-2">{{ column }}</td>
+                        <td class="px-4 py-2">{{ column|clean_ml_name }}</td>
                         <td class="px-4 py-2">{{ count }}</td>
                     </tr>
                     {% endif %}
@@ -261,18 +333,28 @@
     <!-- Cleaning Report -->
     {% if model.training_logs.cleaning_report %}
     <div class="mb-6">
-        <h4 class="text-md font-semibold text-gray-700 mb-2">Data Cleaning Summary</h4>
+        <h4 class="text-sm font-bold text-gray-600 text-lg mb-2 uppercase">Data Cleaning Summary</h4>
         
         <!-- Duplicates Removed -->
-        <div class="mb-4">
-            <p class="text-sm font-medium text-gray-600">Duplicates Removed</p>
-            <p class="text-base text-gray-900">{{ model.training_logs.cleaning_report.duplicates_removed }}</p>
-        </div>
+         <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg mb-4">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2">Feature</th>
+                    <th class="px-4 py-2">Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="px-4 py-2">Duplicates Removed</td>
+                    <td class="px-4 py-2">{{ model.training_logs.cleaning_report.duplicates_removed }}</td>
+                </tr>
+            </tbody>
+         </table>
 
         <!-- Outliers Capped -->
         {% if model.training_logs.cleaning_report.outliers_capped %}
         <div class="mb-4">
-            <p class="text-sm font-medium text-gray-600 mb-2">Outliers Capped</p>
+            <p class="text-sm font-bold text-gray-600 text-lg mb-2 uppercase">Outliers Capped</p>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg">
                     <thead class="bg-gray-100">
@@ -284,7 +366,7 @@
                     <tbody>
                         {% for feature, count in model.training_logs.cleaning_report.outliers_capped.items %}
                         <tr class="border-b">
-                            <td class="px-4 py-2">{{ feature }}</td>
+                            <td class="px-4 py-2">{{ feature|clean_ml_name }}</td>
                             <td class="px-4 py-2">{{ count }}</td>
                         </tr>
                         {% endfor %}
@@ -297,7 +379,7 @@
         <!-- Invalid Value Corrections -->
         {% if model.training_logs.cleaning_report.invalid_value_corrections %}
         <div class="mb-4">
-            <p class="text-sm font-medium text-gray-600 mb-2">Invalid Value Corrections</p>
+            <p class="text-sm font-bold text-gray-600 text-lg mb-2 uppercase">Invalid Value Corrections</p>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm text-left text-gray-500 border rounded-lg">
                     <thead class="bg-gray-100">
@@ -309,7 +391,7 @@
                     <tbody>
                         {% for type, count in model.training_logs.cleaning_report.invalid_value_corrections.items %}
                         <tr class="border-b">
-                            <td class="px-4 py-2">{{ type }}</td>
+                            <td class="px-4 py-2">{{ type|clean_ml_name }}</td>
                             <td class="px-4 py-2">{{ count }}</td>
                         </tr>
                         {% endfor %}

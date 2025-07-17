@@ -13,21 +13,24 @@ class Predictor:
         self.models = {}
         self.preprocessors = {}
 
-    def predict(self, model_type, input_data, algorithm=None):
+    def predict(self, model_type, input_data, algorithm=None, version=None):
         """Make prediction using trained model
 
         Args:
             model_type (str): Type of model to use for prediction
             input_data (dict): Input data dictionary
             algorithm (str, optional): Specific algorithm to use
-
+            version (int, optional): Version of the model
         Returns:
             dict: Prediction results including predicted value, confidence interval, and uncertainty
         """
         if algorithm is None:
             algorithm = DEFAULT_ALGORITHMS.get(model_type, "random_forest")
 
-        model_key = f"{model_type}_{algorithm}"
+        if version is None:
+            model_key = f"{model_type}_{algorithm}"
+        else:
+            model_key = f"{model_type}_{algorithm}_version_{version}"
 
         model, preprocessor, model_info = self._load_model_and_preprocessor(model_key)
         if model is None:
