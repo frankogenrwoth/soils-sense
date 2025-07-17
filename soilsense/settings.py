@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+import dj_database_url
 
 load_dotenv()
 
@@ -86,11 +87,22 @@ WSGI_APPLICATION = "soilsense.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     },
+#     "opt": {
+#         "ENGINE": "django.db.backends"
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.parse(
+        'postgresql://postgres.drdazezbpttffpfiuteh:qa8KR7yMQJNxx35E@aws-0-eu-west-2.pooler.supabase.com:6543/postgres', 
+        conn_max_age=600, 
+        ssl_require=True,
+    )
 }
 
 
