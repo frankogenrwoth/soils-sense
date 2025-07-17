@@ -37,11 +37,8 @@ logs/
 *.log
 
 # media files
-media/
 mediafiles/
 staticfiles/
-static/
-
 
 
 
