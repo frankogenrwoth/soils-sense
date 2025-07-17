@@ -7,6 +7,9 @@
     <title>{% block title %}SoilSense - Smart Soil Monitoring{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* body::-webkit-scrollbar {
+            display: none;
+        } */
         #bg-slider-img {
             transition: opacity 1s ease-in-out;
         }
@@ -16,24 +19,47 @@
 <body class="bg-gray-50 text-gray-800 relative">
 
 <!-- ✅ NAVIGATION BAR -->
-<nav class="bg-gray-800 text-white px-6 py-4 fixed w-full top-0 z-50 shadow-md">
+<nav class="bg-gradient-to-r from-green-400 via-green-500 to-green-600/90 text-white px-6 py-4 fixed w-full top-0 z-50 shadow-lg border-b border-green-200/60 backdrop-blur-md bg-opacity-80 rounded-2xl border-4 border-green-300 mx-2 mt-2">
     <div class="container mx-auto flex justify-between items-center">
-        <div class="text-2xl font-bold"><a href="/">SoilSense</a></div>
-        <ul class="flex space-x-6 text-sm">
-            <li><a href="#features" class="hover:text-green-400">Features</a></li>
-            <li><a href="#how" class="hover:text-green-400">How It Works</a></li>
-            <li><a href="/about" class="hover:text-green-400">About</a></li>
-            <li><a href="/contact" class="hover:text-green-400">Contact</a></li>
+        <div class="text-2xl font-bold tracking-wide drop-shadow-lg">
+            <a href="/" class="hover:text-green-100 transition-colors duration-200 hover:scale-105 inline-block">SoilSense</a>
+        </div>
+        <ul class="flex space-x-2 text-sm">
+            <li><a href="#features" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">Features</a></li>
+            <li><a href="#how" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">How It Works</a></li>
+            <li><a href="/about" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">About</a></li>
+            <li><a href="/contact" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">Contact</a></li>
         </ul>
         <div class="flex space-x-3">
-            <a href="{% url 'authentication:login' %}" class="hover:text-green-400">Login</a>
-            <a href="{% url 'authentication:signup' %}" class="bg-green-500 px-4 py-1 rounded hover:bg-green-600">Sign Up</a>
+            <a href="{% url 'authentication:login' %}" class="rounded px-4 py-1 font-semibold border border-white/40 hover:bg-white/10 hover:text-green-100 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-200">Login</a>
+            <a href="{% url 'authentication:signup' %}" class="rounded-full bg-white text-green-700 font-bold px-5 py-1.5 shadow-md hover:bg-green-100 hover:scale-105 hover:shadow-lg focus:ring-2 focus:ring-green-200 transition duration-200 border-2 border-green-400 animate-pulse">Sign Up</a>
         </div>
     </div>
+    <style>
+    .nav-underline {
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-underline::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0.2rem;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6ee7b7 0%, #22d3ee 100%);
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+      border-radius: 2px;
+    }
+    .nav-underline:hover::after, .nav-underline:focus::after {
+      left: 25%;
+      width: 50%;
+    }
+    </style>
 </nav>
 
 <!-- ✅ MAIN CONTENT -->
-<main class="pt-20">
+<main>
     {% block content %}
     {% endblock %}
 </main>

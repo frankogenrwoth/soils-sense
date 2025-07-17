@@ -5,9 +5,9 @@
 
 {% block content %}
 <!-- ✅ HERO SECTION -->
-<section class="relative h-screen flex items-center justify-center">
-  <img id="bg-slider-img" src="{% static 'images/slide1.jpg' %}" class="absolute w-full h-full object-cover z-0 transition-opacity duration-700" />
-  <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-green-900/40 z-10 flex flex-col items-center justify-center text-white text-center">
+<section class="relative h-screen flex items-center justify-center pt-30">
+  <img id="bg-slider-img" src="{% static 'images/slide1.jpg' %}" class="absolute w-full h-full object-cover z-0 transition-opacity duration-1000" />
+  <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-green-900/10 z-10 flex flex-col items-center justify-center text-white text-center">
     <h1 class="text-5xl md:text-6xl font-extrabold drop-shadow animate-fade-in">
       Grow Smarter. <span class="text-green-300">Harvest Better.</span>
     </h1>
@@ -23,141 +23,195 @@
   </div>
 </section>
 <!-- ✅ FEATURES SECTION -->
-<section id="features" class="py-20 bg-white">
+<section id="features" class="pt-20 py-20 bg-gradient-to-b from-green-50 to-white">
     <div class="max-w-6xl mx-auto px-6 text-center">
-        <h2 class="text-4xl font-bold mb-4 text-gray-800">Powerful Features for Smart Farming</h2>
-        <p class="text-gray-600 mb-12 text-lg">Everything you need to monitor, analyze, and improve your soil's health.</p>
-
+        <h2 class="text-4xl font-extrabold mb-4 text-green-800 drop-shadow">Powerful Features for Smart Farming</h2>
+        <p class="text-gray-700 mb-12 text-lg">Everything you need to monitor, analyze, and improve your soil's health.</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Feature 1 -->
-            <div class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-lg p-6 transition-all shadow-md hover:shadow-lg">
-                <div class="flex items-center justify-center mb-4 text-green-600">
+            <div class="bg-white hover:bg-green-100 border border-green-200 rounded-2xl p-8 transition-all shadow-lg hover:scale-105 hover:shadow-2xl group">
+                <div class="flex items-center justify-center mb-4 text-green-600 group-hover:text-green-800 transition">
                     <!-- Heroicon: Chart Bar -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V9m4 6v-3M5 19h14" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Live Soil Monitoring</h3>
-                <p class="text-gray-600">Access real-time moisture readings from all your fields on one smart dashboard.</p>
+                <h3 class="text-xl font-bold text-green-900 mb-2">Live Soil Monitoring</h3>
+                <p class="text-gray-700">Access real-time moisture readings from all your fields on one smart dashboard.</p>
             </div>
-
             <!-- Feature 2 -->
-            <div class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-lg p-6 transition-all shadow-md hover:shadow-lg">
-                <div class="flex items-center justify-center mb-4 text-green-600">
+            <div class="bg-white hover:bg-green-100 border border-green-200 rounded-2xl p-8 transition-all shadow-lg hover:scale-105 hover:shadow-2xl group">
+                <div class="flex items-center justify-center mb-4 text-green-600 group-hover:text-green-800 transition">
                     <!-- Heroicon: Trending Up -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17l6-6 4 4 8-8" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Visual Reports & Trends</h3>
-                <p class="text-gray-600">Track moisture over time with easy-to-read charts that support seasonal planning.</p>
+                <h3 class="text-xl font-bold text-green-900 mb-2">Visual Reports & Trends</h3>
+                <p class="text-gray-700">Track moisture over time with easy-to-read charts that support seasonal planning.</p>
             </div>
-
             <!-- Feature 3 -->
-            <div class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-lg p-6 transition-all shadow-md hover:shadow-lg">
-                <div class="flex items-center justify-center mb-4 text-green-600">
+            <div class="bg-white hover:bg-green-100 border border-green-200 rounded-2xl p-8 transition-all shadow-lg hover:scale-105 hover:shadow-2xl group">
+                <div class="flex items-center justify-center mb-4 text-green-600 group-hover:text-green-800 transition">
                     <!-- Heroicon: Bell Alert -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3c0 .386-.146.735-.405 1.005L4 17h5m6 0v1a3 3 0 11-6 0v-1h6z" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Smart Notifications</h3>
-                <p class="text-gray-600">Get instant alerts when your soil is too dry or too wet — never over- or under-water again.</p>
+                <h3 class="text-xl font-bold text-green-900 mb-2">Smart Notifications</h3>
+                <p class="text-gray-700">Get instant alerts when your soil is too dry or too wet — never over- or under-water again.</p>
             </div>
         </div>
     </div>
 </section>
 
-
-
 <!-- ✅ HOW IT WORKS -->
-<section id="how" class="py-16 bg-gray-100">
-    <h2 class="text-3xl font-bold text-center mb-10">How It Works</h2>
-    <div class="flex flex-col md:flex-row justify-around items-center max-w-5xl mx-auto gap-10 px-6">
-        <div class="text-center">
-            <div class="text-5xl mb-2">1️⃣</div>
-            <h4 class="font-bold text-lg mb-1">Install Sensors</h4>
-            <p>Place wireless soil moisture sensors in your field.</p>
+<section id="how" class="py-16 bg-green-50">
+    <h2 class="text-3xl font-extrabold text-center mb-10 text-green-800 drop-shadow">How It Works</h2>
+    <div class="overflow-hidden w-full">
+      <div class="how-marquee flex gap-10 w-max">
+        <div class="text-center bg-white rounded-2xl shadow-lg p-8 min-w-[300px] hover:scale-105 transition how-card">
+            <div class="text-6xl mb-2 text-green-600">1️⃣</div>
+            <h4 class="font-bold text-lg mb-1 text-green-900">Install Sensors</h4>
+            <p class="text-gray-700">Place wireless soil moisture sensors in your field.</p>
         </div>
-        <div class="text-center">
-            <div class="text-5xl mb-2">2️⃣</div>
-            <h4 class="font-bold text-lg mb-1">Connect & Stream</h4>
-            <p>Data is automatically sent to the web app via API.</p>
+        <div class="text-center bg-white rounded-2xl shadow-lg p-8 min-w-[300px] hover:scale-105 transition how-card">
+            <div class="text-6xl mb-2 text-green-600">2️⃣</div>
+            <h4 class="font-bold text-lg mb-1 text-green-900">Connect & Stream</h4>
+            <p class="text-gray-700">Data is automatically sent to the web app via API.</p>
         </div>
-        <div class="text-center">
-            <div class="text-5xl mb-2">3️⃣</div>
-            <h4 class="font-bold text-lg mb-1">View & Act</h4>
-            <p>Log in, monitor graphs, and take action accordingly.</p>
+        <div class="text-center bg-white rounded-2xl shadow-lg p-8 min-w-[300px] hover:scale-105 transition how-card">
+            <div class="text-6xl mb-2 text-green-600">3️⃣</div>
+            <h4 class="font-bold text-lg mb-1 text-green-900">View & Act</h4>
+            <p class="text-gray-700">Log in, monitor graphs, and take action accordingly.</p>
         </div>
+        <!-- Duplicate for seamless loop -->
+        <div class="text-center bg-white rounded-2xl shadow-lg p-8 min-w-[300px] hover:scale-105 transition how-card">
+            <div class="text-6xl mb-2 text-green-600">1️⃣</div>
+            <h4 class="font-bold text-lg mb-1 text-green-900">Install Sensors</h4>
+            <p class="text-gray-700">Place wireless soil moisture sensors in your field.</p>
+        </div>
+        <div class="text-center bg-white rounded-2xl shadow-lg p-8 min-w-[300px] hover:scale-105 transition how-card">
+            <div class="text-6xl mb-2 text-green-600">2️⃣</div>
+            <h4 class="font-bold text-lg mb-1 text-green-900">Connect & Stream</h4>
+            <p class="text-gray-700">Data is automatically sent to the web app via API.</p>
+        </div>
+        <div class="text-center bg-white rounded-2xl shadow-lg p-8 min-w-[300px] hover:scale-105 transition how-card">
+            <div class="text-6xl mb-2 text-green-600">3️⃣</div>
+            <h4 class="font-bold text-lg mb-1 text-green-900">View & Act</h4>
+            <p class="text-gray-700">Log in, monitor graphs, and take action accordingly.</p>
+        </div>
+      </div>
     </div>
 </section>
 
 <!-- ✅ WHO IT’S FOR -->
-<section id="users" class="py-16 bg-white text-center">
-    <h2 class="text-3xl font-bold mb-10">Who Uses SoilSense?</h2>
-    <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto px-8">
-        <div>
-            <h4 class="text-xl font-semibold mb-2">🌾 Farmers</h4>
-            <p>Maximize yields and reduce irrigation costs with data-driven decisions.</p>
-        </div>
-        <div>
-            <h4 class="text-xl font-semibold mb-2">👨‍🔬 Researchers</h4>
-            <p>Collect consistent, exportable soil moisture data for experiments.</p>
-        </div>
-        <div>
-            <h4 class="text-xl font-semibold mb-2">🏢 Agencies</h4>
-            <p>Monitor soil conditions in districts or regions for climate-smart planning.</p>
+<section id="users" class="py-16 bg-white text-center relative" style="background-image: url('{% static 'images/ladyone.jpg' %}'); background-size: cover; background-position: center;">
+    <div class="absolute inset-0 bg-white/50 backdrop-blur-sm"></div>
+    <div class="relative z-10">
+        <h2 class="text-3xl font-extrabold mb-10 text-green-800 drop-shadow">Who Uses SoilSense?</h2>
+        <div class="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto px-8">
+            <div class="bg-green-50 rounded-2xl shadow-lg p-8 hover:scale-105 transition">
+                <h4 class="text-2xl font-bold mb-2 text-green-900">🌾 Farmers</h4>
+                <p class="text-gray-700">Maximize yields and reduce irrigation costs with data-driven decisions.</p>
+            </div>
+            <div class="bg-green-50 rounded-2xl shadow-lg p-8 hover:scale-105 transition">
+                <h4 class="text-2xl font-bold mb-2 text-green-900">👨‍🔬 Researchers</h4>
+                <p class="text-gray-700">Collect consistent, exportable soil moisture data for experiments.</p>
+            </div>
+            <div class="bg-green-50 rounded-2xl shadow-lg p-8 hover:scale-105 transition">
+                <h4 class="text-2xl font-bold mb-2 text-green-900">🏢 Agencies</h4>
+                <p class="text-gray-700">Monitor soil conditions in districts or regions for climate-smart planning.</p>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- ✅ SCREENSHOTS -->
 <section class="py-16 bg-gray-100 text-center">
-    <h2 class="text-3xl font-bold mb-8">App Preview</h2>
+    <h2 class="text-3xl font-extrabold mb-8 text-green-800 drop-shadow">App Preview</h2>
     <div class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto px-6">
-        <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="rounded shadow-md">
-        <img src="{% static 'images/chart-preview.png' %}" alt="Chart" class="rounded shadow-md">
+        <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="rounded-2xl shadow-xl hover:scale-105 transition duration-200 border-4 border-green-100">
+        <img src="{% static 'images/chart-preview.png' %}" alt="Chart" class="rounded-2xl shadow-xl hover:scale-105 transition duration-200 border-4 border-green-100">
     </div>
 </section>
 
 <!-- ✅ CONTACT FORM -->
-<section id="contact" class="py-16 bg-white">
+<section id="contact" class="py-20 bg-gradient-to-b from-white to-green-50">
     <div class="max-w-2xl mx-auto text-center">
-        <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
-        <p class="mb-8">Need help? Want a demo? Fill in the form below:</p>
-        <form method="post" action="/contact/" class="space-y-4 text-left">
+        <h2 class="text-3xl font-extrabold mb-6 text-green-800 drop-shadow">Contact Us</h2>
+        <p class="mb-8 text-gray-700">Need help? Want a demo? Fill in the form below:</p>
+        <form method="post" action="/contact/" class="space-y-6 text-left bg-white border border-green-100 rounded-2xl shadow-xl p-10">
             {% csrf_token %}
-            <input type="text" name="name" placeholder="Your Name" required class="w-full px-4 py-2 border rounded">
-            <input type="email" name="email" placeholder="Your Email" required class="w-full px-4 py-2 border rounded">
-            <textarea name="message" rows="4" placeholder="Your Message" required class="w-full px-4 py-2 border rounded"></textarea>
-            <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Send Message</button>
+            <input type="text" name="name" placeholder="Your Name" required class="w-full px-5 py-3 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none text-lg">
+            <input type="email" name="email" placeholder="Your Email" required class="w-full px-5 py-3 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none text-lg">
+            <textarea name="message" rows="4" placeholder="Your Message" required class="w-full px-5 py-3 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none text-lg"></textarea>
+            <button type="submit" class="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white px-8 py-3 rounded-full font-bold shadow-md hover:scale-105 hover:bg-green-700 transition duration-200">Send Message</button>
+            {% if messages %}
+                <div class="mt-4">
+                    {% for message in messages %}
+                        <div class="p-4 mb-2 text-sm text-green-800 bg-green-100 rounded-lg shadow" role="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </form>
     </div>
 </section>
 {% endblock %}
 
 {% block scripts %}
+<style>
+@keyframes slide-in-right {
+  0% { transform: translateX(100vw); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.how-works-animate {
+  animation: slide-in-right 1s cubic-bezier(0.4,0,0.2,1) both;
+}
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.how-marquee {
+  animation: marquee-left 18s linear infinite;
+}
+</style>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const images = [
-      "{% static 'images/slide1.jpg' %}", // general
-      "{% static 'images/wheat.jpg' %}", // general
-      "{% static 'images/lady.jpg' %}", // lady
-      "{% static 'images/lady3.jpg' %}", // lady
-      "{% static 'images/ladyone.jpg' %}" // lady
-    ];
-    let current = 0;
-    const imgEl = document.getElementById('bg-slider-img');
+document.addEventListener('DOMContentLoaded', function () {
+  const images = [
+    "{% static 'images/slide1.jpg' %}", // general
+    "{% static 'images/garden2.jpg' %}", // general
+    "{% static 'images/lady.jpg' %}", // lady
+    "{% static 'images/lady3.jpg' %}", // lady
+    "{% static 'images/ladyone.jpg' %}" // lady
+  ];
+  let current = 0;
+  const imgEl = document.getElementById('bg-slider-img');
 
-    setInterval(() => {
-      imgEl.classList.add('opacity-0');
-      setTimeout(() => {
-        current = (current + 1) % images.length;
-        imgEl.src = images[current];
-        imgEl.classList.remove('opacity-0');
-      }, 700);
-    }, 4000);
-  });
+  setInterval(() => {
+    imgEl.classList.add('opacity-0');
+    setTimeout(() => {
+      current = (current + 1) % images.length;
+      imgEl.src = images[current];
+      imgEl.classList.remove('opacity-0');
+    }, 700);
+  }, 4000);
+
+  // Staggered slide in for 'How It Works' cards
+  const howSection = document.getElementById('how');
+  const howCards = howSection.querySelectorAll('.how-card');
+  let howAnimated = false;
+  function animateHowCards() {
+    if (!howAnimated && howSection.getBoundingClientRect().top < window.innerHeight - 100) {
+      howCards.forEach((card, i) => {
+        setTimeout(() => card.classList.add('how-works-animate'), i * 250);
+      });
+      howAnimated = true;
+    }
+  }
+  window.addEventListener('scroll', animateHowCards);
+  animateHowCards();
+});
 </script>
 {% endblock %}
 
