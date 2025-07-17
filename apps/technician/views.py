@@ -677,10 +677,9 @@ def add_farm(request):
 
 @technician_required
 def models_view(request):
-    # Get all trained models with details
     ml_engine = MLEngine()
-    models = ml_engine.list_all_models()
-    return render(request, 'technician/models.html', {'models': models})
+    model_data = [ml_engine.get_model_info(model_type) for model_type in ml_engine.get_available_models()]
+    return render(request, 'technician/models.html', {'models': model_data})
 
 @technician_required
 def delete_prediction(request, pk):
