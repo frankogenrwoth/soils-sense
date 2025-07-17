@@ -46,58 +46,49 @@ def dashboard(request):
         context = {'error': 'No farms found. Please add a farm first.'}
         return render(request, 'farmer/dashboard.html', context)
 
-    latest_reading = SoilMoistureReading.objects.filter(
-        farm=selected_farm
-    ).order_by('-timestamp').first()
-
-    latest_weather = WeatherData.objects.filter(
-        farm=selected_farm,
-        is_forecast=False
-    ).order_by('-timestamp').first()
-
-    latest_irrigation = IrrigationEvent.objects.filter(
-        farm=selected_farm
-    ).order_by('-start_time').first()
-
-    recent_alerts = Alert.objects.filter(
-        farm=selected_farm,
-        is_read=False
-    )[:3]
-
-    seven_days_ago = datetime.now() - timedelta(days=7)
+    # Get the last 7 days of readings
+    seven_days_ago = timezone.now() - timedelta(days=7)
     moisture_history = SoilMoistureReading.objects.filter(
         farm=selected_farm,
         timestamp__gte=seven_days_ago,
-        soil_moisture_percent__isnull=False  # Exclude null values
     ).order_by('timestamp')
 
-    # Filter out any None values and safely convert to float
-    moisture_dates = []
-    moisture_values = []
+    # Initialize lists for chart data
+    dates = []
+    predicted_values = []
+
+    # Initialize the soil moisture predictor
+    predictor = SoilMoisturePredictor()
+
+    # Process readings and collect data for charts
     for reading in moisture_history:
         try:
-            if reading.soil_moisture_percent is not None:
-                moisture_dates.append(reading.timestamp.strftime('%Y-%m-%d'))
-                moisture_values.append(float(reading.soil_moisture_percent))
-        except (ValueError, TypeError):
+            dates.append(reading.timestamp.strftime('%Y-%m-%d %H:%M'))
+            
+            # Make prediction using gradient boosting
+            prediction = predictor.predict_moisture(
+                sensor_id=reading.sensor_id,
+                location=selected_farm.location,
+                temperature_celsius=reading.temperature_celsius,
+                humidity_percent=reading.humidity_percent,
+                battery_voltage=reading.battery_voltage,
+                status=reading.status,
+                irrigation_action=reading.irrigation_action,
+                timestamp=reading.timestamp,
+                algorithm='random_forest'
+            )
+            
+            if prediction['success']:
+                predicted_values.append(float(prediction['predicted_value']))
+            else:
+                predicted_values.append(None)
+
+        except (ValueError, TypeError) as e:
+            print(f"Error processing reading: {e}")
             continue
 
-    yesterday = datetime.now() - timedelta(days=1)
-    today_avg = SoilMoistureReading.objects.filter(
-        farm=selected_farm,
-        timestamp__date=datetime.now().date(),
-        soil_moisture_percent__isnull=False  # Exclude null values
-    ).aggregate(Avg('soil_moisture_percent'))['soil_moisture_percent__avg'] or 0
-
-    yesterday_avg = SoilMoistureReading.objects.filter(
-        farm=selected_farm,
-        timestamp__date=yesterday.date(),
-        soil_moisture_percent__isnull=False  # Exclude null values
-    ).aggregate(Avg('soil_moisture_percent'))['soil_moisture_percent__avg'] or 0
-
-    moisture_change = today_avg - yesterday_avg if yesterday_avg > 0 else 0
-
-    # Safely handle None values when getting latest readings
+    # Get latest readings for display
+    latest_reading = moisture_history.first()
     try:
         current_moisture = round(float(latest_reading.soil_moisture_percent), 1) if latest_reading and latest_reading.soil_moisture_percent is not None else 0
         temperature = round(float(latest_reading.temperature_celsius), 1) if latest_reading and latest_reading.temperature_celsius is not None else 0
@@ -107,9 +98,8 @@ def dashboard(request):
         temperature = 0
         humidity = 0
 
-    # New: Get all unread/critical alerts for the selected farm
+    # Get alerts
     critical_alerts = Alert.objects.filter(farm=selected_farm, is_read=False, severity='critical')
-    # New: Get unread soil moisture alerts for the selected farm
     unread_moisture_alerts = Alert.objects.filter(
         farm=selected_farm,
         is_read=False,
@@ -122,16 +112,8 @@ def dashboard(request):
         'current_moisture': current_moisture,
         'temperature': temperature,
         'humidity': humidity,
-        'moisture_change': round(moisture_change, 1),
-        'moisture_change_direction': 'up' if moisture_change >= 0 else 'down',
-        'moisture_dates': json.dumps(moisture_dates),
-        'moisture_values': json.dumps(moisture_values),
-        'recent_alerts': recent_alerts,
-        'latest_irrigation': latest_irrigation,
-        'weather_data': latest_weather,
-        'prediction_available': False,
-        'moisture_predictions': [],
-        'recommendation': None,
+        'dates': json.dumps(dates),
+        'predicted_values': json.dumps(predicted_values),
         'critical_alerts': critical_alerts,
         'unread_moisture_alerts': unread_moisture_alerts,
     }

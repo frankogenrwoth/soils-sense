@@ -17,147 +17,239 @@
         <span class="block sm:inline">{{ error }}</span>
     </div>
 {% else %}
-    <!-- Farm Selector -->
-    {% if farms.count > 1 %}
-    <div class="mb-6">
-        <label for="farm-select" class="block text-sm font-medium text-gray-700 mb-2">Select Farm</label>
-        <select id="farm-select" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
-            {% for farm in farms %}
-                <option value="{{ farm.id }}" {% if farm.id == selected_farm.id %}selected{% endif %}>
-                    {{ farm.farm_name }}
-                </option>
-            {% endfor %}
-        </select>
+    <!-- Farm Selector and Quick Actions -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div class="flex-grow max-w-xs">
+            {% if farms.count > 1 %}
+            <label for="farm-select" class="block text-sm font-medium text-gray-700 mb-2">Select Farm</label>
+            <select id="farm-select" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+                {% for farm in farms %}
+                    <option value="{{ farm.id }}" {% if farm.id == selected_farm.id %}selected{% endif %}>
+                        {{ farm.farm_name }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
 
-    <!-- Quick Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Main Stats Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <!-- Temperature Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4  hover:shadow-lg transition-shadow">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-thermometer-half text-green-500 text-xl"></i>
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-thermometer-half text-red-500 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Temperature</h3>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Temperature</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ temperature }}°C</p>
-                    <p class="text-xs text-gray-600">Current Reading</p>
+            </div>
+            <div class="flex items-baseline mb-4">
+                <h2 class="text-3xl font-bold text-gray-900">{{ temperature }}°C</h2>
+            </div>
+            <div id="temperatureSparkline" class="h-16"></div>
+            <div class="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-gray-500">Min</p>
+                    <p class="font-semibold text-gray-900">10°C</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-gray-500">Avg</p>
+                    <p class="font-semibold text-gray-900">47°C</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-gray-500">Max</p>
+                    <p class="font-semibold text-gray-900">77°C</p>
                 </div>
             </div>
         </div>
 
         <!-- Humidity Card -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4  hover:shadow-lg transition-shadow">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mr-4">
                         <i class="fas fa-cloud text-blue-500 text-xl"></i>
                     </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Humidity</h3>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Humidity</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ humidity }}%</p>
-                    <p class="text-xs text-gray-600">Current Reading</p>
+            </div>
+            <div class="flex items-baseline mb-4">
+                <h2 class="text-3xl font-bold text-gray-900">{{ humidity }}%</h2>
+            </div>
+            <div id="humiditySparkline" class="h-16"></div>
+            <div class="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-gray-500">Min</p>
+                    <p class="font-semibold text-gray-900">10%</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-gray-500">Avg</p>
+                    <p class="font-semibold text-gray-900">45%</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-gray-500">Max</p>
+                    <p class="font-semibold text-gray-900">95%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soil Health Score -->
+        <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-seedling text-emerald-500 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Soil Health</h3>
+                        <p class="text-sm text-gray-500">Overall Score</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center mb-4">
+                <div class="relative w-32 h-32">
+                    <canvas id="soilHealthGauge"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="text-3xl font-bold text-gray-900">{{ soil_health_score }}</span>
+                        <span class="text-sm text-gray-500">out of 100</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-emerald-50 rounded-lg p-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-emerald-700">pH Level</span>
+                        <span class="font-medium text-emerald-900">6.8</span>
+                    </div>
+                    <div class="mt-1 h-1.5 w-full bg-emerald-200 rounded-full">
+                        <div class="h-1.5 bg-emerald-500 rounded-full" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="bg-emerald-50 rounded-lg p-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-emerald-700">Nutrients</span>
+                        <span class="font-medium text-emerald-900">Good</span>
+                    </div>
+                    <div class="mt-1 h-1.5 w-full bg-emerald-200 rounded-full">
+                        <div class="h-1.5 bg-emerald-500 rounded-full" style="width: 75%"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Soil Moisture Prediction System Overview -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <!-- About the System -->
-        <div class="bg-white rounded-xl shadow-md p-6">
-            <div class="flex items-center mb-4">
-                <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
-                    <i class="fas fa-brain text-primary text-xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900">How Our Predictions Work</h3>
-            </div>
-            <div class="prose prose-sm text-gray-600">
-                <p class="mb-4">Our advanced AI-powered soil moisture prediction system uses multiple data points to forecast soil conditions and provide tailored recommendations:</p>
-                <ul class="list-disc list-inside space-y-2 mb-4">
-                    <li><span class="font-medium text-gray-700">Real-time Sensors:</span> Continuous monitoring of soil moisture, temperature, and humidity</li>
-                    <li><span class="font-medium text-gray-700">Weather Integration:</span> Local weather forecasts and historical patterns</li>
-                    <li><span class="font-medium text-gray-700">Crop Data:</span> Specific requirements for your crops and growth stages</li>
-                    <li><span class="font-medium text-gray-700">Machine Learning:</span> Advanced algorithms trained on extensive agricultural datasets</li>
-                </ul>
-                <div class="bg-green-50 rounded-lg p-4 mb-4">
-                    <p class="text-sm text-green-800"><i class="fas fa-lightbulb text-green-600 mr-2"></i>Our predictions are updated every 6 hours to maintain accuracy and reliability.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- How Recommendations Work -->
-        <div class="bg-white rounded-xl shadow-md p-6">
-            <div class="flex items-center mb-4">
-                <div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center mr-3">
-                    <i class="fas fa-clipboard-list text-blue-500 text-xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900">Smart Recommendations</h3>
-            </div>
-            <div class="prose prose-sm text-gray-600">
-                <p class="mb-4">Our recommendation engine analyzes multiple factors to provide actionable insights:</p>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-blue-50 rounded-lg p-4">
-                        <h4 class="font-medium text-blue-900 mb-2">Input Factors</h4>
-                        <ul class="text-blue-800 text-sm space-y-1">
-                            <li><i class="fas fa-check-circle mr-1"></i>Soil moisture levels</li>
-                            <li><i class="fas fa-check-circle mr-1"></i>Weather forecasts</li>
-                            <li><i class="fas fa-check-circle mr-1"></i>Crop water needs</li>
-                            <li><i class="fas fa-check-circle mr-1"></i>Growth stage</li>
-                        </ul>
-                    </div>
-                    <div class="bg-purple-50 rounded-lg p-4">
-                        <h4 class="font-medium text-purple-900 mb-2">Output Actions</h4>
-                        <ul class="text-purple-800 text-sm space-y-1">
-                            <li><i class="fas fa-arrow-right mr-1"></i>Irrigation timing</li>
-                            <li><i class="fas fa-arrow-right mr-1"></i>Water quantity</li>
-                            <li><i class="fas fa-arrow-right mr-1"></i>Resource optimization</li>
-                            <li><i class="fas fa-arrow-right mr-1"></i>Risk prevention</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="bg-yellow-50 rounded-lg p-4">
-                    <p class="text-sm text-yellow-800"><i class="fas fa-exclamation-circle text-yellow-600 mr-2"></i>Recommendations are customized based on your farm's specific conditions and historical performance.</p>
-                </div>
-            </div>
+    <!-- Soil Moisture Trends -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Soil Moisture Trends</h3>
+        <p class="text-sm text-gray-600 mb-4">ML predictions using Random Forest</p>
+        <div class="h-64">
+            <canvas id="moistureTrendChart"></canvas>
         </div>
     </div>
 
-    {% if prediction_available %}
-    <!-- Current Predictions Section -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Current Predictions & Recommendations</h3>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-                <canvas id="predictionChart" width="400" height="200"></canvas>
+    <!-- Farm Details Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Farm Information -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">Farm Information</h3>
+                    <p class="text-sm text-gray-500">Details and Statistics</p>
+                </div>
+                <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-farm text-indigo-500"></i>
+                </div>
             </div>
-            <div>
-                <h4 class="text-md font-semibold text-gray-900 mb-4">AI-Generated Recommendations</h4>
-                {% if recommendation %}
-                    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
-                        <div class="flex items-center mb-3">
-                            <i class="fas fa-robot text-green-600 text-xl mr-3"></i>
-                            <h5 class="font-medium text-green-900">System Suggestion</h5>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Basic Details -->
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Basic Information</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Farm Name</span>
+                                <span class="font-medium text-gray-900">{{ selected_farm.farm_name }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Location</span>
+                                <span class="font-medium text-gray-900">{{ selected_farm.location }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Area</span>
+                                <span class="font-medium text-gray-900">{{ selected_farm.area }} hectares</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Soil Type</span>
+                                <span class="font-medium text-gray-900">{{ selected_farm.soil_type }}</span>
+                            </div>
+                            
                         </div>
-                        <p class="text-green-700">{{ recommendation }}</p>
                     </div>
-                {% else %}
-                    <div class="bg-gray-50 border-l-4 border-gray-500 p-6 rounded-lg">
-                        <p class="text-gray-600">Gathering more data to generate personalized recommendations...</p>
+                </div>
+
+                <!-- Crop Information -->
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Current Crops</h4>
+                        <div class="space-y-3">
+                            {% for crop in selected_farm.crops.all %}
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-seedling text-green-500 mr-2"></i>
+                                    <span class="text-gray-900">{{ crop.crop_name }}</span>
+                                </div>
+                                <span class="text-sm text-gray-500">{{ crop.planted_date|date:"M d, Y" }}</span>
+                            </div>
+                            {% empty %}
+                            <p class="text-gray-500 text-sm">No crops currently planted</p>
+                            {% endfor %}
+                        </div>
                     </div>
-                {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Statistics</h3>
+            <div class="space-y-4">
+                <div class="bg-indigo-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-indigo-700">Active Sensors</span>
+                        <span class="font-medium text-indigo-900">{{ selected_farm.sensors.count }}</span>
+                    </div>
+                    <div class="flex items-center text-xs text-indigo-600">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        <span>All sensors operational</span>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-green-700">Crop Varieties</span>
+                        <span class="font-medium text-green-900">{{ selected_farm.crops.count }}</span>
+                    </div>
+                    <div class="flex items-center text-xs text-green-600">
+                        <i class="fas fa-calendar mr-1"></i>
+                        <span>Next harvest in 45 days</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    {% endif %}
 {% endif %}
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Farm selector handler
@@ -168,43 +260,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    {% if prediction_available %}
-    // Prediction chart
-    const predCtx = document.getElementById('predictionChart').getContext('2d');
-    new Chart(predCtx, {
+    // Sparkline charts configuration
+    const sparklineOptions = {
+        chart: {
+            type: 'area',
+            height: 60,
+            sparkline: { enabled: true },
+            toolbar: { show: false },
+            animations: { enabled: true },
+            zoom: { enabled: false }
+        },
+        stroke: { curve: 'smooth', width: 2 },
+        fill: { 
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.3,
+                stops: [0, 90, 100]
+            }
+        },
+        tooltip: {
+            fixed: { enabled: false },
+            x: { show: false },
+            y: { title: { formatter: function (seriesName) { return ''; } } },
+            marker: { show: false }
+        }
+    };
+
+    // Temperature Sparkline
+    const tempHistory = JSON.parse('{{ temperature_history|default:"[20,22,21,23,22,24,23]"|safe }}');
+    new ApexCharts(document.querySelector("#temperatureSparkline"), {
+        ...sparklineOptions,
+        series: [{
+            name: 'Temperature',
+            data: tempHistory
+        }],
+        colors: ['#EF4444']
+    }).render();
+
+    // Humidity Sparkline
+    const humidHistory = JSON.parse('{{ humidity_history|default:"[65,63,68,64,66,65,67]"|safe }}');
+    new ApexCharts(document.querySelector("#humiditySparkline"), {
+        ...sparklineOptions,
+        series: [{
+            name: 'Humidity',
+            data: humidHistory
+        }],
+        colors: ['#3B82F6']
+    }).render();
+
+    // Soil Moisture Trends Chart
+    const moistureTrendCtx = document.getElementById('moistureTrendChart').getContext('2d');
+    const dates = JSON.parse('{{ dates|safe }}');
+    const predictedValues = JSON.parse('{{ predicted_values|safe }}');
+    
+    new Chart(moistureTrendCtx, {
         type: 'line',
         data: {
-            labels: {{ prediction_dates|safe }},
-            datasets: [{
-                label: 'Actual Moisture',
-                data: {{ moisture_values|safe }},
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
-                fill: false
-            },
-            {
-                label: 'Predicted Moisture',
-                data: {{ moisture_predictions|safe }},
-                borderColor: '#6366F1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                tension: 0.4,
-                fill: false,
-                borderDash: [5, 5]
-            }]
+            labels: dates,
+            datasets: [
+                {
+                    label: 'ML Predictions',
+                    data: predictedValues,
+                    borderColor: '#6366F1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointHoverRadius: 4,
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top'
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10,
+                        font: {
+                            size: 11
+                        }
+                    }
                 },
-                title: {
-                    display: true,
-                    text: 'Soil Moisture Prediction Analysis',
-                    font: {
-                        size: 16
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Predicted Moisture: ${context.parsed.y.toFixed(2)}%`;
+                        }
                     }
                 }
             },
@@ -214,25 +362,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     max: 100,
                     title: {
                         display: true,
-                        text: 'Moisture Level (%)'
+                        text: 'Soil Moisture (%)',
+                        font: { size: 11 }
                     },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    }
+                    ticks: { font: { size: 10 } }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Timeline'
+                        text: 'Date',
+                        font: { size: 11 }
                     },
-                    grid: {
-                        display: false
-                    }
+                    ticks: { font: { size: 10 } }
                 }
             }
         }
     });
-    {% endif %}
+
+    // Soil Health Gauge
+    const soilHealthScore = {{ soil_health_score|default:75 }};
+    const soilHealthGauge = new Chart(document.getElementById('soilHealthGauge').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [soilHealthScore, 100 - soilHealthScore],
+                backgroundColor: ['#10B981', '#E5E7EB'],
+                borderWidth: 0,
+                circumference: 270,
+                rotation: 225
+            }]
+        },
+        options: {
+            cutout: '75%',
+            plugins: { legend: { display: false } },
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
 });
 </script>
 {% endblock %}
