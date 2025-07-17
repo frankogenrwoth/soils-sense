@@ -58,6 +58,51 @@
         border-radius: 0.5rem;
         color: #6c757d;
     }
+
+    .input-method-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .input-method-btn {
+        flex: 1;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .input-method-btn:hover {
+        border-color: #0d6efd;
+        background: #f8f9fa;
+    }
+
+    .input-method-btn.active {
+        border-color: #0d6efd;
+        background: #e7f1ff;
+    }
+
+    .input-method-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #0d6efd;
+    }
+
+    .input-method-btn h5 {
+        margin: 0;
+        color: #495057;
+    }
+
+    .form-section {
+        display: none;
+    }
+
+    .form-section.active {
+        display: block;
+    }
 </style>
 {% endblock %}
 
@@ -71,6 +116,21 @@
                     <i class="fas fa-file-csv me-2"></i>Download CSV
                 </a>
             </div>
+
+            <!-- Input Method Selection -->
+            <div class="input-method-buttons">
+                <button class="input-method-btn active" data-form="manual-input">
+                    <i class="fas fa-keyboard"></i>
+                    <h5>Manual Input</h5>
+                    <small class="text-muted">Enter data manually</small>
+                </button>
+                <button class="input-method-btn" data-form="csv-upload">
+                    <i class="fas fa-file-upload"></i>
+                    <h5>CSV Upload</h5>
+                    <small class="text-muted">Upload data via CSV</small>
+                </button>
+            </div>
+
             <!-- Farm Selection -->
             <div class="card shadow border-0 rounded-3 mb-4">
                 <div class="card-header bg-primary text-white">
@@ -84,7 +144,9 @@
                                 <select class="form-select form-select-lg" id="farmSelect" name="farm" required>
                                     <option value="">Select a farm...</option>
                                     {% for farm in farms %}
-                                        <option value="{{ farm.id }}">{{ farm.farm_name }}</option>
+                                        <option value="{{ farm.id }}" data-location="{{ farm.location }}">
+                                            {{ farm.farm_name }}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -106,54 +168,108 @@
             </div>
             {% endif %}
 
-            <!-- Soil Moisture Prediction Form -->
-            <div class="card shadow border-0 rounded-3 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0 prediction-title">Get Predictions</h4>
+            <!-- Manual Input Form Section -->
+            <div id="manual-input-section" class="form-section active">
+                <div class="card shadow border-0 rounded-3 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0 prediction-title">Manual Data Entry</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="soilMoistureForm" method="POST" action="{% url 'farmer:predictions' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="predict_type" value="soil_moisture">
+                            <input type="hidden" name="farm" id="selectedFarmId">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="location" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="location" name="location" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="temperature" class="form-label">Temperature (°C)</label>
+                                    <input type="number" step="0.001" class="form-control" id="temperature" name="temperature" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="humidity" class="form-label">Humidity (%)</label>
+                                    <input type="number" step="0.001" class="form-control" id="humidity" name="humidity" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="battery_voltage" class="form-label">Battery Voltage</label>
+                                    <input type="number" step="0.001" class="form-control" id="battery_voltage" name="battery_voltage" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="algorithm" class="form-label">Soil Moisture Algorithm</label>
+                                    <select class="form-select" id="algorithm" name="algorithm">
+                                        {% for algo in soil_algorithms %}
+                                            <option value="{{ algo }}" {% if algo == default_soil_algorithm %}selected{% endif %}>{{ algo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="algorithm_irr" class="form-label">Irrigation Algorithm</label>
+                                    <select class="form-select" id="algorithm_irr" name="algorithm_irr">
+                                        {% for algo in irrigation_algorithms %}
+                                            <option value="{{ algo }}" {% if algo == default_irrigation_algorithm %}selected{% endif %}>{{ algo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary px-4">Get Predictions</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form id="soilMoistureForm" method="POST" action="{% url 'farmer:predictions' %}" class="mb-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="predict_type" value="soil_moisture">
-                        <input type="hidden" name="farm" id="selectedFarmId">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="location" class="form-label">Location</label>
-                                <input type="text" class="form-control" id="location" name="location" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="temperature" class="form-label">Temperature (°C)</label>
-                                <input type="number" step="0.001" class="form-control" id="temperature" name="temperature" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="humidity" class="form-label">Humidity (%)</label>
-                                <input type="number" step="0.001" class="form-control" id="humidity" name="humidity" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="battery_voltage" class="form-label">Battery Voltage</label>
-                                <input type="number" step="0.001" class="form-control" id="battery_voltage" name="battery_voltage" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="algorithm" class="form-label">Soil Moisture Algorithm</label>
-                                <select class="form-select" id="algorithm" name="algorithm">
-                                    {% for algo in soil_algorithms %}
-                                        <option value="{{ algo }}" {% if algo == default_soil_algorithm %}selected{% endif %}>{{ algo }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="algorithm_irr" class="form-label">Irrigation Algorithm</label>
-                                <select class="form-select" id="algorithm_irr" name="algorithm_irr">
-                                    {% for algo in irrigation_algorithms %}
-                                        <option value="{{ algo }}" {% if algo == default_irrigation_algorithm %}selected{% endif %}>{{ algo }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary px-4">Get Predictions</button>
-                            </div>
+            </div>
+
+            <!-- CSV Upload Form Section -->
+            <div id="csv-upload-section" class="form-section">
+                <div class="card shadow border-0 rounded-3 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0 prediction-title">CSV Data Upload</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <p class="text-sm text-muted mb-2">Download our template to ensure your data is formatted correctly:</p>
+                            <a href="{% url 'farmer:download_csv_template' %}" class="btn btn-outline-primary mb-3">
+                                <i class="fas fa-download me-2"></i>Download CSV Template
+                            </a>
                         </div>
-                    </form>
+
+                        <form id="csv-upload-form" method="POST" action="{% url 'farmer:upload_soil_data' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="farm" id="csvFarmId">
+                            <div class="mb-3">
+                                <label for="file-upload" class="form-label">Choose CSV File</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="file-upload" name="csv_file" accept=".csv" required>
+                                </div>
+                                <div class="form-text" id="file-name">No file chosen</div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="algorithm_csv" class="form-label">Soil Moisture Algorithm</label>
+                                    <select class="form-select" id="algorithm_csv" name="algorithm">
+                                        {% for algo in soil_algorithms %}
+                                            <option value="{{ algo }}" {% if algo == default_soil_algorithm %}selected{% endif %}>{{ algo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="algorithm_irr_csv" class="form-label">Irrigation Algorithm</label>
+                                    <select class="form-select" id="algorithm_irr_csv" name="algorithm_irr">
+                                        {% for algo in irrigation_algorithms %}
+                                            <option value="{{ algo }}" {% if algo == default_irrigation_algorithm %}selected{% endif %}>{{ algo }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fas fa-upload me-2"></i>Upload and Get Predictions
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -229,11 +345,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const farmSelect = document.getElementById('farmSelect');
     const alertMessage = document.getElementById('alertMessage');
     const selectedFarmId = document.getElementById('selectedFarmId');
+    const csvFarmId = document.getElementById('csvFarmId');
     const predictionForm = document.getElementById('soilMoistureForm');
+    const fileUpload = document.getElementById('file-upload');
+    const fileName = document.getElementById('file-name');
+    const inputMethodBtns = document.querySelectorAll('.input-method-btn');
     
     // Function to clear all form fields
     function clearFormFields() {
         selectedFarmId.value = '';
+        csvFarmId.value = '';
         document.getElementById('location').value = '';
         document.getElementById('temperature').value = '';
         document.getElementById('humidity').value = '';
@@ -245,12 +366,20 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const algoSelect = document.getElementById('algorithm');
         const algoIrrSelect = document.getElementById('algorithm_irr');
+        const algoCsvSelect = document.getElementById('algorithm_csv');
+        const algoIrrCsvSelect = document.getElementById('algorithm_irr_csv');
         
         if (algoSelect && defaultSoilAlgo) {
             algoSelect.value = defaultSoilAlgo;
         }
         if (algoIrrSelect && defaultIrrAlgo) {
             algoIrrSelect.value = defaultIrrAlgo;
+        }
+        if (algoCsvSelect && defaultSoilAlgo) {
+            algoCsvSelect.value = defaultSoilAlgo;
+        }
+        if (algoIrrCsvSelect && defaultIrrAlgo) {
+            algoIrrCsvSelect.value = defaultIrrAlgo;
         }
     }
     
@@ -265,49 +394,68 @@ document.addEventListener('DOMContentLoaded', function() {
             alertMessage.classList.add('d-none');
         }, 5000);
     }
-    
-    // Function to fetch and populate latest readings
-    async function fetchLatestReadings(farmId) {
-        try {
-            const response = await fetch(`{% url 'farmer:get_latest_readings' farm_id=0 %}`.replace('0', farmId));
-            const data = await response.json();
+
+    // Handle input method button clicks
+    inputMethodBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons and sections
+            inputMethodBtns.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(section => section.classList.remove('active'));
             
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to fetch readings');
+            // Add active class to clicked button and corresponding section
+            this.classList.add('active');
+            const formSection = document.getElementById(`${this.dataset.form}-section`);
+            if (formSection) {
+                formSection.classList.add('active');
             }
-            
-            // Set the selected farm ID
-            selectedFarmId.value = farmId;
-            
-            // Populate form fields
-            document.getElementById('location').value = data.location;
-            document.getElementById('temperature').value = data.temperature_celsius;
-            document.getElementById('humidity').value = data.humidity_percent;
-            document.getElementById('battery_voltage').value = data.battery_voltage;
-            
-            showAlert('Latest readings loaded successfully!', 'success');
-        } catch (error) {
-            console.error('Error:', error);
-            showAlert(error.message || 'Failed to fetch latest readings. Please try again.');
-        }
-    }
+        });
+    });
     
     // Handle farm selection change
     farmSelect.addEventListener('change', function() {
         const farmId = this.value;
         if (farmId) {
-            fetchLatestReadings(farmId);
+            selectedFarmId.value = farmId;
+            csvFarmId.value = farmId;
+            // Get the selected farm's location
+            const selectedOption = this.options[this.selectedIndex];
+            document.getElementById('location').value = selectedOption.dataset.location || '';
         } else {
             clearFormFields();
         }
     });
 
+    // Handle file upload change
+    if (fileUpload && fileName) {
+        fileUpload.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                    fileName.textContent = file.name;
+                } else {
+                    fileName.textContent = 'Please select a CSV file';
+                    this.value = '';
+                }
+            } else {
+                fileName.textContent = 'No file chosen';
+            }
+        });
+    }
+
     // Clear form on page load
     clearFormFields();
     farmSelect.value = '';
 
-    // Handle form submission
+    // Handle form submissions
     predictionForm.addEventListener('submit', function(e) {
+        if (!farmSelect.value) {
+            e.preventDefault();
+            showAlert('Please select a farm first');
+        }
+    });
+
+    const csvUploadForm = document.getElementById('csv-upload-form');
+    csvUploadForm.addEventListener('submit', function(e) {
         if (!farmSelect.value) {
             e.preventDefault();
             showAlert('Please select a farm first');

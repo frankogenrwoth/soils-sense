@@ -33,4 +33,8 @@ urlpatterns = [
     path('notifications/mark-read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/unread-count/', views.get_unread_count, name='unread_count'),
     path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
+
+    # API URLs
+    path('api/sensor-data/<int:farm_id>/', views.get_sensor_data, name='get_sensor_data'),
+    path('api/sensor-data-json/<int:farm_id>/', views.get_sensor_data_api, name='get_sensor_data_api'),
 ] 
