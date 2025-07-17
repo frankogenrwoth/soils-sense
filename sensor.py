@@ -8,8 +8,8 @@ from dataclasses import dataclass
 # Configuration
 URL = "http://localhost:8000/farmer/get-soil-data/"
 SOIL_STATUS = ["Normal", "Dry", "Wet", "Critical Low", "Critical High"]
-FARM_ID = 1
-SENSOR_ID = "SENSOR_41"
+FARM_ID = 2
+SENSOR_ID = "SENSOR_40"
 
 
 @dataclass

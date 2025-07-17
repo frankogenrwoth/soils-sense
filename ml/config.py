@@ -70,7 +70,9 @@ REGRESSION_ALGORITHMS = {
         "max_iter": 500,
         "random_state": 42,
     },
-    "linear_regression": {"fit_intercept": True,},
+    "linear_regression": {
+        "fit_intercept": True,
+    },
 }
 
 CLASSIFICATION_ALGORITHMS = {
@@ -98,8 +100,8 @@ CLASSIFICATION_ALGORITHMS = {
 }
 
 DEFAULT_ALGORITHMS = {
-    "soil_moisture_predictor": "gradient_boosting",
-    "irrigation_recommendation": "gradient_boosting",
+    "soil_moisture_predictor": "random_forest",
+    "irrigation_recommendation": "random_forest",
 }
 
 # Training parameters
