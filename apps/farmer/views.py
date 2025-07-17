@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import json
 import csv
 import pandas as pd
+import traceback
 from ml.predictor import SoilMoisturePredictor, IrrigationRecommender
 from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS, DEFAULT_ALGORITHMS
 from django.utils import timezone
@@ -1192,3 +1193,111 @@ def delete_notification(request, notification_id):
     except Exception as e:
         messages.error(request, f'Error deleting notification: {str(e)}')
     return redirect('farmer:notifications')
+
+@farmer_role_required
+def get_sensor_data(request, farm_id):
+    """API endpoint to get sensor readings for a specific farm"""
+    try:
+        # Verify farm ownership
+        farm = get_object_or_404(Farm, id=farm_id, user=request.user)
+        
+        # Get the timeframe from query params (default to 30 minutes)
+        minutes = int(request.GET.get('minutes', 30))
+        
+        # Calculate the time range
+        end_time = timezone.now()
+        start_time = end_time - timedelta(minutes=minutes)
+        
+        # Get readings for the specified farm within the time range
+        readings = SoilMoistureReading.objects.filter(
+            farm=farm,
+            timestamp__gte=start_time,
+            timestamp__lte=end_time
+        ).order_by('timestamp')
+        
+        # Format the readings
+        data = {
+            'success': True,
+            'readings': [{
+                'timestamp': reading.timestamp.isoformat(),
+                'temperature': reading.temperature_celsius,
+                'humidity': reading.humidity_percent,
+                'soil_moisture': reading.soil_moisture_percent,
+                'battery_voltage': reading.battery_voltage,
+                'status': reading.status,
+                'irrigation_action': reading.irrigation_action
+            } for reading in readings]
+        }
+        
+        return JsonResponse(data)
+    except Farm.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Farm not found or access denied'
+        }, status=404)
+    except ValueError as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Invalid timeframe parameter: {str(e)}'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+
+from django.views.decorators.http import require_GET
+
+@require_GET
+def get_sensor_data_api(request, farm_id):
+    try:
+        # Verify farm ownership
+        farm = get_object_or_404(Farm, id=farm_id, user=request.user)
+
+        # Get the timeframe from query params (default to 30 minutes)
+        minutes = int(request.GET.get('minutes', 30))
+
+        # Calculate the time range
+        end_time = timezone.now()
+        start_time = end_time - timedelta(minutes=minutes)
+
+        # Get readings for the specified farm within the time range
+        readings = SoilMoistureReading.objects.filter(
+            farm=farm,
+            timestamp__gte=start_time,
+            timestamp__lte=end_time
+        ).order_by('timestamp')
+
+        # Format the readings
+        data = {
+            'success': True,
+            'readings': [
+                {
+                    'timestamp': reading.timestamp.isoformat(),
+                    'temperature': reading.temperature_celsius,
+                    'humidity': reading.humidity_percent,
+                    'soil_moisture': reading.soil_moisture_percent,
+                    'battery_voltage': reading.battery_voltage,
+                    'status': reading.status,
+                    'irrigation_action': reading.irrigation_action
+                }
+                for reading in readings
+            ]
+        }
+
+        print(data)
+
+        return JsonResponse(data, content_type='application/json')
+    except Farm.DoesNotExist:
+        error = {'success': False, 'error': 'Farm not found or access denied'}
+        return JsonResponse(error, status=404)
+    except ValueError as e:
+        error = {'success': False, 'error': f'Invalid timeframe parameter: {str(e)}'}
+        return JsonResponse(error, status=400)
+    except Exception as e:
+        print(traceback.format_exc())
+        error = {'success': False, 'error': str(e)}
+        return JsonResponse(error, status=500)
+

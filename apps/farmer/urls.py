@@ -72,4 +72,8 @@ urlpatterns = [
         name="delete_notification",
     ),
     path("get-soil-data/", get_soil_data, name="get_soil_data"),
+    
+    # API URLs
+    path('api/sensor-data/<int:farm_id>/', views.get_sensor_data, name='get_sensor_data'),
+    path('api/sensor-data-json/<int:farm_id>/', views.get_sensor_data_api, name='get_sensor_data_api'),
 ]
