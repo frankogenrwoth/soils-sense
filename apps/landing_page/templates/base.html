@@ -49,27 +49,6 @@
 
 <!-- ✅ GLOBAL SCRIPTS -->
 {% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const images = [
-            "{% static 'images/slide1.jpg' %}",
-            "{% static 'images/slide2.jpg' %}",
-            "{% static 'images/slide3.jpg' %}"
-        ];
-        let idx = 0;
-        const img = document.getElementById('bg-slider-img');
-        if (img) {
-            setInterval(() => {
-                idx = (idx + 1) % images.length;
-                img.style.opacity = 0;
-                setTimeout(() => {
-                    img.src = images[idx];
-                    img.style.opacity = 1;
-                }, 500);
-            }, 5000);
-        }
-    });
-</script>
 {% endblock %}
 
 </body>

@@ -19,6 +19,8 @@ class User(AbstractUser):
         blank=True,
     )
     phone_number = models.CharField(max_length=15, null=True, blank=True)
+    reset_code = models.CharField(max_length=6, null=True, blank=True)  # For password reset
+    reset_code_expiry = models.DateTimeField(null=True, blank=True)  # For password reset code expiration
 
     objects = UserManager()
 

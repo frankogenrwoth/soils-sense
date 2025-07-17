@@ -56,6 +56,7 @@ class SoilMoistureReading(models.Model):
         ('csv_upload', 'CSV Upload'),
         ('prediction', 'ML Prediction')
     ], default='manual_input')
+    irrigation_action = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ['-timestamp']
@@ -128,13 +129,13 @@ class Alert(models.Model):
         ('critical', 'Critical'),
     ]
 
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='alerts')
-    alert_type = models.CharField(max_length=50, choices=ALERT_TYPES)
-    severity = models.CharField(max_length=20, choices=SEVERITY_LEVELS)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
-    is_resolved = models.BooleanField(default=False)
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='alerts', null=True, blank=True)  # Made nullable
+    alert_type = models.CharField(max_length=50, choices=ALERT_TYPES, default='system_error')
+    severity = models.CharField(max_length=20, choices=SEVERITY_LEVELS, default='info')  # Added default
+    message = models.TextField()  # Previously 'description'
+    timestamp = models.DateTimeField(auto_now_add=True)  # Previously 'created_at'
+    is_read = models.BooleanField(default=False)  # Previously 'read'
+    is_resolved = models.BooleanField(default=False)  # New field
     resolved_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
@@ -145,7 +146,7 @@ class Alert(models.Model):
 
     def __str__(self):
         return f"{self.farm.farm_name} - {self.alert_type} - {self.timestamp}"
-
+    
 class PredictionResult(models.Model):
     farm = models.ForeignKey('Farm', on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
@@ -163,3 +164,61 @@ class PredictionResult(models.Model):
 
     def __str__(self):
         return f"Prediction for {self.farm.farm_name} at {self.created_at}"
+
+    def get_moisture_status(self):
+        # Define thresholds for soil moisture
+        LOW_THRESHOLD = 30.0
+        HIGH_THRESHOLD = 70.0
+        
+        if self.soil_moisture_result < LOW_THRESHOLD:
+            return "low", "Warning: Soil moisture is critically low"
+        elif self.soil_moisture_result > HIGH_THRESHOLD:
+            return "high", "Warning: Soil moisture is too high"
+        else:
+            return "normal", "Soil moisture is within normal range"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        
+        if is_new:
+            # Get moisture status and warning message
+            status, warning = self.get_moisture_status()
+            
+            # Create detailed notification message
+            message = (
+                f"New prediction for {self.farm.farm_name}:\n"
+                f"Soil Moisture: {self.soil_moisture_result:.1f}%\n"
+                f"{warning}\n"
+                f"Recommendation: {self.irrigation_result}"
+            )
+            
+            # Create notification with appropriate type based on moisture status
+            notification_type = 'warning' if status in ['low', 'high'] else 'prediction'
+            
+            Notification.objects.create(
+                user=self.farm.user,
+                message=message,
+                notification_type=notification_type
+            )
+
+class Notification(models.Model):
+    user = models.ForeignKey('authentication.User', on_delete=models.CASCADE)
+    message = models.TextField()
+    notification_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('prediction', 'Prediction'),
+            ('warning', 'Warning'),
+            ('info', 'Information')
+        ],
+        default='prediction'
+    )
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.message} - {self.created_at}"

@@ -8,7 +8,7 @@ from authentication.models import Role
 from django.core.exceptions import PermissionDenied
 from .models import (
     Farm, Crop, SoilMoistureReading, 
-    WeatherData, IrrigationEvent, Alert, PredictionResult
+    WeatherData, IrrigationEvent, Alert, PredictionResult, Notification
 )
 from django.db.models import Avg
 from datetime import datetime, timedelta
@@ -21,6 +21,8 @@ from django.utils import timezone
 import os
 from django.conf import settings
 
+from .utils import farmer_role_required
+
 def farmer_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -30,7 +32,7 @@ def farmer_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-@login_required
+@farmer_role_required
 def dashboard(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -105,6 +107,15 @@ def dashboard(request):
         temperature = 0
         humidity = 0
 
+    # New: Get all unread/critical alerts for the selected farm
+    critical_alerts = Alert.objects.filter(farm=selected_farm, is_read=False, severity='critical')
+    # New: Get unread soil moisture alerts for the selected farm
+    unread_moisture_alerts = Alert.objects.filter(
+        farm=selected_farm,
+        is_read=False,
+        alert_type__in=['low_moisture', 'high_moisture']
+    ).order_by('-timestamp')
+
     context = {
         'farms': farms,
         'selected_farm': selected_farm,
@@ -121,11 +132,13 @@ def dashboard(request):
         'prediction_available': False,
         'moisture_predictions': [],
         'recommendation': None,
+        'critical_alerts': critical_alerts,
+        'unread_moisture_alerts': unread_moisture_alerts,
     }
     
     return render(request, 'farmer/dashboard.html', context)
 
-@login_required
+@farmer_role_required
 def profile(request):
     if request.method == 'POST':
         if 'update_profile' in request.POST:
@@ -177,7 +190,7 @@ def profile(request):
     }
     return render(request, 'farmer/profile.html', context)
 
-@login_required
+@farmer_role_required
 def farm_management(request):
     farms = Farm.objects.filter(user=request.user)
     crops = Crop.objects.filter(farm__user=request.user)
@@ -189,7 +202,7 @@ def farm_management(request):
     return render(request, 'farmer/farm_management.html', context)
 
 @require_http_methods(["POST"])
-@login_required
+@farmer_role_required
 def add_farm(request):
     try:
         farm = Farm.objects.create(
@@ -209,7 +222,7 @@ def add_farm(request):
         return redirect('farmer:farm_management')
 
 @require_http_methods(["POST"])
-@login_required
+@farmer_role_required
 def add_crop(request):
     try:
         farm = Farm.objects.get(id=request.POST.get('farm'), user=request.user)
@@ -235,9 +248,14 @@ def add_crop(request):
         messages.error(request, str(e))
         return redirect('farmer:farm_management')
 
-@login_required
+@farmer_role_required
 def analytics(request):
     farms = Farm.objects.filter(user=request.user)
+    
+    # Ensure these are always defined
+    current_predicted_moisture = None
+    current_actual_moisture = None
+    latest_reading = None
     
     # Get selected farm and time range
     farm_id = request.GET.get('farm_id')
@@ -271,8 +289,10 @@ def analytics(request):
     actual_values = []
     predicted_values = []
     correlation_data = []
+    temperature_values = []  # New
+    humidity_values = []     # New
     
-    # Process readings and generate predictions
+    # Process readings and generate predictions (historical)
     for reading in readings:
         try:
             # Get actual reading
@@ -303,6 +323,9 @@ def analytics(request):
                 
             # Add date
             dates.append(reading.timestamp.strftime('%Y-%m-%d'))
+            # Add temp/humidity
+            temperature_values.append(float(reading.temperature_celsius))
+            humidity_values.append(float(reading.humidity_percent))
             
             # Add correlation data point if both values exist
             if reading.temperature_celsius is not None and prediction_result.get('success'):
@@ -353,13 +376,19 @@ def analytics(request):
         'dates': json.dumps(dates),
         'actual_values': json.dumps(actual_values),
         'predicted_values': json.dumps(predicted_values),
-        'correlation_data': json.dumps(correlation_data)
+        'correlation_data': json.dumps(correlation_data),
+        'temperature_values': json.dumps(temperature_values),  # New
+        'humidity_values': json.dumps(humidity_values),        # New
+        # Hybrid: current prediction
+        'current_predicted_moisture': current_predicted_moisture,
+        'current_actual_moisture': current_actual_moisture,
+        'latest_reading': latest_reading,
     }
     
     return render(request, 'farmer/analytics.html', context)
 
 
-@login_required
+@farmer_role_required
 def recommendations(request):
     # Get user's farms
     farms = Farm.objects.filter(user=request.user)
@@ -492,7 +521,7 @@ def recommendations(request):
 
 #Predictions here
 
-@login_required
+@farmer_role_required
 def predictions(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -561,8 +590,32 @@ def predictions(request):
                 soil_moisture_result=soil_moisture_value,
                 irrigation_result=irrigation_recommendation,
                 algorithm=algorithm,
-                algorithm_irr=algorithm_irr
+                algorithm_irr=algorithm_irr,
             )
+
+            # --- ALERT LOGIC ---
+            from apps.farmer.models import Alert
+            alert_type = None
+            severity = None
+            alert_message = None
+            if soil_moisture_value < 30:
+                alert_type = 'low_moisture'
+                severity = 'warning'
+                alert_message = f"Predicted soil moisture is low ({soil_moisture_value:.1f}%) on {prediction.created_at.strftime('%Y-%m-%d %H:%M')}. Immediate attention recommended."
+            elif soil_moisture_value > 70:
+                alert_type = 'high_moisture'
+                severity = 'warning'
+                alert_message = f"Predicted soil moisture is high ({soil_moisture_value:.1f}%) on {prediction.created_at.strftime('%Y-%m-%d %H:%M')}. Monitor for possible overwatering."
+            # Only create alert if needed and not already present for this farm/date/type
+            if alert_type and not Alert.objects.filter(farm=farm, alert_type=alert_type, timestamp__date=prediction.created_at.date()).exists():
+                Alert.objects.create(
+                    farm=farm,
+                    alert_type=alert_type,
+                    severity=severity,
+                    message=alert_message,
+                    is_read=False,
+                    is_resolved=False
+                )
             
             messages.success(request, 'Prediction created successfully!')
             return redirect('farmer:predictions')
@@ -581,7 +634,7 @@ def predictions(request):
     }
     return render(request, 'farmer/predictions.html', context)
 
-@login_required
+@farmer_role_required
 def download_predictions_csv(request):
     import csv
     from django.http import HttpResponse
@@ -617,7 +670,7 @@ def download_predictions_csv(request):
         ])
     return response
 
-@login_required
+@farmer_role_required
 def get_latest_readings(request, farm_id):
     try:
         # Get the farm and verify ownership
@@ -653,7 +706,7 @@ def get_latest_readings(request, farm_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 def soil_data_management(request):
     farms = Farm.objects.filter(user=request.user)
     
@@ -681,7 +734,7 @@ def soil_data_management(request):
     }
     return render(request, 'farmer/soil_data_management.html', context)
 
-@login_required
+@farmer_role_required
 @require_POST
 def add_soil_reading(request):
     try:
@@ -711,7 +764,7 @@ def add_soil_reading(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_reading(request, reading_id):
@@ -740,7 +793,7 @@ def delete_reading(request, reading_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_farm(request, farm_id):
@@ -765,7 +818,7 @@ def delete_farm(request, farm_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_crop(request, crop_id):
@@ -790,7 +843,7 @@ def delete_crop(request, crop_id):
             'error': str(e)
         }, status=500)
 
-@login_required
+@farmer_role_required
 def download_csv_template(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="soil_moisture_template.csv"'
@@ -802,7 +855,7 @@ def download_csv_template(request):
     
     return response
 
-@login_required
+@farmer_role_required
 def upload_soil_data(request):
     if request.method == 'POST':
         try:
@@ -892,7 +945,7 @@ def upload_soil_data(request):
     
     return redirect('farmer:soil_data_management')
 
-@login_required
+@farmer_role_required
 def filter_soil_data(request):
     try:
         farm_id = request.GET.get('farm')
@@ -924,7 +977,7 @@ def filter_soil_data(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-@login_required
+@farmer_role_required
 @csrf_protect
 @require_POST
 def delete_prediction(request, prediction_id):
@@ -936,7 +989,7 @@ def delete_prediction(request, prediction_id):
         messages.error(request, f'Error deleting prediction: {str(e)}')
     return redirect('farmer:predictions')
 
-@login_required
+@farmer_role_required
 def download_prediction_pdf(request, prediction_id):
     try:
         from reportlab.lib import colors
@@ -1127,3 +1180,33 @@ def download_prediction_pdf(request, prediction_id):
     except Exception as e:
         messages.error(request, f'Error generating PDF: {str(e)}')
         return redirect('farmer:predictions')
+
+@farmer_role_required
+def notifications(request):
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'farmer/notifications.html', {
+        'notifications': notifications
+    })
+
+@farmer_role_required
+def mark_notification_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.is_read = True
+    notification.save()
+    return redirect('farmer:notifications')
+
+@farmer_role_required
+def get_unread_count(request):
+    count = Notification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({'count': count})
+
+@farmer_role_required
+@require_http_methods(["POST", "GET"])
+def delete_notification(request, notification_id):
+    try:
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.delete()
+        messages.success(request, 'Notification deleted successfully')
+    except Exception as e:
+        messages.error(request, f'Error deleting notification: {str(e)}')
+    return redirect('farmer:notifications')

@@ -1,3 +1,4 @@
+from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
@@ -27,16 +28,22 @@ from apps.farmer.models import Farm
 from .forms import SensorForm  # We will create this next
 
 def is_technician(user):
-    return user.is_authenticated and user.role == 'technician'
+    """Check if the user is authenticated and has technician role"""
+    return user.is_authenticated and user.role == Role.TECHNICIAN
 
-@login_required
-@user_passes_test(is_technician)
+def technician_required(view_func):
+    """
+    Decorator that ensures a user is logged in and is a technician.
+    Combines Django's login_required and user_passes_test decorators.
+    """
+    return login_required(user_passes_test(is_technician, login_url='authentication:login')(view_func))
+
+@technician_required
 def sensor_list(request):
     sensors = Sensor.objects.select_related('farm').all()
     return render(request, 'technician/sensor_list.html', {'sensors': sensors})
 
-@login_required
-@user_passes_test(is_technician)
+@technician_required
 def sensor_add(request):
     if request.method == 'POST':
         form = SensorForm(request.POST)
@@ -48,8 +55,7 @@ def sensor_add(request):
         form = SensorForm()
     return render(request, 'technician/sensor_form.html', {'form': form, 'title': 'Add Sensor'})
 
-@login_required
-@user_passes_test(is_technician)
+@technician_required
 def sensor_edit(request, pk):
     sensor = get_object_or_404(Sensor, pk=pk)
     if request.method == 'POST':
@@ -62,8 +68,7 @@ def sensor_edit(request, pk):
         form = SensorForm(instance=sensor)
     return render(request, 'technician/sensor_form.html', {'form': form, 'title': 'Edit Sensor'})
 
-@login_required
-@user_passes_test(is_technician)
+@technician_required
 def sensor_delete(request, pk):
     sensor = get_object_or_404(Sensor, pk=pk)
     if request.method == 'POST':
@@ -81,15 +86,16 @@ from apps.farmer.models import PredictionResult
 
 # Keeping the decorator definition for future use, but not applying it
 def technician_required(view_func):
-    """Decorator to check if the user is a technician"""
+    @login_required
+    @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('authentication:login')
-        if request.user.role != Role.TECHNICIAN:
-            raise PermissionDenied("You must be a technician to access this page.")
-        return view_func(request, *args, **kwargs)
+        user = request.user
+        if user.is_authenticated and user.role == Role.TECHNICIAN:
+            return view_func(request, *args, **kwargs)
+     
     return wrapper
 
+@technician_required
 def dashboard(request):
     """Main technician dashboard view"""
     from django.db.models import Count, Q
@@ -196,16 +202,19 @@ def dashboard(request):
     }
     return render(request, 'technician/dashboard.html', context)
 
+@technician_required
 def profile(request):
     user = request.user
     image_url = user.image.url if user.image else ''
     has_custom_image = bool(user.image and not image_url.endswith('default.webp'))
     return render(request, 'technician/profile.html', {'user': user, 'has_custom_image': has_custom_image})
 
+@technician_required
 def farm_locations(request):
     farms = Farm.objects.filter(user__isnull=False)  # Only show farms added by farmers
     return render(request, 'technician/farm_locations.html', {'farms': farms})
 
+@technician_required
 def delete_farm(request, pk):
     """
     View to delete a farm.
@@ -218,6 +227,7 @@ def delete_farm(request, pk):
         return redirect('technician:farm_locations')
     return render(request, 'technician/confirm_delete_farm.html', {'farm': farm})
 
+@technician_required
 def farm_detail(request, pk):
     farm = get_object_or_404(Farm, pk=pk)
     
@@ -234,6 +244,7 @@ def farm_detail(request, pk):
     }
     return render(request, 'technician/farm_detail.html', context)
 
+@technician_required
 def sensor_config(request):
     """Sensor configuration view"""
     from .models import SensorThreshold
@@ -258,6 +269,7 @@ def sensor_config(request):
     }
     return render(request, 'technician/sensor_config.html', context)
 
+@technician_required
 def analytics(request):
     """Analytics dashboard view"""
     
@@ -305,7 +317,7 @@ def analytics(request):
     }
     return render(request, 'technician/analytics.html', context)
 
-@login_required
+@technician_required
 def reports(request):
     farms = Farm.objects.filter(user__isnull=False)  # Only show farms added by farmers
     predictions = PredictionResult.objects.select_related('farm').order_by('-created_at')
@@ -396,6 +408,7 @@ def reports(request):
     }
     return render(request, 'technician/reports.html', context)
 
+@technician_required
 def export_reports(request):
     from .models import Report
     response = HttpResponse(content_type='text/csv')
@@ -414,6 +427,7 @@ def export_reports(request):
         ])
     return response
 
+@technician_required
 def settings(request):
     """Settings view"""
     from django.contrib.auth.forms import PasswordChangeForm
@@ -453,6 +467,7 @@ def settings(request):
     }
     return render(request, 'technician/settings.html', context)
 
+@technician_required
 def edit_farm(request, pk):
     farm = get_object_or_404(Farm, pk=pk)
     
@@ -469,11 +484,7 @@ def edit_farm(request, pk):
     
     return render(request, 'technician/edit_farm.html', {'farm': farm, 'form': form})
 
-def is_technician(user):
-    return user.is_authenticated and user.role == 'technician'
-
-@login_required
-@user_passes_test(is_technician)
+@technician_required
 def technician_soil_readings(request):
     from django.core.paginator import Paginator
     
@@ -506,6 +517,7 @@ def technician_soil_readings(request):
     }
     return render(request, 'technician/soil_readings.html', context)
 
+@technician_required
 def delete_threshold(request, pk):
     """Delete sensor threshold"""
     from .models import SensorThreshold
@@ -518,6 +530,7 @@ def delete_threshold(request, pk):
     
     return render(request, 'technician/confirm_delete_threshold.html', {'threshold': threshold})
 
+@technician_required
 def edit_threshold(request, pk):
     """Edit sensor threshold"""
     from .models import SensorThreshold
@@ -541,6 +554,7 @@ def edit_threshold(request, pk):
     }
     return render(request, 'technician/edit_threshold.html', context)
 
+@technician_required
 def delete_report(request, pk):
     """Delete report"""
     from .models import Report
@@ -553,6 +567,7 @@ def delete_report(request, pk):
     
     return render(request, 'technician/confirm_delete_report.html', {'report': report})
 
+@technician_required
 def edit_report(request, pk):
     """Edit report"""
     from .models import Report
@@ -576,6 +591,7 @@ def edit_report(request, pk):
     }
     return render(request, 'technician/edit_report.html', context)
 
+@technician_required
 def download_prediction_pdf(request, pk):
     from .models import Report
     report = get_object_or_404(Report, pk=pk)
@@ -631,6 +647,7 @@ def ml_predict_soil_moisture(location, soil_moisture, temperature, humidity):
         irrigation_action = 'No Action'
     return status, irrigation_action
 
+@technician_required
 def add_farm(request):
     """Technician add farm view (POST only)"""
     if request.method == 'POST':
@@ -658,12 +675,14 @@ def add_farm(request):
     else:
         return redirect('technician:farm_locations')
 
+@technician_required
 def models_view(request):
     # Get all trained models with details
     ml_engine = MLEngine()
     models = ml_engine.list_all_models()
     return render(request, 'technician/models.html', {'models': models})
 
+@technician_required
 def delete_prediction(request, pk):
     """Delete a prediction result from Prediction History"""
     prediction = get_object_or_404(PredictionResult, pk=pk)
@@ -673,6 +692,7 @@ def delete_prediction(request, pk):
         return redirect('technician:reports')
     return HttpResponse(status=405)  # Method not allowed for GET
 
+@technician_required
 def download_predictionresult_pdf(request, pk):
     try:
         from reportlab.lib import colors

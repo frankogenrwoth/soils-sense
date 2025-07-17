@@ -19,10 +19,10 @@
                         'poppins': ['Poppins', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#10B981',
-                        secondary: '#059669',
-                        accent: '#34D399',
-                        dark: '#1F2937'
+                        primary: '#3B82F6',    // Changed to blue-500
+                        secondary: '#2563EB',   // Changed to blue-600
+                        accent: '#60A5FA',      // Changed to blue-400
+                        dark: '#1E40AF'         // Changed to blue-800
                     }
                 }
             }
@@ -32,83 +32,101 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
+        .nav-link.active {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .nav-link:hover:not(.active) {
+            background-color: #EFF6FF;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-50">
 <div class="flex h-screen">
     <!-- Left Sidebar Navigation -->
-    <div class="w-64 bg-white shadow-lg border-r border-gray-200">
+    <div class="w-72 bg-white shadow-xl border-r border-gray-100 flex flex-col">
         <!-- Logo Section -->
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center">
-                <i class="fas fa-seedling text-primary text-2xl mr-3"></i>
-                <span class="text-xl font-bold text-gray-900">Soil Sense</span>
-            </div>
-        </div>
-
-        <!-- User Profile Section -->
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center space-x-3">
-                <div>
-                    <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username|default:"Farmer" }}</p>
-                    <p class="text-xs text-gray-500">{{ user.email|default:"farmer@example.com" }}</p>
+        <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-sky-50">
+            <a href="{% url 'home' %}" class="flex items-center space-x-3 hover:opacity-90 transition-opacity">
+                <div class="p-2 bg-white rounded-lg shadow-sm">
+                    <i class="fas fa-seedling text-blue-500 text-2xl"></i>
                 </div>
-            </div>
+                <span class="text-xl font-bold text-blue-700">Soil Sense</span>
+            </a>
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="p-4">
-            <ul class="space-y-2">
-                <li>
-                    <a href="{% url 'farmer:dashboard' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'dashboard' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-home w-5 h-5 mr-3"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:farm_management' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'farm_management' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-history w-5 h-5 mr-3"></i>
-                        <span>Farm Info</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:soil_data_management' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'soil_data_management' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-water w-5 h-5 mr-3"></i>
-                        <span>Soil Data</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:predictions' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'predictions' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-robot w-5 h-5 mr-3"></i>
-                        <span>Predictions</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:analytics' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'analytics' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-chart-line w-5 h-5 mr-3"></i>
-                        <span>Analytics</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:recommendations' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'recommendations' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-lightbulb w-5 h-5 mr-3"></i>
-                        <span>Crop Management</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'farmer:profile' %}" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors {% if request.resolver_match.url_name == 'profile' %}bg-primary text-white{% endif %}">
-                        <i class="fas fa-user w-5 h-5 mr-3"></i>
-                        <span>Profile</span>
-                    </a>
-                </li>
-            </ul>
+        <nav class="flex-1 overflow-y-auto py-6">
+            <div class="px-4">
+                <h3 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-4 px-3">Main Menu</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{% url 'farmer:dashboard' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                            <i class="fas fa-home w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'farmer:farm_management' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'farm_management' %}active{% endif %}">
+                            <i class="fas fa-tractor w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Farm Management</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'farmer:soil_data_management' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'soil_data_management' %}active{% endif %}">
+                            <i class="fas fa-water w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Soil Data</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 mt-8 px-3">Analysis</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{% url 'farmer:predictions' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'predictions' %}active{% endif %}">
+                            <i class="fas fa-robot w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Predictions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'farmer:analytics' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+                            <i class="fas fa-chart-line w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'farmer:recommendations' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'recommendations' %}active{% endif %}">
+                            <i class="fas fa-lightbulb w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Recommendations</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 mt-8 px-3">Settings</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{% url 'farmer:profile' %}" 
+                           class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg transition-all duration-200 group {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                            <i class="fas fa-user-cog w-5 h-5 mr-3 group-hover:text-primary"></i>
+                            <span>Profile Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
         <!-- Logout Section -->
-        <div class="absolute bottom-0 w-64 p-4 border-t border-gray-200">
-            <a href="{% url 'authentication:logout' %}" class="w-full flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors">
-                <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
+        <div class="p-4 border-t border-gray-100">
+            <a href="{% url 'authentication:logout' %}" 
+               class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all duration-200 group">
+                <i class="fas fa-sign-out-alt w-5 h-5 mr-3 group-hover:text-red-600"></i>
                 <span>Logout</span>
             </a>
         </div>
@@ -117,18 +135,37 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Top Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <header class="bg-white shadow-sm border-b border-gray-100 px-8 py-5">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">{% block page_title %}{% endblock %}</h1>
-                    <p class="text-gray-600">{% block page_subtitle %}{% endblock %}</p>
+                    <h1 class="text-2xl font-bold text-blue-800">{% block page_title %}{% endblock %}</h1>
+                    <p class="text-gray-600 mt-1">{% block page_subtitle %}{% endblock %}</p>
                 </div>
-                {% block header_actions %}{% endblock %}
+                <div class="flex items-center gap-6">
+                    
+                    <!-- User Profile -->
+                    <div class="flex items-center gap-3 border-l pl-6">
+                        <div class="p-2 bg-blue-100 rounded-full">
+                            <i class="fas fa-user text-blue-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-700">{{ user.get_full_name|default:user.username|default:"Farmer" }}</p>
+                        </div>
+                    </div>
+                    <!-- Notification Bell -->
+                    <a href="{% url 'farmer:notifications' %}" class="relative inline-flex items-center justify-center">
+                        <i class="fas fa-bell text-2xl text-gray-600 hover:text-blue-500 transition-colors"></i>
+                        <span id="notification-count" 
+                              class="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 font-bold"
+                              style="display: none;">0</span>
+                    </a>
+                    {% block header_actions %}{% endblock %}
+                </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-8 bg-gray-50">
             {% if messages %}
             <div class="mb-6">
                 {% for message in messages %}
@@ -157,6 +194,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     });
 });
+
+// Check for new notifications every 30 seconds
+function checkNotifications() {
+    fetch('/farmer/notifications/unread-count/')
+        .then(response => response.json())
+        .then(data => {
+            const countElement = document.getElementById('notification-count');
+            if (countElement) {
+                countElement.textContent = data.count;
+                countElement.style.display = data.count > 0 ? 'block' : 'none';
+            }
+        });
+}
+
+// Initial check
+document.addEventListener('DOMContentLoaded', checkNotifications);
+
+// Check every 30 seconds
+setInterval(checkNotifications, 30000);
 </script>
 
 {% block extra_js %}{% endblock %}

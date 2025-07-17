@@ -132,21 +132,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Soil Moisture Trends Chart
     const moistureTrendCtx = document.getElementById('moistureTrendChart').getContext('2d');
+    const temperatureValues = {{ temperature_values|safe }};
+    const humidityValues = {{ humidity_values|safe }};
     new Chart(moistureTrendCtx, {
         type: 'line',
         data: {
             labels: {{ dates|safe }},
-            datasets: [{
-                label: 'Actual Moisture (%)',
-                data: {{ actual_values|safe }},
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderWidth: 2,
-                pointRadius: 2,
-                pointHoverRadius: 4,
-                fill: true,
-                tension: 0.4
-            },
+            datasets: [
             {
                 label: 'Predicted Moisture (%)',
                 data: {{ predicted_values|safe }},
@@ -160,13 +152,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }]
         },
         options: Object.assign({}, commonOptions, {
+            plugins: Object.assign({}, commonOptions.plugins, {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const idx = context.dataIndex;
+                            const pred = context.dataset.data[idx];
+                            const temp = temperatureValues[idx];
+                            const hum = humidityValues[idx];
+                            return [
+                                `Predicted Moisture: ${pred.toFixed(2)}%`,
+                                `Temperature: ${temp !== undefined ? temp.toFixed(1) : '-'}°C`,
+                                `Humidity: ${hum !== undefined ? hum.toFixed(1) : '-'}%`
+                            ];
+                        }
+                    }
+                }
+            }),
             scales: {
                 y: {
                     beginAtZero: true,
                     max: 100,
                     title: {
                         display: true,
-                        text: 'Soil Moisture (%)',
+                        text: 'Predicted Soil Moisture (%)',
                         font: {
                             size: 11
                         }
