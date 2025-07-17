@@ -1,4 +1,5 @@
 {% extends 'administrator/base.html' %}
+{% load administrator %}
 
 {% block header_title %}Sensor Management{% endblock %}
 
@@ -16,46 +17,156 @@
 {% block header_content %}
 <div class="mb-8">
     <h2 class="text-xl font-semibold text-green-700">Manage Sensors</h2>
-    <p class="text-gray-500">View, add, edit, or remove sensors from the platform.</p>
+    <p class="text-gray-500">View sensor status and soil moisture readings from the last 24 hours.</p>
 </div>
 {% endblock %}
-
-
-{% block header_tools %}
-<div class="flex justify-end mb-4">
-    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Add Sensor</button>
-</div>
-{% endblock %}
-
 
 {% block content %}
+<!-- Sensors Overview -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <!-- Total Sensors -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-500">Total Sensors</p>
+                <p class="text-lg font-semibold text-gray-700">{{ sensors|length }}</p>
+            </div>
+        </div>
+    </div>
 
+    <!-- Active Sensors -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-500">Active Sensors</p>
+                <p class="text-lg font-semibold text-gray-700">{{ sensor_stats|count_active_sensors }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Readings (24h) -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-500">24h Readings</p>
+                <p class="text-lg font-semibold text-gray-700">{{ sensor_stats|sum_readings }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Average Moisture -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm text-gray-500">Avg Moisture</p>
+                <p class="text-lg font-semibold text-gray-700">
+                    {% with avg=sensor_stats|average_moisture %}
+                    {% if avg %}{{ avg }}%{% else %}N/A{% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sensor List -->
 <div class="bg-white shadow rounded-lg p-6">
-    <h3 class="text-lg font-semibold text-green-700 mb-4">Sensor List</h3>
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-green-700">Sensor List</h3>
+    </div>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sensor Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sensor ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Latest Reading</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">24h Avg</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Readings (24h)</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                {% for sensor in sensors %}
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Sensor 1</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Field 1</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">Active</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ sensor.sensor_id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ sensor.farm.farm_name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button class="text-blue-600 hover:underline mr-2">Edit</button>
-                        <button class="text-red-600 hover:underline">Delete</button>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {% if sensor_stats|get_item:sensor.id|get_item:'status' == 'Active' %}
+                            bg-green-100 text-green-800
+                            {% else %}
+                            bg-red-100 text-red-800
+                            {% endif %}">
+                            {{ sensor_stats|get_item:sensor.id|get_item:'status' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {% with latest=sensor_stats|get_item:sensor.id|get_item:'latest_reading' %}
+                        {% if latest %}
+                        {{ latest.soil_moisture_percent }}% at {{ latest.timestamp|date:"H:i" }}
+                        {% else %}
+                        No readings
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {% with avg=sensor_stats|get_item:sensor.id|get_item:'avg_moisture' %}
+                        {% if avg %}{{ avg }}%{% else %}N/A{% endif %}
+                        {% endwith %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {{ sensor_stats|get_item:sensor.id|get_item:'reading_count' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'administrator:sensor_detail' sensor.id %}" class="text-blue-600 hover:text-blue-800 mr-3">View</a>
+                        <button class="text-red-600 hover:text-red-800">Delete</button>
                     </td>
                 </tr>
-                <!-- More sensor rows here -->
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                            </svg>
+                            <p class="text-gray-500">No sensors found</p>
+                            <p class="text-sm text-gray-400">Add a sensor to get started</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-    <p class="text-gray-400 mt-4">(Sensor list placeholder)</p>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any JavaScript functionality here
+});
+</script>
 {% endblock %} 

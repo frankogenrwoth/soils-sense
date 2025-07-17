@@ -91,3 +91,34 @@ def round_number(value, decimal_places=4):
     Usage: {{ value|round:2 }}
     """
     return round(float(value), decimal_places)
+
+
+@register.filter
+def get_item(dictionary, key):
+    """Get an item from a dictionary using bracket notation in templates."""
+    return dictionary.get(key)
+
+
+@register.filter
+def count_active_sensors(sensor_stats):
+    """Count the number of active sensors in sensor_stats dictionary."""
+    return sum(1 for stats in sensor_stats.values() if stats.get("status") == "Active")
+
+
+@register.filter
+def sum_readings(sensor_stats):
+    """Sum up the total readings from all sensors."""
+    return sum(stats.get("reading_count", 0) for stats in sensor_stats.values())
+
+
+@register.filter
+def average_moisture(sensor_stats):
+    """Calculate the average moisture across all sensors."""
+    moisture_values = [
+        stats.get("avg_moisture")
+        for stats in sensor_stats.values()
+        if stats.get("avg_moisture") is not None
+    ]
+    if not moisture_values:
+        return None
+    return round(sum(moisture_values) / len(moisture_values), 1)

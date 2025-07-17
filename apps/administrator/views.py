@@ -38,6 +38,8 @@ from apps.farmer.models import (
 )
 from apps.technician.models import Sensor
 from authentication.models import Role
+from django.db.models import Avg
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -48,7 +50,65 @@ class DashboardView(View):
     template_name = "administrator/dashboard.html"
 
     def get(self, request):
-        context = {}
+        # Get user statistics
+        total_users = User.objects.count()
+        farmers = User.objects.filter(role=Role.FARMER).count()
+        technicians = User.objects.filter(role=Role.TECHNICIAN).count()
+
+        # Get sensor statistics
+        total_sensors = Sensor.objects.count()
+        active_sensors = 0
+        total_readings = 0
+        avg_moisture = None
+
+        # Calculate sensor stats for the last 24 hours
+        recent_readings = SoilMoistureReading.objects.filter(
+            timestamp__gte=timezone.now() - timezone.timedelta(hours=24)
+        )
+        if recent_readings.exists():
+            # Count sensors with readings in last 24 hours as active
+            active_sensors = recent_readings.values("sensor_id").distinct().count()
+            total_readings = recent_readings.count()
+            avg_moisture = recent_readings.aggregate(Avg("soil_moisture_percent"))[
+                "soil_moisture_percent__avg"
+            ]
+            if avg_moisture:
+                avg_moisture = round(avg_moisture, 1)
+
+        # Get farm statistics
+        total_farms = Farm.objects.count()
+
+        # Get notification and alert statistics
+        total_notifications = Notification.objects.count()
+        unread_notifications = Notification.objects.filter(is_read=False).count()
+        active_alerts = Alert.objects.filter(is_read=False).count()
+
+        # Get recent activities (last 10)
+        recent_notifications = Notification.objects.all().order_by("-created_at")[:5]
+        recent_alerts = Alert.objects.all().order_by("-timestamp")[:5]
+        recent_readings = SoilMoistureReading.objects.all().order_by("-timestamp")[:5]
+
+        context = {
+            # User stats
+            "total_users": total_users,
+            "farmers": farmers,
+            "technicians": technicians,
+            # Sensor stats
+            "total_sensors": total_sensors,
+            "active_sensors": active_sensors,
+            "total_readings": total_readings,
+            "avg_moisture": avg_moisture,
+            # Farm stats
+            "total_farms": total_farms,
+            # Notification stats
+            "total_notifications": total_notifications,
+            "unread_notifications": unread_notifications,
+            "active_alerts": active_alerts,
+            # Recent activities
+            "recent_notifications": recent_notifications,
+            "recent_alerts": recent_alerts,
+            "recent_readings": recent_readings,
+        }
         return render(request, self.template_name, context=context)
 
 
@@ -421,7 +481,14 @@ class NotificationView(View):
     template_name = "administrator/notification.html"
 
     def get(self, request):
-        context = {}
+        # Get notifications and alerts, ordered by most recent first
+        notifications = Notification.objects.all()
+        alerts = Alert.objects.all()
+
+        context = {
+            "notifications": notifications,
+            "alerts": alerts,
+        }
         return render(request, self.template_name, context=context)
 
 
@@ -429,7 +496,36 @@ class SensorView(View):
     template_name = "administrator/sensor_management.html"
 
     def get(self, request):
-        context = {}
+        # Get all sensors and their latest readings
+        sensors = Sensor.objects.all()
+
+        # Create a dict to store sensor stats
+        sensor_stats = {}
+        for sensor in sensors:
+            # Get the latest 24 hours of readings for this sensor
+            recent_readings = SoilMoistureReading.objects.filter(
+                sensor_id=sensor.sensor_id,
+                timestamp__gte=timezone.now() - timezone.timedelta(hours=24),
+            )
+
+            # Calculate stats
+            reading_count = recent_readings.count()
+            avg_moisture = recent_readings.aggregate(Avg("soil_moisture_percent"))[
+                "soil_moisture_percent__avg"
+            ]
+            latest_reading = recent_readings.first()
+
+            sensor_stats[sensor.id] = {
+                "reading_count": reading_count,
+                "avg_moisture": round(avg_moisture, 2) if avg_moisture else None,
+                "latest_reading": latest_reading,
+                "status": "Active" if reading_count > 0 else "Inactive",
+            }
+
+        context = {
+            "sensors": sensors,
+            "sensor_stats": sensor_stats,
+        }
         return render(request, self.template_name, context=context)
 
 
