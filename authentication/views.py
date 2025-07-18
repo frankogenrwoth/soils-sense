@@ -88,7 +88,6 @@ class SignupView(FormView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, "Signup successful! Please log in.")
         return super().form_valid(form)
 
 
