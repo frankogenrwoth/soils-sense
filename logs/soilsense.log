@@ -8901,3 +8901,5 @@ TypeError: '<' not supported between instances of 'str' and 'int'
 "GET /administrator/ml-models/ HTTP/1.1" 500 306108
 C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\urls.py changed, reloading.
 Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\templatetags\administrator.py changed, reloading.
+Watching for file changes with StatReloader
