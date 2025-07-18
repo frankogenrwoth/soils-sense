@@ -74,6 +74,9 @@ def strftime(value, format="%H:%M:%S"):
     Format a time string to a given format. for example 2 seconds or 2.5 seconds or 2.5 minutes or 2.5 hours.
     Usage: {{ value|strftime:"%H:%M:%S" }}
     """
+    if not value:
+        return "0"
+
     if value < 60:
         return f"{value:.2f} s"
     elif value < 3600:
