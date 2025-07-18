@@ -8495,3 +8495,66 @@ Not Found: /favicon.ico
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\soilsense\settings.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"POST /authentication/login/ HTTP/1.1" 302 0
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+- Broken pipe from ('127.0.0.1', 59826)
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /authentication/login/ HTTP/1.1" 200 2899
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 29208
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/ HTTP/1.1" 200 22076
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+- Broken pipe from ('127.0.0.1', 60003)
+- Broken pipe from ('127.0.0.1', 59997)
+- Broken pipe from ('127.0.0.1', 59996)
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/dashboard/ HTTP/1.1" 200 29542
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 34774
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25938
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/2/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 44732
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+- Broken pipe from ('127.0.0.1', 60313)
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 30878
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
