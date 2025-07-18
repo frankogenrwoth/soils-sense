@@ -44,8 +44,11 @@
 </head>
 <body class="bg-gray-50">
 <div class="flex h-screen">
+    <!-- Mobile Menu Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 z-20 hidden md:hidden"></div>
+
     <!-- Left Sidebar Navigation -->
-    <div class="w-72 bg-white shadow-xl border-r border-gray-100 flex flex-col">
+    <div id="sidebar" class="fixed md:static w-72 bg-white shadow-xl border-r border-gray-100 flex flex-col h-full z-30 hidden md:flex transition-transform duration-300">
         <!-- Logo Section -->
         <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-sky-50">
             <a href="{% url 'home' %}" class="flex items-center space-x-3 hover:opacity-90 transition-opacity">
@@ -137,6 +140,10 @@
         <!-- Top Header -->
         <header class="bg-white shadow-sm border-b border-gray-100 px-8 py-5">
             <div class="flex items-center justify-between">
+                <!-- Mobile Menu Toggle -->
+                <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg hover:bg-gray-100 mr-2">
+                    <i class="fas fa-bars text-gray-600 text-2xl"></i>
+                </button>
                 <div>
                     <h1 class="text-2xl font-bold text-blue-800">{% block page_title %}{% endblock %}</h1>
                     <p class="text-gray-600 mt-1">{% block page_subtitle %}{% endblock %}</p>
@@ -193,6 +200,37 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => message.remove(), 500);
         }, 2000);
     });
+
+    // Mobile menu toggle functionality
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+    function openSidebar() {
+        sidebar.classList.remove('hidden');
+        sidebarOverlay.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+    function closeSidebar() {
+        sidebar.classList.add('hidden');
+        sidebarOverlay.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when clicking a link (mobile)
+    if (sidebar) {
+        const sidebarLinks = sidebar.querySelectorAll('a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) { // Only on mobile
+                    closeSidebar();
+                }
+            });
+        });
+    }
 });
 
 // Check for new notifications every 30 seconds
