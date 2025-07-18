@@ -2,6 +2,7 @@ import joblib
 import numpy as np
 import json
 from pathlib import Path
+import traceback
 
 from ml.config import MODELS_DIR, DEFAULT_ALGORITHMS
 from ml.data_processor import DataProcessor
@@ -38,8 +39,10 @@ class Predictor:
 
         try:
             self.data_processor.load_encoders(model_type)
+            print(input_data)
             X = self.data_processor.preprocess_input(input_data, model_type)
         except Exception as e:
+            print(traceback.print_exc())
             return {
                 "success": False,
                 "message": f"Input preprocessing failed: {str(e)}",
@@ -70,14 +73,25 @@ class Predictor:
                 except:
                     class_probabilities = None
             else:
-                prediction_value = (
-                    float(prediction[0])
-                    if hasattr(prediction, "__getitem__")
-                    else float(prediction)
-                )
+                try:
+                    prediction_value = (
+                        float(prediction[0])
+                        if hasattr(prediction, "__getitem__")
+                        else float(prediction)
+                    )
+                except:
+                    import numpy as np
+
+                    print(prediction, type(prediction))
+                    if isinstance(prediction, np.ndarray):
+                        prediction_value = prediction[0]
+                    else:
+                        prediction_value = prediction
+                    print(prediction_value, type(prediction_value))
                 class_probabilities = None
 
         except Exception as e:
+            print(traceback.print_exc())
             return {"success": False, "message": f"Prediction failed: {str(e)}"}
 
         try:

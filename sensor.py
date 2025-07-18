@@ -6,7 +6,7 @@ from typing import Dict, Any
 from dataclasses import dataclass
 
 # Configuration
-URL = "http://localhost:8000/farmer/get-soil-data/"
+URL = "https://soils-sense-production.up.railway.app/farmer/get-soil-data/"
 SOIL_STATUS = ["Normal", "Dry", "Wet", "Critical Low", "Critical High"]
 FARM_ID = 2
 SENSOR_ID = "SENSOR_40"
@@ -79,6 +79,7 @@ def validate_payload(payload: Dict[str, Any]) -> tuple[bool, str]:
 
 class SensorState:
     """Keeps track of the previous sensor values for smooth, uniform changes."""
+
     sensor_id: str
     farm_id: int
 

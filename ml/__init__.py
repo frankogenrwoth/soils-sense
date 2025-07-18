@@ -43,7 +43,7 @@ class MLEngine:
         self,
         model_type: Literal["soil_moisture_predictor", "irrigation_recommendation"],
         custom_data: pd.DataFrame | None = None,
-        version: int | None = None,
+        version: str | None = None,
         algorithm: str | None = None,
     ) -> dict:
         """Train a model
@@ -68,7 +68,8 @@ class MLEngine:
         self,
         model_type: Literal["soil_moisture_predictor", "irrigation_recommendation"],
         data: dict,
-        version: int | None = None,
+        version: str | None = None,
+        algorithm: str | None = None,
     ) -> dict:
         """Predict a model
 
@@ -81,7 +82,9 @@ class MLEngine:
             "soil_moisture_predictor",
             "irrigation_recommendation",
         ], "Invalid model type"
-        return self.predictor.predict(model_type, data, version)
+        return self.predictor.predict(
+            model_type=model_type, input_data=data, version=version, algorithm=algorithm
+        )
 
     def train_irrigation_recommender(
         self, custom_data: pd.DataFrame | None = None, version: int | None = None
