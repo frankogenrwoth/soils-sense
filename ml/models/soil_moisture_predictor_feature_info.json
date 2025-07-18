@@ -1,0 +1,27 @@
+{
+  "feature_columns": [
+    "temperature_celsius",
+    "humidity_percent",
+    "timestamp",
+    "status",
+    "battery_voltage",
+    "irrigation_action",
+    "hour_of_day",
+    "month",
+    "is_growing_season",
+    "temp_humidity_interaction",
+    "low_battery"
+  ],
+  "feature_names": [
+    "num__temperature_celsius",
+    "num__humidity_percent",
+    "num__battery_voltage",
+    "num__hour_of_day",
+    "num__month",
+    "num__is_growing_season",
+    "num__temp_humidity_interaction",
+    "num__low_battery",
+    "cat__status",
+    "cat__irrigation_action"
+  ]
+}

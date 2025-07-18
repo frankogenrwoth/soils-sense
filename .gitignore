@@ -26,7 +26,8 @@ authentication/migrations/
 /apps/*/migrations/
 
 # ml engine
-/ml/models/
+# /ml/data/
+# /ml/models/
 
 # database
 db.sqlite3
