@@ -39,6 +39,21 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
       width: 250px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+    }
+
+    @media (max-width: 767.98px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
     }
 
     .sidebar .nav-link {
@@ -123,17 +138,17 @@
   <!-- Toggle Button for Mobile -->
   <header class="bg-white shadow-sm border-bottom px-3 py-3 d-md-none">
     <div class="d-flex justify-content-between align-items-center">
-      <button class="btn btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+      <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
         <i class="fas fa-bars"></i>
       </button>
       <h4 class="text-primary m-0">SoilSense</h4>
     </div>
   </header>
 
-  <!-- Sidebar Offcanvas -->
-  <div class="offcanvas offcanvas-start d-md-flex sidebar flex-column" id="sidebarMenu" tabindex="-1">
+  <!-- Sidebar -->
+  <div class="sidebar d-md-block collapse" id="sidebarMenu">
     <div class="d-md-none text-end px-3 pt-2">
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      <button type="button" class="btn-close text-white" data-bs-dismiss="collapse" aria-label="Close"></button>
     </div>
     <div class="logo-section d-flex align-items-center px-3">
       <img src="/static/images/logo.webp" alt="Logo" class="me-2" style="width: 40px; height: 40px; border-radius: 10px; background: white; padding: 6px;">
