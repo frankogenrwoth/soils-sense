@@ -1,5 +1,5 @@
 {% extends 'farmer/base.html' %}
-
+{% load administrator %}
 {% block page_title %}Predictions{% endblock %}
 {% block breadcrumb %}Predictions{% endblock %}
 
@@ -199,16 +199,16 @@
                                 <div class="col-md-6">
                                     <label for="algorithm" class="form-label">Soil Moisture Algorithm</label>
                                     <select class="form-select" id="algorithm" name="algorithm">
-                                        {% for algo in soil_algorithms %}
-                                            <option value="{{ algo }}" {% if algo == default_soil_algorithm %}selected{% endif %}>{{ algo }}</option>
+                                        {% for algo in soil_moisture_modal_list %}
+                                            <option value="{{ algo }}" {% if algo == default_soil_algorithm %}selected{% endif %}>{{ algo|clean_ml_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="algorithm_irr" class="form-label">Irrigation Algorithm</label>
                                     <select class="form-select" id="algorithm_irr" name="algorithm_irr">
-                                        {% for algo in irrigation_algorithms %}
-                                            <option value="{{ algo }}" {% if algo == default_irrigation_algorithm %}selected{% endif %}>{{ algo }}</option>
+                                        {% for algo in irrigation_modal_list %}
+                                            <option value="{{ algo }}" {% if algo == default_irrigation_algorithm %}selected{% endif %}>{{ algo|clean_ml_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>

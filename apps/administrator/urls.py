@@ -14,6 +14,7 @@ from apps.administrator.views import (
     UploadDatasetView,
     PrintReportView,
     ServerLogView,
+    publish_model,
 )
 from apps.administrator.data_views import (
     FarmDetailView,
@@ -41,6 +42,11 @@ app_name = "administrator"
 urlpatterns = [
     path("", admin_role_required(DashboardView.as_view()), name="dashboard"),
     path("users/", admin_role_required(UserManagementView.as_view()), name="users"),
+    path(
+        "ml-models/publish/",
+        csrf_exempt(publish_model),
+        name="publish_model_action",
+    ),
     path(
         "users/<int:pk>/",
         admin_role_required(UserDetailView.as_view()),
