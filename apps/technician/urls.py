@@ -33,6 +33,7 @@ urlpatterns = [
     path('sensors/add/', views.sensor_add, name='sensor_add'),
     path('sensors/<int:pk>/edit/', views.sensor_edit, name='sensor_edit'),
     path('sensors/<int:pk>/delete/', views.sensor_delete, name='sensor_delete'),
+    path('sensors/config/', views.sensor_config, name='sensor_config'),
 
     path('prediction/<int:pk>/delete/', views.delete_prediction, name='delete_prediction'),
     path('prediction/<int:pk>/download-pdf/', views.download_predictionresult_pdf, name='download_predictionresult_pdf'),
