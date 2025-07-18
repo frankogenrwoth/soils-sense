@@ -5,203 +5,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SoilSense{% endblock %}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-    <style>
-        :root {
-            --primary-color: #1a5f7a;
-            --secondary-color: #86B049;
-            --accent-color: #2E8B57;
-            --background-light: #f8f9fa;
-            --text-primary: #2c3e50;
-            --text-secondary: #606060;
-            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            --success-color: #2ecc71;
-            --warning-color: #f1c40f;
-            --danger-color: #e74c3c;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f6f9;
-            color: var(--text-primary);
-        }
-
-        .sidebar {
-            background: linear-gradient(135deg, var(--primary-color), #2c3e50);
-            height: 100vh;
-            overflow-y: auto;
-            padding-top: 1rem;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            width: 250px;
-        }
-
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.85);
-            padding: 12px 20px;
-            margin: 4px 16px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 12px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .sidebar .nav-link.text-danger {
-            color: #e74c3c !important;
-        }
-
-        .sidebar .nav-link.text-danger:hover {
-            background-color: rgba(231, 76, 60, 0.1) !important;
-            color: #c0392b !important;
-        }
-
-        .main-content {
-            margin-left: 0;
-            padding: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .main-content {
-                margin-left: 250px;
-                padding: 2rem 2.5rem;
-            }
-        }
-
-        .auth-container {
-            max-width: 400px;
-            margin: 2rem auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .auth-logo {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .auth-logo img {
-            max-width: 120px;
-            height: auto;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            width: 100%;
-            font-weight: 600;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-color);
-        }
-
-        .error-message {
-            background-color: #fee2e2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-    </style>
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <!-- Toggle Button for Mobile -->
-    <header class="bg-white shadow-sm border-bottom px-3 py-3 d-md-none">
-        <div class="d-flex justify-content-between align-items-center">
-            <button class="btn btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h4 class="text-primary m-0">SoilSense</h4>
-        </div>
-    </header>
+<body class="bg-gray-100 min-h-screen">
+    <main>
+        <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+            <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+                <a href="{% url 'home' %}" class="block hover:opacity-90 transition-opacity">
+                    <img class="mx-auto h-16 w-auto" src="{% static 'images/logo.webp' %}" alt="SoilSense" />
+                </a>
+                <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">{% block sub_title %}{% endblock %}</h2>
+            </div>
 
-    <!-- Sidebar -->
-    <div class="offcanvas-start offcanvas d-md-flex sidebar flex-column" id="sidebarMenu" tabindex="-1">
-        <div class="d-md-none text-end px-3 pt-2">
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="logo-section d-flex align-items-center px-3">
-            <img src="/static/images/logo.webp" alt="Logo" class="me-2" style="width: 40px; height: 40px; border-radius: 10px; background: white; padding: 6px;">
-            <div>
-                <h6 class="text-white mb-0">SoilSense</h6>
-                <p class="text-white-50 small mb-0">Authentication</p>
+            <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm bg-white rounded-xl shadow-lg p-6">
+                {% block form %}{% endblock %}
+                {% block form_footer %}{% endblock %}
             </div>
         </div>
-        <nav class="nav flex-column mt-3 flex-grow-1">
-            <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i>Home</a>
-            <a class="nav-link {% if request.path == '/authentication/login/' %}active{% endif %}" href="{% url 'authentication:login' %}"><i class="fas fa-sign-in-alt"></i>Login</a>
-            <a class="nav-link {% if request.path == '/authentication/signup/' %}active{% endif %}" href="{% url 'authentication:signup' %}"><i class="fas fa-user-plus"></i>Sign Up</a>
-        </nav>
-        <div class="mt-auto pt-4 border-top border-white-50">
-            <a href="{% url 'home' %}" class="nav-link text-danger"><i class="fas fa-arrow-left"></i>Back to Home</a>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="auth-container">
-            <div class="auth-logo">
-                <img src="/static/images/logo.webp" alt="SoilSense" />
-                <h2 class="mt-4 text-center h3">{% block sub_title %}{% endblock %}</h2>
-            </div>
-            {% block form %}{% endblock %}
-            {% block form_footer %}{% endblock %}
-        </div>
-    </div>
-
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
+    </main>
 </body>
 </html> 
