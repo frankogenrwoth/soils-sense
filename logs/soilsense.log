@@ -1,4 +1,5 @@
 Watching for file changes with StatReloader
+<<<<<<< HEAD
 "GET /administrator/ml-models/ HTTP/1.1" 
 302 0
 "GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
@@ -784,3 +785,5 @@ Not Found: /media/users/profile_images/default.webp
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+=======
+>>>>>>> ac322ea90676b0eb1d2ab80aecd3d3c592cb2056
