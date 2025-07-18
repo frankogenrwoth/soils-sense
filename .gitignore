@@ -26,7 +26,6 @@ authentication/migrations/
 /apps/*/migrations/
 
 # ml engine
-/ml/data/
 /ml/models/
 
 # database
