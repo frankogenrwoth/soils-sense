@@ -74,14 +74,18 @@ def strftime(value, format="%H:%M:%S"):
     Format a time string to a given format. for example 2 seconds or 2.5 seconds or 2.5 minutes or 2.5 hours.
     Usage: {{ value|strftime:"%H:%M:%S" }}
     """
-    if value < 60:
-        return f"{value:.2f} s"
-    elif value < 3600:
-        return f"{value/60:.2f} min"
-    elif value < 86400:
-        return f"{value/3600:.2f} hr"
-    else:
-        return f"{value/86400:.2f} d"
+    try:
+        seconds = float(value)
+        if seconds < 60:
+            return f"{seconds:.2f} s"
+        elif seconds < 3600:
+            return f"{seconds/60:.2f} min"
+        elif seconds < 86400:
+            return f"{seconds/3600:.2f} hr"
+        else:
+            return f"{seconds/86400:.2f} d"
+    except (ValueError, TypeError):
+        return str(value)  # Return original value if conversion fails
 
 
 @register.filter(name="round")
@@ -89,8 +93,14 @@ def round_number(value, decimal_places=4):
     """
     Round a number to specified decimal places.
     Usage: {{ value|round:2 }}
+    Returns empty string if value is None or empty string.
     """
-    return round(float(value), decimal_places)
+    if value is None or value == '':
+        return ''
+    try:
+        return round(float(value), decimal_places)
+    except (ValueError, TypeError):
+        return value
 
 
 @register.filter
