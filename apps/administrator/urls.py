@@ -15,6 +15,7 @@ from apps.administrator.views import (
     PrintReportView,
     ServerLogView,
     publish_model,
+    delete_model,
 )
 from apps.administrator.data_views import (
     FarmDetailView,
@@ -46,6 +47,11 @@ urlpatterns = [
         "ml-models/publish/",
         csrf_exempt(publish_model),
         name="publish_model_action",
+    ),
+    path(
+        "ml-models/delete/<str:model_name>/",
+        csrf_exempt(delete_model),
+        name="delete_model_action",
     ),
     path(
         "users/<int:pk>/",

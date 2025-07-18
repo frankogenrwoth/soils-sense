@@ -1205,6 +1205,39 @@ def publish_model(request):
     model.is_active = True
     model.save()
 
-    print(model.name, "=" * 100)
-
     return JsonResponse({"message": "Model published"})
+
+
+def delete_model(request, model_name):
+    def clean_model_name(value):
+        _model_name = None
+        algorithm = None
+        version = None
+
+        raw = value.split("_")
+
+        if value.find("version") == -1:
+            version = None
+        else:
+            version = raw[-1]
+            raw.pop()
+            raw.pop()
+
+        algorithm = "_".join(raw[-2:])
+        _model_name = "_".join(raw[:-2])
+
+        return _model_name, algorithm, version
+
+    model_name, algorithm, version = clean_model_name(model_name)
+
+    model_name = f"{model_name}_{algorithm}"
+
+    targets = Model.objects.filter(name=model_name)
+
+    if not targets.exists():
+        return JsonResponse({"message": "Model not found"})
+
+    model = [model for model in targets if model.get_model_version() == version][0]
+    model.delete()
+
+    return JsonResponse({"message": "Model deleted"})

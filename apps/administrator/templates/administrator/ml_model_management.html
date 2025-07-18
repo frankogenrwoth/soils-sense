@@ -97,7 +97,7 @@
                             <button class="text-white bg-green-600 px-2 py-1 text-xs rounded hover:bg-green-700 transition">
                                 <a href="{% url 'administrator:ml_model_detail' model.model_name %}">View</a>
                             </button>
-                            <button class="text-white bg-red-600 px-2 py-1 text-xs rounded hover:bg-red-700 transition">
+                            <button class="text-white bg-red-600 px-2 py-1 text-xs rounded hover:bg-red-700 transition" onclick="deleteModel('{% url 'administrator:delete_model_action' model.model_name %}')">
                                 Delete
                             </button>
                         </td>
@@ -352,5 +352,18 @@
             });
         });
     });
+
+    function deleteModel(url) {
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+            window.location.reload();
+        })
+    }
     </script>
 {% endblock %}
