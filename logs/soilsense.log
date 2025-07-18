@@ -8559,3 +8559,261 @@ Not Found: /.well-known/appspecific/com.chrome.devtools.json
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 30881
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4192
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\ml\__init__.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /static/images/dashboard.png HTTP/1.1" 304 0
+"GET /static/images/chart.png HTTP/1.1" 304 0
+"GET /static/images/ladyone.jpg HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4081
+"GET /static/images/garden2.jpg HTTP/1.1" 304 0
+"GET /static/images/lady.jpg HTTP/1.1" 304 0
+"GET /static/images/lady3.jpg HTTP/1.1" 304 0
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 29739
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25938
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/2/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/2/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 51146
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/profile/ HTTP/1.1" 200 16923
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 51146
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 16715
+Internal Server Error: /administrator/ml-models/
+Traceback (most recent call last):
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\utils.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\views\generic\base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\views.py", line 332, in get
+    return render(request, self.template_name, context=context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 749, in resolve
+    new_obj = func(obj, *arg_vals)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\templatetags\administrator.py", line 77, in strftime
+    if value < 60:
+       ^^^^^^^^^^
+TypeError: '<' not supported between instances of 'str' and 'int'
+"GET /administrator/ml-models/ HTTP/1.1" 500 306102
+"GET /administrator/ HTTP/1.1" 200 16715
+"GET /administrator/users/ HTTP/1.1" 200 38845
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+"GET /static/images/default.webp HTTP/1.1" 304 0
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Internal Server Error: /administrator/ml-models/
+Traceback (most recent call last):
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\utils.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\views\generic\base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\views.py", line 332, in get
+    return render(request, self.template_name, context=context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 749, in resolve
+    new_obj = func(obj, *arg_vals)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\templatetags\administrator.py", line 77, in strftime
+    if value < 60:
+       ^^^^^^^^^^
+TypeError: '<' not supported between instances of 'str' and 'int'
+"GET /administrator/ml-models/ HTTP/1.1" 500 306108
+"GET /administrator/users/ HTTP/1.1" 200 38845
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
