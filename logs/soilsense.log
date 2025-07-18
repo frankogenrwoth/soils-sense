@@ -1,5 +1,22 @@
 Watching for file changes with StatReloader
-<<<<<<< HEAD
+
+"GET / HTTP/1.1" 200 19375
+"GET /privacy/ HTTP/1.1" 200 11745
+"GET / HTTP/1.1" 200 19375
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 26565
+"GET /technician/profile/ HTTP/1.1" 200 20055
+"GET /technician/settings/ HTTP/1.1" 200 17813
+"GET /technician/reports/ HTTP/1.1" 200 61546
+"GET /technician/analytics/ HTTP/1.1" 200 17860
+"GET /technician/models/ HTTP/1.1" 200 61804
+"GET /technician/soil-readings/ HTTP/1.1" 200 36747
+"GET /static/images/logo.webp HTTP/1.1" 304 0
+"GET /technician/soil-readings/?page=2 HTTP/1.1" 200 37035
+"GET /technician/soil-readings/?farm=4&date_from=&date_to=&status= HTTP/1.1" 200 36411
+"GET /technician/soil-readings/?farm=4&date_from=&date_to=&status=Normal HTTP/1.1" 200 32627
+
 "GET /administrator/ml-models/ HTTP/1.1" 
 302 0
 "GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
@@ -30,7 +47,7 @@ Not Found: /.well-known/resource-that-should-not-exist-whose-status-code-should-
 "GET /authentication/login/ HTTP/1.1" 200 2899
 "POST /authentication/login/ HTTP/1.1" 200 2913
 "POST /authentication/login/ HTTP/1.1" 302 0
-"GET /farmer/dashboard/ HTTP/1.1" 200 15873
+"GET /farmer/dashboard/ HTTP/1.1" 200 158
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/farm-management/ HTTP/1.1" 200 32207
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
@@ -68,7 +85,127 @@ Internal Server Error: /administrator/ml-models/soil_moisture_predictor/print-re
 Traceback (most recent call last):
   File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
     response = get_response(request)
-               ^^^^^^^^^^^^^^^^^^^^^
+               ^^^^^^^^^^^^^^^^^^^^^302 0
+"GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2920
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"POST /authentication/signup/ HTTP/1.1" 302 0
+"GET /authentication/login/ HTTP/1.1" 200 3184
+Not Found: /.well-known/change-password
+"GET /.well-known/change-password HTTP/1.1" 404 4129
+Not Found: /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200
+"GET /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200 HTTP/1.1" 404 4282
+- Broken pipe from ('127.0.0.1', 50320)
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2913
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 1587
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 32207
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-farm/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 33447
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-crop/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 35102
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25926
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/15/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 22430
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/recommendations/ HTTP/1.1" 200 19247
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070302 0
+"GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2920
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"POST /authentication/signup/ HTTP/1.1" 302 0
+"GET /authentication/login/ HTTP/1.1" 200 3184
+Not Found: /.well-known/change-password
+"GET /.well-known/change-password HTTP/1.1" 404 4129
+Not Found: /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200
+"GET /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200 HTTP/1.1" 404 4282
+- Broken pipe from ('127.0.0.1', 50320)
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2913
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 1587
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 32207
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-farm/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 33447
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-crop/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 35102
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25926
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/15/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 22430
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/recommendations/ HTTP/1.1" 200 19247
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18737
+"GET /administrator/users/ HTTP/1.1" 200 28190
+Not Found: /media/users/profile_images/default.webp
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ml-models/ HTTP/1.1" 200 27034
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18737
+"GET /administrator/users/ HTTP/1.1" 200 28190
+Not Found: /media/users/profile_images/default.webp
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ml-models/ HTTP/1.1" 200 27034
   File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
     response = wrapped_callback(request, *callback_args, **callback_kwargs)
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -784,6 +921,4 @@ Not Found: /media/users/profile_images/default.webp
 "GET /farmer/predictions/ HTTP/1.1" 200 33217
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
-"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
-=======
->>>>>>> ac322ea90676b0eb1d2ab80aecd3d3c592cb2056
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 
