@@ -3112,3 +3112,16 @@ Not Found: /privacy
 "GET /authentication/login/ HTTP/1.1" 200 2899
 "GET / HTTP/1.1" 200 19185
 "GET / HTTP/1.1" 200 19246
+"GET / HTTP/1.1" 200 19246
+"GET / HTTP/1.1" 200 19246
+"GET / HTTP/1.1" 200 19246
+"GET / HTTP/1.1" 200 19246
+C:\Users\user\Desktop\soils-sense\apps\landing_page\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 19375
+"GET /privacy HTTP/1.1" 301 0
+"GET /privacy/ HTTP/1.1" 200 11745
+"GET /terms HTTP/1.1" 301 0
+"GET /terms/ HTTP/1.1" 200 11944
+"GET /privacy/ HTTP/1.1" 200 11745
+"GET /terms/ HTTP/1.1" 200 11944
