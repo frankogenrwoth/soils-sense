@@ -33,12 +33,11 @@
 
     {% if version_number %}
     <a href="{% url 'administrator:print_report' model.model_type %}?version={{ version_number }}&algorithm={{ model.algorithm }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">Print Report</a>
+    <button id="publish-model" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">Publish</button>
     {% else %}
     <a href="{% url 'administrator:print_report' model.model_type %}?algorithm={{ model.algorithm }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">Print Report</a>
     {% endif %}
     </div>
-    
-
 </div>
 {% endblock %}
 
@@ -455,5 +454,30 @@
 {% endblock %}
 
 {% block scripts %}
+    <script type="text/javascript">
+        const publishBtn = document.getElementById('publish-model');
+        publishBtn.addEventListener('click', function() {
+            publishModel('{% url 'administrator:publish_model_action' %}', '{{ request.build_absolute_uri|add_params }}');
+        });
+
+        function publishModel(url, metaStr) {
+            const getUrl = url + "?" + metaStr;
+            resp = fetch(getUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }).then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById('publish-model').textContent = 'Published';
+                document.getElementById('publish-model').classList.add('bg-gray-700');
+                document.getElementById('publish-model').disabled = true;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
 {{ block.super }}
 {% endblock %}
