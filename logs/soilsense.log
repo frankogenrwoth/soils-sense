@@ -1,4 +1,5 @@
 Watching for file changes with StatReloader
+
 "GET / HTTP/1.1" 200 19375
 "GET /privacy/ HTTP/1.1" 200 11745
 "GET / HTTP/1.1" 200 19375
@@ -15,3 +16,909 @@ Watching for file changes with StatReloader
 "GET /technician/soil-readings/?page=2 HTTP/1.1" 200 37035
 "GET /technician/soil-readings/?farm=4&date_from=&date_to=&status= HTTP/1.1" 200 36411
 "GET /technician/soil-readings/?farm=4&date_from=&date_to=&status=Normal HTTP/1.1" 200 32627
+
+"GET /administrator/ml-models/ HTTP/1.1" 
+302 0
+"GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2920
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"POST /authentication/signup/ HTTP/1.1" 302 0
+"GET /authentication/login/ HTTP/1.1" 200 3184
+Not Found: /.well-known/change-password
+"GET /.well-known/change-password HTTP/1.1" 404 4129
+Not Found: /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200
+"GET /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200 HTTP/1.1" 404 4282
+- Broken pipe from ('127.0.0.1', 50320)
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2913
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 158
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 32207
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-farm/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 33447
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-crop/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 35102
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25926
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/15/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 22430
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/recommendations/ HTTP/1.1" 200 19247
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18737
+"GET /administrator/users/ HTTP/1.1" 200 28190
+Not Found: /media/users/profile_images/default.webp
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ml-models/ HTTP/1.1" 200 27034
+"POST /administrator/ml-models/upload/dataset/ HTTP/1.1" 302 0
+"GET /administrator/ml-models/soil_moisture_predictor_random_forest_version_v0.6.3/ HTTP/1.1" 200 28956
+Internal Server Error: /administrator/ml-models/soil_moisture_predictor/print-report/
+Traceback (most recent call last):
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^302 0
+"GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2920
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"POST /authentication/signup/ HTTP/1.1" 302 0
+"GET /authentication/login/ HTTP/1.1" 200 3184
+Not Found: /.well-known/change-password
+"GET /.well-known/change-password HTTP/1.1" 404 4129
+Not Found: /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200
+"GET /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200 HTTP/1.1" 404 4282
+- Broken pipe from ('127.0.0.1', 50320)
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2913
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 1587
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 32207
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-farm/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 33447
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-crop/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 35102
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25926
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/15/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 22430
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/recommendations/ HTTP/1.1" 200 19247
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070302 0
+"GET /authentication/login/?next=/administrator/ml-models/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2920
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"POST /authentication/login/ HTTP/1.1" 200 2915
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"POST /authentication/signup/ HTTP/1.1" 302 0
+"GET /authentication/login/ HTTP/1.1" 200 3184
+Not Found: /.well-known/change-password
+"GET /.well-known/change-password HTTP/1.1" 404 4129
+Not Found: /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200
+"GET /.well-known/resource-that-should-not-exist-whose-status-code-should-not-be-200 HTTP/1.1" 404 4282
+- Broken pipe from ('127.0.0.1', 50320)
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 200 2913
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 1587
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 32207
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-farm/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 33447
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/add-crop/ HTTP/1.1" 302 0
+"GET /farmer/farm-management/ HTTP/1.1" 200 35102
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/soil-data/ HTTP/1.1" 200 25926
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/api/sensor-data-json/15/?minutes=30 HTTP/1.1" 200 33
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/analytics/ HTTP/1.1" 200 22430
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/recommendations/ HTTP/1.1" 200 19247
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18737
+"GET /administrator/users/ HTTP/1.1" 200 28190
+Not Found: /media/users/profile_images/default.webp
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ml-models/ HTTP/1.1" 200 27034
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18737
+"GET /administrator/users/ HTTP/1.1" 200 28190
+Not Found: /media/users/profile_images/default.webp
+Not Found: /media/users/profiles/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ml-models/ HTTP/1.1" 200 27034
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\utils.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\views\generic\base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\views.py", line 672, in get
+    buffer = self._generate_pdf(model_info)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\administrator\views.py", line 689, in _generate_pdf
+    from PyPDF2 import PdfReader, PdfWriter
+ModuleNotFoundError: No module named 'PyPDF2'
+"GET /administrator/ml-models/soil_moisture_predictor/print-report/?version=v0.6.3&algorithm=random_forest HTTP/1.1" 500 107360
+"GET /administrator/ml-models/soil_moisture_predictor/print-report/?version=v0.6.3&algorithm=random_forest HTTP/1.1" 200 7668
+"GET /administrator/ml-models/soil_moisture_predictor/print-report/?version=v0.6.3&algorithm=random_forest HTTP/1.1" 200 7668
+- Broken pipe from ('127.0.0.1', 50359)
+"GET /administrator/ml-models/ HTTP/1.1" 200 27114
+"GET /administrator/data/ HTTP/1.1" 200 57532
+Not Found: /media/users/profiles/default.webp
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ml-models/ HTTP/1.1" 200 26420
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 26392
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18737
+"GET /administrator/ml-models/ HTTP/1.1" 200 26420
+"GET /administrator/ml-models/soil_moisture_predictor_random_forest_version_v0.6.3/ HTTP/1.1" 200 28956
+"POST /administrator/ml-models/soil_moisture_predictor_random_forest_version_v0.6.3/ HTTP/1.1" 302 0
+"GET /administrator/ml-models/soil_moisture_predictor_random_forest_version_v0.6.3/?predicted_value=19.215279349998116 HTTP/1.1" 200 29472
+"GET /administrator/ml-models/ HTTP/1.1" 200 27112
+"GET /administrator/ml-models/ HTTP/1.1" 200 26420
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\ml\model_trainer.py changed, reloading.
+Watching for file changes with StatReloader
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 26392
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+Internal Server Error: /farmer/predictions/
+Traceback (most recent call last):
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\utils.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py", line 684, in predictions
+    ml_engine = MLEngine()
+                ^^^^^^^^
+NameError: name 'MLEngine' is not defined
+"GET /farmer/predictions/ HTTP/1.1" 500 78920
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 31012
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 31012
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 29574
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31272
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31174
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31242
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31242
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31184
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31184
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31308
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31166
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31166
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31288
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31230
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31198
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30617
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 34176
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/delete/53/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 31142
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 34176
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/download/54/ HTTP/1.1" 200 2741
+"GET /farmer/predictions/download/54/ HTTP/1.1" 200 2741
+- Broken pipe from ('127.0.0.1', 52082)
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /farmer/predictions/
+Traceback (most recent call last):
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\utils.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py", line 720, in predictions
+    non_activated =[mod.get_version() for mod in custom_activated_models]
+                    ^^^^^^^^^^^^^^^
+AttributeError: 'Model' object has no attribute 'get_version'
+"GET /farmer/predictions/ HTTP/1.1" 500 80642
+- Broken pipe from ('127.0.0.1', 52359)
+Internal Server Error: /farmer/predictions/
+Traceback (most recent call last):
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\utils.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py", line 720, in predictions
+    non_activated =[mod.get_version() for mod in custom_activated_models]
+                    ^^^^^^^^^^^^^^^
+AttributeError: 'Model' object has no attribute 'get_version'
+"GET /farmer/predictions/ HTTP/1.1" 500 80642
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30821
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 30821
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30821
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30821
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 30821
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+C:\Users\USER\OneDrive\Desktop\soil-sense\soils-sense\apps\farmer\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /farmer/predictions/ HTTP/1.1" 200 32996
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 32996
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /static/images/dashboard.png HTTP/1.1" 304 0
+"GET /static/images/chart.png HTTP/1.1" 304 0
+"GET /static/images/ladyone.jpg HTTP/1.1" 304 0
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18742
+"GET /administrator/ml-models/ HTTP/1.1" 200 26420
+"GET /administrator/data/ HTTP/1.1" 200 60359
+Not Found: /media/users/profiles/default.webp
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profiles/default.webp HTTP/1.1" 404 4231
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+Not Found: /media/users/profile_images/default.webp
+"GET /media/users/profile_images/default.webp HTTP/1.1" 404 4255
+"GET /administrator/ HTTP/1.1" 200 18742
+"GET /administrator/sensors/ HTTP/1.1" 200 11122
+"GET /admin/login/?next=/admin/SMA/location/add/ HTTP/1.1" 302 0
+"GET /admin/ HTTP/1.1" 200 27652
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/vendor/adminlte/css/adminlte.min.css HTTP/1.1" 304 0
+"GET /static/jazzmin/css/main.css HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.min.js HTTP/1.1" 304 0
+"GET /static/vendor/adminlte/js/adminlte.min.js HTTP/1.1" 304 0
+"GET /static/jazzmin/js/main.js HTTP/1.1" 304 0
+"GET /static/vendor/adminlte/img/AdminLTELogo.png HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-regular-400.woff2 HTTP/1.1" 304 0
+"GET /admin/administrator/model/ HTTP/1.1" 200 23531
+"GET /static/vendor/select2/css/select2.min.css HTTP/1.1" 304 0
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/vendor/select2/js/select2.min.js HTTP/1.1" 304 0
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+"GET /static/jazzmin/js/change_list.js HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/administrator/model/2/change/ HTTP/1.1" 200 21711
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+"GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+"GET /static/jazzmin/js/change_form.js HTTP/1.1" 200 6052
+"POST /admin/administrator/model/2/change/ HTTP/1.1" 302 0
+"GET /admin/administrator/model/ HTTP/1.1" 200 24145
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436
+"GET /admin/administrator/model/2/change/ HTTP/1.1" 200 21719
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18742
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 26392
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 33217
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 18742
+"GET /administrator/ml-models/ HTTP/1.1" 200 26420
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 26392
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 33217
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 

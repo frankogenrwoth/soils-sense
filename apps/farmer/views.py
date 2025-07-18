@@ -21,8 +21,14 @@ from ml.config import REGRESSION_ALGORITHMS, CLASSIFICATION_ALGORITHMS, DEFAULT_
 from django.utils import timezone
 import os
 from django.conf import settings
+from ml import MLEngine
+import traceback
+from apps.administrator.models import Model
 
 from .utils import farmer_role_required
+
+
+ml_engine = MLEngine()
 
 def farmer_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -515,6 +521,7 @@ def predictions(request):
     
     if request.method == 'POST':
         try:
+            print(request.POST)
             farm_id = request.POST.get('farm')
             farm = get_object_or_404(Farm, id=farm_id, user=request.user)
             
@@ -531,6 +538,9 @@ def predictions(request):
                 
                 try:
                     # Read CSV file
+
+                    print(request.POST)
+
                     df = pd.read_csv(csv_file)
                     required_columns = ['temperature_celsius', 'humidity_percent', 'battery_voltage', 'status']
                     
@@ -623,6 +633,29 @@ def predictions(request):
                 battery_voltage = float(request.POST.get('battery_voltage'))
                 algorithm = request.POST.get('algorithm')
                 algorithm_irr = request.POST.get('algorithm_irr')
+
+                def clean_ml_algo(value):
+                    model_name = None
+                    algorithm = None
+                    version = None
+
+                    raw = value.split("_")
+
+                    if value.find("version") == -1:
+                        version = None
+                    else:
+                        version = raw[-1]
+                        raw.pop()
+                        raw.pop()
+
+                    algorithm = "_".join(raw[-2:])
+                    model_name = "_".join(raw[:-2])
+
+                    return model_name, algorithm, version
+                
+                model_name, algorithm, version = clean_ml_algo(algorithm)
+                model_name_irr, algorithm_irr, version_irr = clean_ml_algo(algorithm_irr)
+
                 
                 # Make predictions
                 soil_predictor = SoilMoisturePredictor()
@@ -632,31 +665,30 @@ def predictions(request):
                 current_time = timezone.now()
                 
                 # Predict soil moisture
-                soil_moisture_result = soil_predictor.predict_moisture(
-                    sensor_id=1,  # Default sensor ID
-                    location=location,
-                    temperature_celsius=temperature,
-                    humidity_percent=humidity,
-                    battery_voltage=battery_voltage,
-                    status="Normal",  # Default status
-                    irrigation_action="None",  # Default - no irrigation
-                    timestamp=current_time,
-                    algorithm=algorithm
-                )
-                
+
+
+                soil_moisture_result = ml_engine.predict(model_type=model_name, algorithm=algorithm, version=version, data={
+                    "temperature_celsius": temperature,
+                    "humidity_percent": humidity,
+                    "battery_voltage": battery_voltage,
+                    "status": "Normal",
+                    "irrigation_action": "None",
+                    "timestamp": current_time,
+                })
+                print(soil_moisture_result)
                 # Get the predicted value
                 soil_moisture_value = soil_moisture_result['predicted_value'] if isinstance(soil_moisture_result, dict) else soil_moisture_result
                 
                 # Get irrigation recommendation
-                irrigation_result = irrigation_recommender.recommend_irrigation(
-                    soil_moisture_percent=soil_moisture_value,
-                    temperature_celsius=temperature,
-                    humidity_percent=humidity,
-                    battery_voltage=battery_voltage,
-                    status="Normal",
-                    timestamp=current_time,
-                    algorithm=algorithm_irr
-                )
+                irrigation_result = ml_engine.predict(model_type=model_name_irr, algorithm=algorithm_irr, version=version_irr, data={
+                    "soil_moisture_percent": soil_moisture_value,
+                    "temperature_celsius": temperature,
+                    "humidity_percent": humidity,
+                    "battery_voltage": battery_voltage,
+                    "status": "Normal",
+                    "timestamp": current_time,
+                })
+                print(irrigation_result)
                 
                 # Get the recommendation value
                 irrigation_recommendation = irrigation_result['predicted_value'] if isinstance(irrigation_result, dict) else irrigation_result
@@ -679,16 +711,47 @@ def predictions(request):
             return redirect('farmer:predictions')
             
         except Exception as e:
+            print(traceback.print_exc())
             messages.error(request, f'Error making prediction: {str(e)}')
             return redirect('farmer:predictions')
+    modal_list = ml_engine.get_available_models()
+    
+    custom_activated_models = Model.objects.filter(is_active=False)
+    non_activated =[mod.get_model_version() for mod in custom_activated_models]
+
+    print(non_activated)
+    print(modal_list)
+
+    print([(modal_list[0].find(odd) != -1) for odd in non_activated if modal_list[0].find(odd) != -1])
+    print([(modal_list[3].find(odd) != -1) for odd in non_activated if modal_list[3].find(odd) != -1])
+
+
+
+    
+
+    modal_list = [
+        algo 
+        for algo in modal_list 
+        if len([(algo.find(odd)!= -1) for odd in non_activated if algo.find(odd) != -1]) == 0
+    ]
+    print(modal_list)
+    
+    soil_moisture_modal_list = [algo for algo in modal_list if algo.startswith("soil_moisture_predictor")]
+    irrigation_modal_list = [algo for algo in modal_list if algo.startswith("irrigation")]
+
+    
+
+    print(modal_list)
     
     context = {
         'farms': farms,
         'predictions': predictions,
         'soil_algorithms': REGRESSION_ALGORITHMS,
         'irrigation_algorithms': CLASSIFICATION_ALGORITHMS,
-        'default_soil_algorithm': DEFAULT_ALGORITHMS['soil_moisture_predictor'],
-        'default_irrigation_algorithm': DEFAULT_ALGORITHMS['irrigation_recommendation']
+        'default_soil_algorithm': "soil_moisture_predictor_random_forest",
+        'default_irrigation_algorithm': "irrigation_recommendation_random_forest",
+        'soil_moisture_modal_list': soil_moisture_modal_list,
+        'irrigation_modal_list': irrigation_modal_list,
     }
     return render(request, 'farmer/predictions.html', context)
 
