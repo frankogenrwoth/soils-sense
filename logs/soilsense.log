@@ -8559,3 +8559,484 @@ Not Found: /.well-known/appspecific/com.chrome.devtools.json
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+Watching for file changes with StatReloader
+"GET /technician/analytics/ HTTP/1.1" 200 21485
+"GET /technician/analytics/ HTTP/1.1" 200 21506
+"GET /technician/dashboard/ HTTP/1.1" 200 30216
+"GET /technician/dashboard/ HTTP/1.1" 200 30216
+"GET /technician/profile/ HTTP/1.1" 200 23715
+"GET /technician/settings/ HTTP/1.1" 200 24627
+"POST /technician/settings/ HTTP/1.1" 302 0
+"GET /technician/settings/ HTTP/1.1" 200 24246
+"GET /technician/profile/ HTTP/1.1" 200 23715
+"GET /technician/profile/ HTTP/1.1" 200 23555
+"GET /technician/profile/ HTTP/1.1" 200 23555
+"GET /technician/dashboard/ HTTP/1.1" 200 30062
+"GET /technician/profile/ HTTP/1.1" 200 23555
+"GET /technician/settings/ HTTP/1.1" 200 24092
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 16499
+"GET /static/images/slide1.jpg HTTP/1.1" 200 100505
+"GET /static/images/dashboard.png HTTP/1.1" 200 73583
+"GET /static/images/chart.png HTTP/1.1" 200 69919
+"GET /static/images/ladyone.jpg HTTP/1.1" 200 911834
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4081
+"GET /static/images/garden2.jpg HTTP/1.1" 200 4417134
+"GET /static/images/lady.jpg HTTP/1.1" 200 1017834
+"GET /static/images/lady3.jpg HTTP/1.1" 200 859813
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"GET /static/images/logo.webp HTTP/1.1" 200 90028
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 30107
+"GET / HTTP/1.1" 200 16070
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4081
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 30107
+"GET /technician/dashboard/ HTTP/1.1" 200 30341
+"GET /technician/dashboard/ HTTP/1.1" 200 30341
+Internal Server Error: /technician/soil-readings/
+Traceback (most recent call last):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\utils.py", line 98, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.InvalidCursorName: cursor "_django_curs_13188_sync_1" does not exist
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 102, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 526, in technician_soil_readings
+    return render(request, 'technician/soil_readings.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1081, in render
+    return render_value_in_context(output, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1058, in render_value_in_context
+    value = str(value)
+            ^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\utils.py", line 79, in __str__
+    return self.as_widget()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\boundfield.py", line 108, in as_widget
+    return widget.render(
+           ^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\widgets.py", line 329, in render
+    context = self.get_context(name, value, attrs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\widgets.py", line 830, in get_context
+    context = super().get_context(name, value, attrs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\widgets.py", line 781, in get_context
+    context["widget"]["optgroups"] = self.optgroups(
+                                     ^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\widgets.py", line 721, in optgroups
+    for index, (option_value, option_label) in enumerate(self.choices):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\forms\models.py", line 1424, in __iter__
+    for obj in queryset:
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\query.py", line 502, in _iterator
+    yield from iterable
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\query.py", line 123, in __iter__
+    for row in compiler.results_iter(results):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 2171, in cursor_iter
+    for rows in iter((lambda: cursor.fetchmany(itersize)), sentinel):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 2171, in <lambda>
+    for rows in iter((lambda: cursor.fetchmany(itersize)), sentinel):
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\utils.py", line 97, in inner
+    with self:
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\db\utils.py", line 98, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: cursor "_django_curs_13188_sync_1" does not exist
+
+"GET /technician/soil-readings/ HTTP/1.1" 500 257958
+- Broken pipe from ('127.0.0.1', 50320)
+"GET /technician/sensors/ HTTP/1.1" 200 15324
+"GET /technician/models/ HTTP/1.1" 200 51854
+"GET /technician/analytics/ HTTP/1.1" 200 21586
+- Broken pipe from ('127.0.0.1', 50384)
+"GET /technician/dashboard/ HTTP/1.1" 200 30341
+"GET /technician/dashboard/ HTTP/1.1" 200 30279
+"GET /technician/dashboard/ HTTP/1.1" 200 30280
+"GET /technician/dashboard/ HTTP/1.1" 200 30280
+"GET /technician/farm-locations/ HTTP/1.1" 200 21640
+"GET /technician/soil-readings/ HTTP/1.1" 200 40138
+"GET /technician/sensors/ HTTP/1.1" 200 15260
+"GET /technician/sensors/ HTTP/1.1" 200 15258
+"GET /technician/sensors/ HTTP/1.1" 200 15714
+"GET /static/images/default.webp HTTP/1.1" 200 24145
+"GET /technician/dashboard/ HTTP/1.1" 200 30734
+"GET /technician/settings/ HTTP/1.1" 200 24716
+"GET /technician/profile/ HTTP/1.1" 200 24179
+"GET /technician/settings/ HTTP/1.1" 200 24716
+"GET /technician/dashboard/ HTTP/1.1" 200 30278
+"GET /technician/settings/ HTTP/1.1" 200 24260
+"GET /technician/profile/ HTTP/1.1" 200 23729
+"GET /technician/settings/ HTTP/1.1" 200 24260
+"GET /technician/settings/ HTTP/1.1" 200 24659
+"GET /technician/dashboard/ HTTP/1.1" 200 30266
+"GET /technician/profile/ HTTP/1.1" 200 24128
+"GET /technician/settings/ HTTP/1.1" 200 24659
+"GET /technician/sensors/ HTTP/1.1" 200 15657
+"GET /technician/soil-readings/ HTTP/1.1" 200 40136
+"GET /technician/dashboard/ HTTP/1.1" 200 30278
+"GET /technician/sensors/ HTTP/1.1" 200 15657
+"GET /technician/models/ HTTP/1.1" 200 52187
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 16703
+"GET /administrator/ml-models/ HTTP/1.1" 200 27034
+"POST /administrator/ml-models/upload/dataset/ HTTP/1.1" 302 0
+"GET /administrator/ml-models/soil_moisture_predictor_random_forest_version_v0.13.3/ HTTP/1.1" 200 27549
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16360
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /farmer/dashboard/ HTTP/1.1" 200 29080
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/ HTTP/1.1" 200 28877
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 32437
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/predictions/download/12/ HTTP/1.1" 200 2748
+"GET /farmer/predictions/download/12/ HTTP/1.1" 200 2748
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+- Broken pipe from ('127.0.0.1', 53988)
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 35649
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"POST /farmer/predictions/ HTTP/1.1" 302 0
+"GET /farmer/predictions/ HTTP/1.1" 200 38857
+- Broken pipe from ('127.0.0.1', 54013)
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/farm-management/ HTTP/1.1" 200 33296
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+Internal Server Error: /technician/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 102, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 211, in dashboard
+    return render(request, 'technician/dashboard.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'notification' not found. 'notification' is not a valid view function or pattern name.
+"GET /technician/dashboard/ HTTP/1.1" 500 216774
+Watching for file changes with StatReloader
+Internal Server Error: /technician/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 102, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 211, in dashboard
+    return render(request, 'technician/dashboard.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'notification' not found. 'notification' is not a valid view function or pattern name.
+"GET /technician/dashboard/ HTTP/1.1" 500 216771
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+Forbidden (CSRF token from POST incorrect.): /authentication/login/
+"POST /authentication/login/ HTTP/1.1" 403 2503
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 30280
+"GET /technician/settings/ HTTP/1.1" 200 24659
+"GET /technician/profile/ HTTP/1.1" 200 24128
+"GET /technician/reports/ HTTP/1.1" 200 62375
+- Broken pipe from ('127.0.0.1', 53999)
+"GET /technician/dashboard/ HTTP/1.1" 200 30280
+"GET /technician/farm-locations/ HTTP/1.1" 200 21638
+"GET /technician/soil-readings/ HTTP/1.1" 200 40136
+Internal Server Error: /technician/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 102, in wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\apps\technician\views.py", line 211, in dashboard
+    return render(request, 'technician/dashboard.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\garang\OneDrive\Desktop\soils-sense\.venv\Lib\site-packages\django\template\loader_tags.py", line 228, in do_block
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: 'block' tag with name 'header_actions' appears more than once
+- Broken pipe from ('127.0.0.1', 54228)
+"GET /technician/sensors/ HTTP/1.1" 200 15657
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 16715
+"GET /administrator/ml-models/ HTTP/1.1" 200 26421
+- Broken pipe from ('127.0.0.1', 54355)
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /administrator/ HTTP/1.1" 200 16715
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /landing_page/ HTTP/1.1" 200 16070
+"GET /static/images/dashboard.png HTTP/1.1" 304 0
+"GET /static/images/chart.png HTTP/1.1" 304 0
+"GET /static/images/ladyone.jpg HTTP/1.1" 304 0
+"GET /static/images/garden2.jpg HTTP/1.1" 304 0
+"GET /static/images/lady.jpg HTTP/1.1" 304 0
+"GET /static/images/lady3.jpg HTTP/1.1" 304 0
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"GET /authentication/login/ HTTP/1.1" 200 2899
