@@ -1998,3 +1998,11 @@ Not Found: /media/users/profiles/default.webp
 "GET /administrator/ml-models/irrigation_recommendation/?algorithm=gradient_boosting HTTP/1.1" 200 25824
 "GET /administrator/ml-models/irrigation_recommendation/?algorithm=logistic_regression HTTP/1.1" 200 25830
 Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 19375
+"GET / HTTP/1.1" 200 19375
+"GET /static/images/lady.jpg HTTP/1.1" 200 1017834
+"GET /static/images/lady3.jpg HTTP/1.1" 200 859813
+"GET /static/images/garden2.jpg HTTP/1.1" 200 4417134
+"GET /static/images/lady.jpg HTTP/1.1" 200 1017834
+"GET /static/images/slide1.jpg HTTP/1.1" 200 100505
+"GET / HTTP/1.1" 200 19375
