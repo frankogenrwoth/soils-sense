@@ -20,19 +20,49 @@
 
 <!-- ✅ NAVIGATION BAR -->
 <nav class="bg-gradient-to-r from-green-400 via-green-500 to-green-600/90 text-white px-6 py-4 fixed w-full top-0 z-50 shadow-lg border-b border-green-200/60 backdrop-blur-md bg-opacity-80 rounded-2xl border-4 border-white/80 mx-2 mt-2">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="text-2xl font-bold tracking-wide drop-shadow-lg">
-            <a href="/" class="hover:text-green-100 transition-colors duration-200 hover:scale-105 inline-block">SoilSense</a>
+    <div class="container mx-auto">
+        <div class="flex justify-between items-center">
+            <!-- Logo -->
+            <div class="text-2xl font-bold tracking-wide drop-shadow-lg">
+                <a href="/" class="hover:text-green-100 transition-colors duration-200 hover:scale-105 inline-block">SoilSense</a>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <ul class="flex space-x-2 text-sm">
+                    <li><a href="#features" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">Features</a></li>
+                    <li><a href="#how" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">How It Works</a></li>
+                    <li><a href="/about" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">About</a></li>
+                    <li><a href="/contact" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">Contact</a></li>
+                </ul>
+                <div class="flex space-x-3">
+                    <a href="{% url 'authentication:login' %}" class="rounded px-4 py-1 font-semibold border border-white/40 hover:bg-white/10 hover:text-green-100 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-200">Login</a>
+                    <a href="{% url 'authentication:signup' %}" class="rounded-full bg-white text-green-700 font-bold px-5 py-1.5 shadow-md hover:bg-green-100 hover:scale-105 hover:shadow-lg focus:ring-2 focus:ring-green-200 transition duration-200 border-2 border-green-400 animate-pulse">Sign Up</a>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 rounded-lg p-2">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-        <ul class="flex space-x-2 text-sm">
-            <li><a href="#features" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">Features</a></li>
-            <li><a href="#how" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">How It Works</a></li>
-            <li><a href="/about" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">About</a></li>
-            <li><a href="/contact" class="rounded px-3 py-1 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 nav-underline">Contact</a></li>
-        </ul>
-        <div class="flex space-x-3">
-            <a href="{% url 'authentication:login' %}" class="rounded px-4 py-1 font-semibold border border-white/40 hover:bg-white/10 hover:text-green-100 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-200">Login</a>
-            <a href="{% url 'authentication:signup' %}" class="rounded-full bg-white text-green-700 font-bold px-5 py-1.5 shadow-md hover:bg-green-100 hover:scale-105 hover:shadow-lg focus:ring-2 focus:ring-green-200 transition duration-200 border-2 border-green-400 animate-pulse">Sign Up</a>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+            <ul class="flex flex-col space-y-2">
+                <li><a href="#features" class="block rounded px-3 py-2 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200">Features</a></li>
+                <li><a href="#how" class="block rounded px-3 py-2 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200">How It Works</a></li>
+                <li><a href="/about" class="block rounded px-3 py-2 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200">About</a></li>
+                <li><a href="/contact" class="block rounded px-3 py-2 font-semibold transition duration-200 hover:bg-white/20 hover:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-200">Contact</a></li>
+            </ul>
+            <div class="mt-4 flex flex-col space-y-2 px-3">
+                <a href="{% url 'authentication:login' %}" class="block text-center rounded px-4 py-2 font-semibold border border-white/40 hover:bg-white/10 hover:text-green-100 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-200">Login</a>
+                <a href="{% url 'authentication:signup' %}" class="block text-center rounded-full bg-white text-green-700 font-bold px-5 py-2 shadow-md hover:bg-green-100 hover:scale-105 hover:shadow-lg focus:ring-2 focus:ring-green-200 transition duration-200 border-2 border-green-400">Sign Up</a>
+            </div>
         </div>
     </div>
     <style>
@@ -68,14 +98,38 @@
 <footer class="bg-gray-800 text-white py-6 mt-10 text-center">
     <p>&copy; 2025 SoilSense. All rights reserved.</p>
     <div class="text-sm mt-2">
-        <a href="/privacy" class="hover:underline mx-2">Privacy Policy</a> |
-        <a href="/terms" class="hover:underline mx-2">Terms of Use</a>
+    <p>GROUP P</p>
     </div>
 </footer>
 
 <!-- ✅ GLOBAL SCRIPTS -->
 {% block scripts %}
 {% endblock %}
+
+<script>
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close mobile menu when clicking a link
+    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+    mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    // Close mobile menu on window resize if screen becomes large
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) { // 768px is the md breakpoint in Tailwind
+            mobileMenu.classList.add('hidden');
+        }
+    });
+</script>
 
 </body>
 </html>

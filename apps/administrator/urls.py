@@ -34,6 +34,7 @@ from apps.administrator.data_views import (
     SensorDeleteView,
 )
 from apps.administrator.utils import admin_role_required
+from django.views.decorators.csrf import csrf_exempt
 
 app_name = "administrator"
 
@@ -141,7 +142,7 @@ urlpatterns = [
     path("ml-models/", admin_role_required(MLModelManagementView.as_view()), name="ml"),
     path(
         "ml-models/<str:model_name>/",
-        admin_role_required(MLModelDetailView.as_view()),
+        admin_role_required(csrf_exempt(MLModelDetailView.as_view())),
         name="ml_model_detail",
     ),
     path(
