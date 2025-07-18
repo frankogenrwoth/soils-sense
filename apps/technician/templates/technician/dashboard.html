@@ -12,8 +12,8 @@
 {% block content %}
 <!-- Stats Cards Row -->
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="dashboard-card stat-card bg-white">
+    <div class="col-12 col-md-3 mb-3 mb-md-0">
+        <div class="dashboard-card stat-card bg-white h-100">
             <i class="fas fa-farm icon"></i>
             <div class="title">Active Farms</div>
             <h3>{{ farm_count }}</h3>
@@ -22,8 +22,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="dashboard-card stat-card bg-white">
+    <div class="col-12 col-md-3 mb-3 mb-md-0">
+        <div class="dashboard-card stat-card bg-white h-100">
             <i class="fas fa-chart-line icon"></i>
             <div class="title">Total Readings</div>
             <h3>{{ total_readings }}</h3>
@@ -32,8 +32,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="dashboard-card stat-card bg-white">
+    <div class="col-12 col-md-3 mb-3 mb-md-0">
+        <div class="dashboard-card stat-card bg-white h-100">
             <i class="fas fa-exclamation-triangle icon"></i>
             <div class="title">Critical Alerts</div>
             <h3>{{ critical_readings }}</h3>
@@ -42,8 +42,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="dashboard-card stat-card bg-white">
+    <div class="col-12 col-md-3">
+        <div class="dashboard-card stat-card bg-white h-100">
             <i class="fas fa-cog icon"></i>
             <div class="title">Sensor Thresholds</div>
             <h3>{{ threshold_count }}</h3>
@@ -57,11 +57,11 @@
 <!-- Main Content Area: Two Columns -->
 <div class="row g-3 mb-4">
     <!-- Left Column: Moisture Trend and Farm Performance -->
-    <div class="col-lg-8 d-flex flex-column gap-3">
+    <div class="col-12 col-lg-8 d-flex flex-column gap-3">
         <div class="dashboard-card mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h5 class="mb-0">Moisture Trend (Last 7 Days)</h5>
-                <div class="btn-group">
+                <div class="btn-group mt-2 mt-lg-0">
                     <button class="btn btn-outline-secondary btn-sm">Day</button>
                     <button class="btn btn-outline-secondary btn-sm active">Week</button>
                     <button class="btn btn-outline-secondary btn-sm">Month</button>
@@ -72,12 +72,12 @@
             </div>
         </div>
         <div class="dashboard-card mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h5 class="mb-0">Farm Performance</h5>
-                <a href="{% url 'technician:farm_locations' %}" class="text-decoration-none">View All</a>
+                <a href="{% url 'technician:farm_locations' %}" class="text-decoration-none mt-2 mt-lg-0">View All</a>
             </div>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-hover align-middle">
                     <thead>
                         <tr>
                             <th>Farm</th>
@@ -113,11 +113,11 @@
         </div>
     </div>
     <!-- Right Column: Recent Alerts, Quick Actions, System Status -->
-    <div class="col-lg-4 d-flex flex-column gap-3">
+    <div class="col-12 col-lg-4 d-flex flex-column gap-3">
         <div class="dashboard-card mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h5 class="mb-0">Recent Alerts</h5>
-                <a href="{% url 'technician:soil_readings' %}" class="text-decoration-none">View All</a>
+                <a href="{% url 'technician:soil_readings' %}" class="text-decoration-none mt-2 mt-lg-0">View All</a>
             </div>
             <div class="alert-list">
                 {% for reading in recent_critical_readings %}
@@ -142,16 +142,16 @@
         <div class="dashboard-card mb-3">
             <h5 class="mb-4">Quick Actions</h5>
             <div class="d-grid gap-2">
-                <a href="{% url 'technician:models' %}" class="btn btn-outline-primary">
+                <a href="{% url 'technician:models' %}" class="btn btn-outline-primary w-100">
                     <i class="fas fa-cubes me-2"></i>Models
                 </a>
-                <a href="{% url 'technician:analytics' %}" class="btn btn-outline-info">
+                <a href="{% url 'technician:analytics' %}" class="btn btn-outline-info w-100">
                     <i class="fas fa-chart-bar me-2"></i>View Analytics
                 </a>
-                <a href="{% url 'technician:soil_readings' %}" class="btn btn-outline-success">
+                <a href="{% url 'technician:soil_readings' %}" class="btn btn-outline-success w-100">
                     <i class="fas fa-tint me-2"></i>Soil Readings
                 </a>
-                <a href="{% url 'technician:farm_locations' %}" class="btn btn-outline-warning">
+                <a href="{% url 'technician:farm_locations' %}" class="btn btn-outline-warning w-100">
                     <i class="fas fa-map-marker-alt me-2"></i>Farm Locations
                 </a>
             </div>
@@ -187,9 +187,9 @@
 <div class="row g-3 mt-2">
     <div class="col-12">
         <div class="dashboard-card">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h5 class="mb-0">Moisture Distribution</h5>
-                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#distributionModal">
+                <button class="btn btn-light btn-sm mt-2 mt-lg-0" data-bs-toggle="modal" data-bs-target="#distributionModal">
                     <i class="fas fa-chart-pie me-2"></i>Details
                 </button>
             </div>

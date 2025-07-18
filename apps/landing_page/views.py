@@ -48,4 +48,12 @@ class LandingPage(TemplateView):
         context['title'] = "Welcome to SoilSense"
         context['description'] = "Your partner in sustainable agriculture."
         return context
+
+# ✅ Privacy Policy Page
+class PrivacyPolicyPage(TemplateView):
+    template_name = 'privacy.html'
+
+# ✅ Terms of Use Page
+class TermsOfUsePage(TemplateView):
+    template_name = 'terms.html'
     
