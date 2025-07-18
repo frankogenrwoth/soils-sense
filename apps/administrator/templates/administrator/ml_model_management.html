@@ -152,7 +152,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ model.training_time }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{% url 'administrator:ml_model_detail' model.model_type %}?{{ model.algorithm|add_params }}" class="text-white bg-green-600 px-2 py-1 text-xs rounded hover:bg-green-700 transition">View data</a>
+                            <a href="{% url 'administrator:ml_model_detail' model.model_type %}?algorithm={{ model.algorithm }}" class="text-white bg-green-600 px-2 py-1 text-xs rounded hover:bg-green-700 transition">View data</a>
                         </td>
                     </tr>
 
