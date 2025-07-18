@@ -1,0 +1,173 @@
+{
+  "model_type": "irrigation_recommendation",
+  "algorithm": "random_forest",
+  "task_type": "classification",
+  "training_time": 0.3841724395751953,
+  "n_samples": 2241,
+  "n_features": 10,
+  "feature_names": [
+    "num__soil_moisture_percent",
+    "num__temperature_celsius",
+    "num__humidity_percent",
+    "num__battery_voltage",
+    "num__hour_of_day",
+    "num__month",
+    "num__is_growing_season",
+    "num__temp_humidity_interaction",
+    "num__low_battery",
+    "cat__status"
+  ],
+  "feature_columns": [
+    "soil_moisture_percent",
+    "temperature_celsius",
+    "humidity_percent",
+    "timestamp",
+    "status",
+    "battery_voltage",
+    "hour_of_day",
+    "month",
+    "is_growing_season",
+    "temp_humidity_interaction",
+    "low_battery"
+  ],
+  "model_name": "RandomForestClassifier",
+  "train_accuracy": 0.9669790272199911,
+  "test_accuracy": 0.8502673796791443,
+  "train_f1": 0.9669712631527452,
+  "test_f1": 0.8500251474066067,
+  "cv_mean": 0.7764446786509704,
+  "cv_std": 0.01682585841890422,
+  "training_logs": {
+    "data_inspection": {
+      "num_rows": 4000,
+      "num_columns": 10,
+      "columns": [
+        "record_id",
+        "sensor_id",
+        "location",
+        "soil_moisture_percent",
+        "temperature_celsius",
+        "humidity_percent",
+        "timestamp",
+        "status",
+        "battery_voltage",
+        "irrigation_action"
+      ],
+      "dtypes": {
+        "record_id": "int64",
+        "sensor_id": "object",
+        "location": "object",
+        "soil_moisture_percent": "float64",
+        "temperature_celsius": "float64",
+        "humidity_percent": "float64",
+        "timestamp": "object",
+        "status": "object",
+        "battery_voltage": "float64",
+        "irrigation_action": "object"
+      },
+      "missing_values": {
+        "record_id": 0,
+        "sensor_id": 0,
+        "location": 0,
+        "soil_moisture_percent": 0,
+        "temperature_celsius": 0,
+        "humidity_percent": 0,
+        "timestamp": 0,
+        "status": 0,
+        "battery_voltage": 0,
+        "irrigation_action": 1198
+      },
+      "unique_values": {
+        "record_id": 4000,
+        "sensor_id": 20,
+        "location": 4,
+        "soil_moisture_percent": 3983,
+        "temperature_celsius": 3663,
+        "humidity_percent": 3825,
+        "timestamp": 3990,
+        "status": 5,
+        "battery_voltage": 3501,
+        "irrigation_action": 2
+      },
+      "numeric_summary": {
+        "record_id": {
+          "count": 4000.0,
+          "mean": 2000.5,
+          "std": 1154.8448669265786,
+          "min": 1.0,
+          "25%": 1000.75,
+          "50%": 2000.5,
+          "75%": 3000.25,
+          "max": 4000.0
+        },
+        "soil_moisture_percent": {
+          "count": 4000.0,
+          "mean": 32.384662169182036,
+          "std": 16.46232141477012,
+          "min": 0.2074892436126214,
+          "25%": 18.158207366994695,
+          "50%": 33.049771987509466,
+          "75%": 46.647097804091594,
+          "max": 63.79330367307768
+        },
+        "temperature_celsius": {
+          "count": 4000.0,
+          "mean": 26.17126607342666,
+          "std": 5.107185513340153,
+          "min": 13.944361396182916,
+          "25%": 21.793528306159992,
+          "50%": 26.103934196122275,
+          "75%": 30.45344305028128,
+          "max": 38.488164452910986
+        },
+        "humidity_percent": {
+          "count": 4000.0,
+          "mean": 61.091529886190315,
+          "std": 18.05472765824075,
+          "min": 19.89674468662145,
+          "25%": 44.990041734245445,
+          "50%": 62.72989460660317,
+          "75%": 76.10137319012928,
+          "max": 98.27843171018192
+        },
+        "battery_voltage": {
+          "count": 4000.0,
+          "mean": 3.5921451250206804,
+          "std": 0.3537844679039129,
+          "min": 2.677888544441086,
+          "25%": 3.2867686562356035,
+          "50%": 3.6098124283122717,
+          "75%": 3.88,
+          "max": 4.2
+        }
+      },
+      "outliers": {
+        "record_id": 0,
+        "soil_moisture_percent": 0,
+        "temperature_celsius": 0,
+        "humidity_percent": 0,
+        "battery_voltage": 0
+      },
+      "num_duplicates": 0,
+      "datetime_columns": []
+    },
+    "cleaning_report": {
+      "duplicates_removed": 0,
+      "outliers_capped": {
+        "record_id": 0,
+        "soil_moisture_percent": 0,
+        "temperature_celsius": 0,
+        "humidity_percent": 0,
+        "battery_voltage": 0
+      },
+      "invalid_value_corrections": {
+        "temperature_celsius_invalid": 0,
+        "humidity_percent_below_0": 0,
+        "humidity_percent_above_100": 0,
+        "battery_voltage_negative": 0,
+        "soil_moisture_percent_below_0": 0,
+        "soil_moisture_percent_above_100": 0
+      }
+    }
+  }
+}

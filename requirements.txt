@@ -43,10 +43,10 @@ psycopg2==2.9.10
 pure_eval==0.2.3
 Pygments==2.19.2
 PyJWT==2.10.1
+PyPDF2==3.0.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 pytz==2025.2
-pywin32==310
 pyzmq==27.0.0
 reportlab==4.4.2
 requests==2.32.4
