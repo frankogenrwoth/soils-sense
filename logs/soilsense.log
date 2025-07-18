@@ -787,3 +787,27 @@ Not Found: /media/users/profile_images/default.webp
 "GET /farmer/notifications/unread-count/ HTTP/1.1" 200 12
 =======
 >>>>>>> ac322ea90676b0eb1d2ab80aecd3d3c592cb2056
+Watching for file changes with StatReloader
+"GET /farmer/notifications/unread-count/ HTTP/1.1" 302 0
+"GET /authentication/login/?next=/farmer/notifications/unread-count/ HTTP/1.1" 200 2899
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 19375
+"GET /static/images/garden2.jpg HTTP/1.1" 304 0
+"GET /static/images/lady.jpg HTTP/1.1" 304 0
+"GET /static/images/lady3.jpg HTTP/1.1" 304 0
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+"POST /authentication/signup/ HTTP/1.1" 302 0
+"GET /authentication/login/ HTTP/1.1" 200 3184
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 26566
+"GET /technician/farm-locations/ HTTP/1.1" 200 17976
+"GET /technician/soil-readings/ HTTP/1.1" 200 36876
+"GET /technician/sensors/ HTTP/1.1" 200 11602
+"GET /technician/analytics/ HTTP/1.1" 200 17863
+"GET /technician/reports/ HTTP/1.1" 200 61546
+"GET /technician/profile/ HTTP/1.1" 200 20045
+"GET /technician/settings/ HTTP/1.1" 200 17809
+- Broken pipe from ('127.0.0.1', 53491)
+"GET /authentication/logout/ HTTP/1.1" 302 0
+"GET /landing_page/ HTTP/1.1" 200 19375
