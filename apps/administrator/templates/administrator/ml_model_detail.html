@@ -454,6 +454,7 @@
 {% endblock %}
 
 {% block scripts %}
+{% if version_number %}
     <script type="text/javascript">
         const publishBtn = document.getElementById('publish-model');
         publishBtn.addEventListener('click', function() {
@@ -479,5 +480,6 @@
             });
         }
     </script>
+{% endif %}
 {{ block.super }}
 {% endblock %}
