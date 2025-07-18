@@ -33,8 +33,9 @@ authentication/migrations/
 db.sqlite3
 *.sqlite3
 
-# logs/
-# *.log
+# logs
+logs/
+*.log
 
 # media files
 mediafiles/
