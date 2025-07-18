@@ -3125,3 +3125,33 @@ Watching for file changes with StatReloader
 "GET /terms/ HTTP/1.1" 200 11944
 "GET /privacy/ HTTP/1.1" 200 11745
 "GET /terms/ HTTP/1.1" 200 11944
+"GET / HTTP/1.1" 200 19375
+"GET /privacy/ HTTP/1.1" 200 11745
+"GET /terms/ HTTP/1.1" 200 11944
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"POST /authentication/login/ HTTP/1.1" 302 0
+"GET /technician/dashboard/ HTTP/1.1" 200 26147
+"GET /technician/sensors/ HTTP/1.1" 200 11379
+"GET /technician/sensors/add/ HTTP/1.1" 200 15680
+"GET /technician/profile/ HTTP/1.1" 200 19832
+"GET /technician/settings/ HTTP/1.1" 200 17590
+"GET /technician/models/ HTTP/1.1" 200 54632
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/models/ HTTP/1.1" 200 54632
+"GET /technician/models/ HTTP/1.1" 200 54632
+"GET /technician/dashboard/ HTTP/1.1" 200 26149
+"GET /technician/models/ HTTP/1.1" 200 54632
+C:\Users\user\Desktop\soils-sense\apps\technician\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /technician/models/ HTTP/1.1" 200 54632
+"GET /technician/sensors/ HTTP/1.1" 200 11379
+"GET /technician/sensors/add/ HTTP/1.1" 200 15680
+"GET /technician/sensors/ HTTP/1.1" 200 11379
+"GET /technician/soil-readings/ HTTP/1.1" 200 36257
+"GET /technician/soil-readings/ HTTP/1.1" 200 36257
+"GET /technician/analytics/ HTTP/1.1" 200 17635
+"GET /technician/reports/ HTTP/1.1" 200 58091
+"GET /technician/prediction/14/download-pdf/ HTTP/1.1" 200 2748
+"GET /technician/analytics/ HTTP/1.1" 200 17635
+"GET /technician/dashboard/ HTTP/1.1" 200 26149
