@@ -3104,3 +3104,11 @@ Watching for file changes with StatReloader
 C:\Users\user\Desktop\soils-sense\ml\__init__.py changed, reloading.
 Watching for file changes with StatReloader
 C:\Users\user\Desktop\soils-sense\soilsense\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 19375
+"GET /authentication/signup/ HTTP/1.1" 200 4168
+Not Found: /privacy
+"GET /privacy HTTP/1.1" 404 4069
+"GET /authentication/login/ HTTP/1.1" 200 2899
+"GET / HTTP/1.1" 200 19185
+"GET / HTTP/1.1" 200 19246
