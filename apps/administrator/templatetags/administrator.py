@@ -122,3 +122,35 @@ def average_moisture(sensor_stats):
     if not moisture_values:
         return None
     return round(sum(moisture_values) / len(moisture_values), 1)
+
+
+@register.filter
+def add_params(value):
+    """
+    Add parameters to the URL. Transform the value
+    from: http://localhost:8000/administrator/ml-models/soil_moisture_predictor_random_forest_version_v0.6.4/
+    to: model=soil_moisture_predictor&algorithm=random_forest&version=v0.6.4
+
+    Usage in template:
+        {{ request.build_absolute_uri|add_params }}
+    """
+    # Defensive parsing in case the value format is not as expected
+    model_name = None
+    algorithm = None
+    version = None
+
+    value = value.split("/")[-2]
+
+    raw = value.split("_")
+
+    version = raw[-1]
+    raw.pop()
+    raw.pop()
+
+    algorithm = "_".join(raw[-2:])
+    raw.pop()
+    raw.pop()
+
+    model_name = "_".join(raw)
+
+    return f"model={model_name}&algorithm={algorithm}&version={version}"
