@@ -4,13 +4,15 @@ import pandas as pd
 from ml.config import MODEL_CONFIGS
 from typing import Literal
 from io import BytesIO
+from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-
+from django.urls import reverse
 
 from django.shortcuts import render, redirect
+
 from django.views import View
 from django.contrib.auth import get_user_model
 from django import forms
@@ -336,6 +338,7 @@ class MLModelDetailView(View):
     template_name = "administrator/ml_model_detail.html"
 
     def get(self, request, model_name):
+        predicted_value = request.GET.get("predicted_value", None)
         model_algorithm = request.GET.get("algorithm", None)
         if model_algorithm is not None:
             model_name = f"{model_name}_{model_algorithm}"
@@ -368,9 +371,134 @@ class MLModelDetailView(View):
             "model": ml_engine.get_model_info(model_name),
             "version_number": version_number,
             "input_fields": input_fields,
+            "predicted_value": predicted_value,
         }
 
         return render(request, self.template_name, context=context)
+
+    def post(self, request, model_name):
+        model_super_name = model_name
+        model_algorithm = request.GET.get("algorithm", None)
+        version = request.GET.get("version", None)
+        meta = request.POST.get("meta", None)
+        if meta is not None:
+            meta = meta.split("&")
+            meta = {k: v for k, v in [item.split("=") for item in meta]}
+
+            version = meta.get("version", None)
+            model_algorithm = meta.get("algorithm", None)
+            model_name = meta.get("model", None)
+
+        data = {k: v for k, v in request.POST.items() if v != ""}
+        cleaned_data = {}
+        for key, value in data.items():
+            if key in ["action", "irrigation_action"]:
+                continue
+            try:
+                cleaned_data[key] = float(value)
+            except ValueError:
+                cleaned_data[key] = value
+
+        cleaned_data["timestamp"] = datetime.now().isoformat()
+
+        if data.get("action") == "predict":
+            # fill in data
+            cleaned_data["irrigation_action"] = "Irrigate"
+
+            res = ml_engine.predict(
+                model_type=model_name,
+                data=cleaned_data,
+                version=version,
+                algorithm=model_algorithm,
+            )
+            predicted_value = res.get("predicted_value")
+            messages.success(
+                request,
+                f"Prediction successful: {predicted_value} {model_algorithm.title().replace('_', ' ')}",
+            )
+
+            url = reverse("administrator:ml_model_detail", args=[model_super_name])
+            if not meta:
+                return redirect(
+                    f"{url}?algorithm={model_algorithm}&version={version}&predicted_value={predicted_value}"
+                )
+            else:
+                return redirect(f"{url}?predicted_value={predicted_value}")
+
+        elif data.get("action") == "retrain":
+            dataset = request.FILES.get("dataset")
+            df = self._clean_dataset(request, dataset, model_name)
+
+            if df is None:
+                return redirect("administrator:ml")
+
+            res = ml_engine.train_model(
+                model_type=model_name, custom_data=df, version=version
+            )
+
+            messages.success(request, "Model training successful")
+            url = reverse("administrator:ml_model_detail", args=[model_super_name])
+            return redirect(f"{url}?algorithm={model_algorithm}&version={version}")
+
+        else:
+            messages.error(request, "Invalid action")
+            return redirect("administrator:ml")
+
+    def _clean_dataset(self, request, file, model_type="soil_moisture_predictor"):
+        """
+        Clean the dataset and return a dataframe
+        """
+        if file.size > 10 * 1024 * 1024:
+            messages.error(request, "File size exceeds 10MB limit")
+            return None
+
+        # Try to read the file as CSV or Excel
+        df = None
+        if file.content_type == "text/csv":
+            try:
+                df = pd.read_csv(file)
+            except Exception:
+                messages.error(request, "Invalid CSV file")
+                return None
+        elif (
+            file.content_type
+            == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ):
+            try:
+                df = pd.read_excel(file)
+            except Exception:
+                messages.error(request, "Invalid Excel file")
+                return None
+        else:
+            messages.error(request, "Invalid file type")
+            return None
+
+        if df is None or df.empty:
+            messages.error(request, "Empty or unreadable file")
+            return None
+
+        # Check for required columns
+        required_columns = MODEL_CONFIGS.get(model_type, {}).get("features", [])
+
+        engineered_columns = [
+            "hour_of_day",
+            "month",
+            "is_growing_season",
+            "temp_humidity_interaction",
+            "low_battery",
+        ]
+
+        # remove engineered columns from required columns
+        required_columns = [
+            col for col in required_columns if col not in engineered_columns
+        ] + ["timestamp"]
+
+        if required_columns and not all(col in df.columns for col in required_columns):
+            messages.error(request, "Required columns are missing")
+            return None
+
+        # Return the dataframe for further processing
+        return df
 
 
 class UploadDatasetView(View):
