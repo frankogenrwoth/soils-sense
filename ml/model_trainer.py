@@ -45,7 +45,6 @@ class ModelTrainer:
         version=None,
     ):
         """Train a regression model for the specified type algorithm and save it with a version number
-
         Args:
             model_type (str): Type of model to train (e.g., 'soil_moisture_predictor')
             algorithm (str, optional): Algorithm to use (e.g., 'random_forest', 'gradient_boosting')
