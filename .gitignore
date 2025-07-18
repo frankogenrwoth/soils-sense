@@ -33,6 +33,7 @@ authentication/migrations/
 db.sqlite3
 *.sqlite3
 
+# logs
 logs/
 *.log
 
