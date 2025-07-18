@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Terms of Use | SoilSense{% endblock %}
+{% block content %}
+
+<main class="py-16 px-4">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-4xl font-bold text-green-800 mb-6">Terms of Use</h1>
+        <p class="text-gray-600 mb-8">Last updated: {% now "F j, Y" %}</p>
+
+        <div class="space-y-8">
+            <!-- Agreement -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Agreement to Terms</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    By accessing or using SoilSense's services, you agree to be bound by these Terms of Use. If you disagree with any part of these terms, you may not access our service.
+                </p>
+            </section>
+
+            <!-- Service Description -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Description of Service</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    SoilSense provides a soil monitoring platform that includes:
+                </p>
+                <ul class="list-disc pl-6 text-gray-700 space-y-2 mt-2">
+                    <li>Real-time soil moisture monitoring</li>
+                    <li>Data analytics and visualization</li>
+                    <li>Automated alerts and notifications</li>
+                    <li>API access for data integration</li>
+                    <li>Mobile and web application access</li>
+                </ul>
+            </section>
+
+            <!-- User Responsibilities -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">User Responsibilities</h2>
+                <p class="text-gray-700 leading-relaxed">Users are responsible for:</p>
+                <ul class="list-disc pl-6 text-gray-700 space-y-2 mt-2">
+                    <li>Maintaining the confidentiality of their account credentials</li>
+                    <li>Ensuring the accuracy of provided information</li>
+                    <li>Proper installation and maintenance of sensors</li>
+                    <li>Complying with local regulations regarding sensor deployment</li>
+                    <li>Using the service in accordance with applicable laws</li>
+                </ul>
+            </section>
+
+            <!-- Intellectual Property -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Intellectual Property</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    The service, including its original content, features, and functionality, is owned by SoilSense and is protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+                </p>
+            </section>
+
+            <!-- Data Usage -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Data Usage and Storage</h2>
+                <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                    <li>Users retain ownership of their data</li>
+                    <li>We may analyze aggregated data for service improvement</li>
+                    <li>Data is stored securely and backed up regularly</li>
+                    <li>Users can export their data at any time</li>
+                </ul>
+            </section>
+
+            <!-- Limitations -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Limitations of Liability</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    SoilSense shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service.
+                </p>
+            </section>
+
+            <!-- Termination -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Account Termination</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    We may terminate or suspend your account and access to the service immediately, without prior notice or liability, for any reason, including breach of these Terms.
+                </p>
+            </section>
+
+            <!-- Changes to Terms -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Changes to Terms</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    We reserve the right to modify or replace these Terms at any time. We will provide notice of any significant changes and the opportunity to review the updated terms.
+                </p>
+            </section>
+
+            <!-- Contact Information -->
+            <section>
+                <h2 class="text-2xl font-semibold text-green-700 mb-4">Contact Us</h2>
+                <p class="text-gray-700 leading-relaxed">
+                    If you have questions about these Terms, please contact us at:
+                    <a href="mailto:legal@soilsense.com" class="text-green-600 hover:underline">legal@soilsense.com</a>
+                </p>
+            </section>
+        </div>
+    </div>
+</main>
+
+{% endblock %} 
