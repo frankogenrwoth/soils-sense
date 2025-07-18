@@ -46,7 +46,6 @@ PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 pytz==2025.2
-pywin32==310
 pyzmq==27.0.0
 reportlab==4.4.2
 requests==2.32.4
