@@ -100,6 +100,7 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sensor ID</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farm ID</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Latest Reading</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">24h Avg</th>
@@ -112,6 +113,7 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ sensor.sensor_id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ sensor.farm.farm_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ sensor.farm.id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                             {% if sensor_stats|get_item:sensor.id|get_item:'status' == 'Active' %}
