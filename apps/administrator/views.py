@@ -42,6 +42,7 @@ from apps.technician.models import Sensor
 from authentication.models import Role
 from django.db.models import Avg
 from django.utils import timezone
+import json
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -400,6 +401,8 @@ class MLModelDetailView(View):
                 cleaned_data[key] = value
 
         cleaned_data["timestamp"] = datetime.now().isoformat()
+
+        print(cleaned_data)
 
         if data.get("action") == "predict":
             # fill in data
@@ -1180,3 +1183,28 @@ class PrintReportView(View):
         writer.write(output_buffer)
         output_buffer.seek(0)
         return output_buffer
+
+
+def publish_model(request):
+    print(request.GET, "=" * 100)
+    version = request.GET.get("amp;version")
+    algorithm = request.GET.get("amp;algorithm")
+    model_type = request.GET.get("model")
+
+    model_name = f"{model_type}_{algorithm}"
+
+    targets = Model.objects.filter(name=model_name)
+
+    if not targets.exists():
+        return JsonResponse({"message": "Model not found"})
+
+    model = [model for model in targets if model.get_model_version() == version][0]
+    if model.is_active:
+        return JsonResponse({"message": "Model already published"})
+
+    model.is_active = True
+    model.save()
+
+    print(model.name, "=" * 100)
+
+    return JsonResponse({"message": "Model published"})
