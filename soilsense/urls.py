@@ -8,7 +8,6 @@ def redirect_to_farmer(request):
     """Redirect root URL to farmer dashboard"""
     return redirect("farmer:dashboard")
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("authentication/", include("authentication.urls")),

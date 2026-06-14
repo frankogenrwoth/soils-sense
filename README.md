@@ -286,4 +286,3 @@ For support and questions:
 
 ---
 
-**Made with ❤️ by Makerere University BSSE Group P Students**

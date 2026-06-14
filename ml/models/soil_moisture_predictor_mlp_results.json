@@ -2,7 +2,7 @@
   "model_type": "soil_moisture_predictor",
   "algorithm": "mlp",
   "task_type": "regression",
-  "training_time": 23.701682567596436,
+  "training_time": 6.243407964706421,
   "n_samples": 3200,
   "n_features": 10,
   "feature_names": [
@@ -32,13 +32,13 @@
   ],
   "model_name": "MLPRegressor",
   "train_r2": 0.5337798592634388,
-  "test_r2": 0.25055506201506317,
+  "test_r2": 0.2505550620150633,
   "train_rmse": 11.255560588955287,
   "test_rmse": 14.165119654672647,
-  "train_mae": 8.871370568877817,
+  "train_mae": 8.871370568877818,
   "test_mae": 11.26082235261244,
-  "cv_mean": 0.23669726573666333,
-  "cv_std": 0.027062955449108018,
+  "cv_mean": 0.24315275677755732,
+  "cv_std": 0.033267026054661405,
   "training_logs": {
     "data_inspection": {
       "num_rows": 4000,

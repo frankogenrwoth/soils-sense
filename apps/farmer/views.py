@@ -766,8 +766,11 @@ def download_predictions_csv(request):
     predictions = PredictionResult.objects.filter(farm__in=farms).select_related('farm').order_by('-created_at')
 
     # Create the HttpResponse object with CSV header
-    response = HttpResponse(content_type='text/csv')
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="soil_sense_predictions.csv"'
+    
+    # Write UTF-8 BOM for Excel compatibility
+    response.write('\ufeff')
 
     writer = csv.writer(response)
     # Write header
@@ -967,9 +970,12 @@ def delete_crop(request, crop_id):
 @farmer_role_required
 def download_csv_template(request):
     """Download empty CSV template for data upload"""
-    response = HttpResponse(content_type='text/csv')
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="soil_moisture_template.csv"'
     
+    # Write UTF-8 BOM for Excel compatibility
+    response.write('\ufeff')
+
     writer = csv.writer(response)
     writer.writerow(['sensor_id', 'location', 'temperature_celsius', 'humidity_percent', 'timestamp', 'status', 'battery_voltage'])
     writer.writerow(['SENSOR_1', 'Farm A', '25.3', '65.2', '2024-03-21 14:30:00', 'Normal', '3.62'])
@@ -1002,8 +1008,12 @@ def download_sensor_data(request):
         ).order_by('timestamp')
 
         # Create the HttpResponse object with CSV header
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="{farm.farm_name}_sensor_data_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        safe_filename = f"{farm.farm_name}_sensor_data_{timezone.now().strftime('%Y%m%d_%H%M%S')}.csv".replace(' ', '_')
+        response['Content-Disposition'] = f'attachment; filename="{safe_filename}"'
+
+        # Write UTF-8 BOM for Excel compatibility
+        response.write('\ufeff')
 
         # Create CSV writer
         writer = csv.writer(response)

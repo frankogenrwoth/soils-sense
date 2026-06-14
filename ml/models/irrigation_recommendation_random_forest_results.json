@@ -2,7 +2,7 @@
   "model_type": "irrigation_recommendation",
   "algorithm": "random_forest",
   "task_type": "classification",
-  "training_time": 0.3841724395751953,
+  "training_time": 0.1729736328125,
   "n_samples": 2241,
   "n_features": 10,
   "feature_names": [

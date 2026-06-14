@@ -2,7 +2,7 @@
   "model_type": "soil_moisture_predictor",
   "algorithm": "svr",
   "task_type": "regression",
-  "training_time": 0.5817792415618896,
+  "training_time": 0.4506962299346924,
   "n_samples": 3200,
   "n_features": 10,
   "feature_names": [
@@ -36,9 +36,9 @@
   "train_rmse": 16.002083960080547,
   "test_rmse": 16.122125815754558,
   "train_mae": 13.500725881889178,
-  "test_mae": 13.664757240572364,
-  "cv_mean": 0.03125613757228853,
-  "cv_std": 0.015438616076508167,
+  "test_mae": 13.664757240572362,
+  "cv_mean": 0.0312561375722886,
+  "cv_std": 0.01543861607650813,
   "training_logs": {
     "data_inspection": {
       "num_rows": 4000,

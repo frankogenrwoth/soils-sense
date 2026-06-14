@@ -6,10 +6,10 @@ from typing import Dict, Any
 from dataclasses import dataclass
 
 # Configuration
-URL = "https://soils-sense-production.up.railway.app/farmer/get-soil-data/"
+URL = "http://127.0.0.1:8001/farmer/get-soil-data/"
 SOIL_STATUS = ["Normal", "Dry", "Wet", "Critical Low", "Critical High"]
 FARM_ID = 2
-SENSOR_ID = "SENSOR_40"
+SENSOR_ID = "SENSOR_1"
 
 
 @dataclass

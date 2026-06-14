@@ -2,7 +2,7 @@
   "model_type": "soil_moisture_predictor",
   "algorithm": "gradient_boosting",
   "task_type": "regression",
-  "training_time": 1.9433653354644775,
+  "training_time": 1.1834707260131836,
   "n_samples": 3200,
   "n_features": 10,
   "feature_names": [

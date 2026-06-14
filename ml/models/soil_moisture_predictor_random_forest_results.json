@@ -2,7 +2,7 @@
   "model_type": "soil_moisture_predictor",
   "algorithm": "random_forest",
   "task_type": "regression",
-  "training_time": 0.5250632762908936,
+  "training_time": 0.3115811347961426,
   "n_samples": 3200,
   "n_features": 10,
   "feature_names": [
@@ -31,14 +31,14 @@
     "low_battery"
   ],
   "model_name": "RandomForestRegressor",
-  "train_r2": 0.6443398693332139,
+  "train_r2": 0.644339869333214,
   "test_r2": 0.3073532071727787,
   "train_rmse": 9.830807823368167,
   "test_rmse": 13.617779442863762,
   "train_mae": 8.098884203354075,
   "test_mae": 11.324780470340729,
-  "cv_mean": 0.2802883969894515,
-  "cv_std": 0.026583726054773153,
+  "cv_mean": 0.2802883969894516,
+  "cv_std": 0.026583726054773087,
   "training_logs": {
     "data_inspection": {
       "num_rows": 4000,
